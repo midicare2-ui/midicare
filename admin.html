@@ -853,11 +853,11 @@
         <button class="adm-btn-icon" onclick="closeAddProductModal()">✕</button>
       </div>
 
-      <form class="adm-modal-body" onsubmit="saveProductSubmit(event)">
+      <form class="adm-modal-body" onsubmit="saveProductSubmit(event); return false;">
         <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
           <div class="chk-form-group">
             <label class="chk-label">Product Name <span class="required">*</span></label>
-            <input type="text" id="p-name" class="chk-input" placeholder="e.g. Obsidian Flex Scrub Set" required>
+            <input type="text" id="p-name" class="chk-input" placeholder="e.g. Obsidian Flex Scrub Set">
           </div>
           <div class="chk-form-group">
             <label class="chk-label">SKU Code</label>
@@ -868,7 +868,7 @@
         <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
           <div class="chk-form-group">
             <label class="chk-label">Category <span class="required">*</span></label>
-            <select id="p-category" class="chk-select" required>
+            <select id="p-category" class="chk-select">
               <option value="Scrubs">Medical Scrubs</option>
               <option value="Lab Coats">Lab Coats</option>
               <option value="Footwear">Medical Footwear</option>
@@ -877,7 +877,7 @@
           </div>
           <div class="chk-form-group">
             <label class="chk-label">Specialty Tag <span class="required">*</span></label>
-            <select id="p-specialty" class="chk-select" required>
+            <select id="p-specialty" class="chk-select">
               <option value="medicine">Medicine & Surgery</option>
               <option value="pharmacy">Pharmacy</option>
               <option value="dentistry">Dentistry</option>
@@ -889,7 +889,7 @@
         <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
           <div class="chk-form-group">
             <label class="chk-label">Price (DZD) <span class="required">*</span></label>
-            <input type="number" id="p-price" class="chk-input" placeholder="10700" required>
+            <input type="number" id="p-price" class="chk-input" placeholder="10700">
           </div>
           <div class="chk-form-group">
             <label class="chk-label">Initial Stock</label>
@@ -910,7 +910,9 @@
           <div id="p-image-preview-grid" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:0.75rem;"></div>
         </div>
 
-        <button type="submit" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%;">Save Product to Store</button>
+        <button type="button" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%; font-size:16px; font-weight:800; cursor:pointer;" onclick="saveProductSubmit(event)">
+          💾 Save Product to Store Catalog
+        </button>
       </form>
     </div>
   </div>

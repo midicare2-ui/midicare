@@ -778,17 +778,42 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`🗑️ Product ${sku} deleted`);
   };
 
+  window.filterAdminProducts = function(query) {
+    const q = (query || '').toLowerCase().trim();
+    const rows = document.querySelectorAll('#admin-products-table-body tr');
+    rows.forEach(r => {
+      const text = r.textContent.toLowerCase();
+      r.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  };
+
   window.saveProductSubmit = async function(e) {
-    e.preventDefault();
-    const name      = document.getElementById('p-name')?.value.trim();
-    const sku       = document.getElementById('p-sku')?.value.trim() || `MC-${Math.floor(100 + Math.random() * 900)}`;
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const nameInput  = document.getElementById('p-name');
+    const skuInput   = document.getElementById('p-sku');
+    const priceInput = document.getElementById('p-price');
+    const stockInput = document.getElementById('p-stock');
+
+    const name      = nameInput ? nameInput.value.trim() : '';
+    const sku       = (skuInput && skuInput.value.trim()) ? skuInput.value.trim() : `MC-${Math.floor(100 + Math.random() * 900)}`;
     const category  = document.getElementById('p-category')?.value || 'Scrubs';
     const specialty = document.getElementById('p-specialty')?.value || 'medicine';
-    const price     = parseFloat(document.getElementById('p-price')?.value) || 0;
-    const stock     = parseInt(document.getElementById('p-stock')?.value, 10) || 25;
+    const price     = priceInput ? parseFloat(priceInput.value) : 0;
+    const stock     = stockInput ? (parseInt(stockInput.value, 10) || 25) : 25;
 
-    if (!name || !price) {
-      showToast('❌ Please fill out Product Name and Price');
+    if (!name) {
+      alert('⚠️ Please enter a Product Name (يرجى كتابة اسم المنتج)!');
+      if (nameInput) nameInput.focus();
+      return;
+    }
+
+    if (!price || isNaN(price) || price <= 0) {
+      alert('⚠️ Please enter a valid Price in DZD (يرجى كتابة سعر المنتج بالدينار)!');
+      if (priceInput) priceInput.focus();
       return;
     }
 
@@ -823,10 +848,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeAddProductModal();
     renderProductsTable();
+
+    // Switch view to Products Catalog module tab
+    if (typeof window.switchModule === 'function') {
+      window.switchModule(document.querySelector("button[onclick*='mod-products']"), 'mod-products');
+    }
+
     logAuditAction('Added New Product', `${name} (${sku}) — ${price} DZD — ${finalImages.length} image(s)`);
     showToast(`🎉 Product "${name}" saved and added to catalog!`);
 
-    if (e.target && typeof e.target.reset === 'function') e.target.reset();
+    // Reset inputs
+    if (nameInput) nameInput.value = '';
+    if (skuInput) skuInput.value = '';
+    if (priceInput) priceInput.value = '';
+    if (stockInput) stockInput.value = '25';
     uploadedProductImages = [];
     renderImagePreviews();
   };
