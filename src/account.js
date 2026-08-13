@@ -11,6 +11,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toast    = document.getElementById('copy-toast');
 
   /* ------------------------------------------------------------------
+     0. TOAST NOTIFICATION HELPER
+     ------------------------------------------------------------------ */
+  function showToast(msg) {
+    let toastEl = document.getElementById('copy-toast');
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.id = 'copy-toast';
+      toastEl.className = 'mc-copy-toast';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(() => toastEl.classList.remove('show'), 2500);
+  }
+  window.showToast = showToast;
+
+  /* ------------------------------------------------------------------
      1. INIT ACCOUNT VIEW BASED ON AUTH SESSION
      ------------------------------------------------------------------ */
   async function initAccountPage() {
@@ -568,7 +586,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     customer.medical_role = role;
 
     localStorage.setItem('medicare_customer_session', JSON.stringify(customer));
-    if (window.MedicareDB) {
+    if (window.MedicareDB && typeof window.MedicareDB.saveCustomerSession === 'function') {
       window.MedicareDB.saveCustomerSession(customer);
     }
 
@@ -577,6 +595,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.renderHeaderAccountWidget) window.renderHeaderAccountWidget();
     await renderCustomerDashboard(customer);
   };
+  window.handleEditProfileSubmit = window.handleSaveProfileSubmit;
 
   // Initial load
   await initAccountPage();
