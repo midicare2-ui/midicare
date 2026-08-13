@@ -714,17 +714,81 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) modal.classList.remove('open');
   };
 
+  /* ------------------------------------------------------------------
+     11. PRODUCTS CATALOG STORE & TABLE RENDERER
+     ------------------------------------------------------------------ */
+  let allAdminProducts = [
+    { id: 'MC-101', name: 'Obsidian Flex Scrub Set', sku: 'MC-101-OBS', category: 'Medical Scrubs', specialty: 'medicine', price: 10700, stock: 12, image: 'assets/medicare_scrubs_hero_1786614154492.png' },
+    { id: 'MC-102', name: 'ClinFlex 4-Way Stretch Scrub Pants', sku: 'MC-102-PAN', category: 'Medical Scrubs', specialty: 'nursing', price: 6800, stock: 28, image: 'assets/medicare_lab_coat_1786614177321.png' },
+    { id: 'MC-103', name: 'Executive Fluid-Shield Lab Coat', sku: 'MC-103-EXC', category: 'Lab Coats', specialty: 'pharmacy', price: 13400, stock: 58, image: 'assets/medicare_lab_coat_1786614177321.png' },
+    { id: 'MC-108', name: 'Titanium Master Diagnostic Stethoscope', sku: 'MC-108-TIT', category: 'Diagnostic Tools', specialty: 'medicine', price: 19800, stock: 9, image: 'assets/medicare_stethoscope_1786614166370.png' },
+    { id: 'MC-110', name: 'Clinical Cushion Antibacterial Clogs', sku: 'MC-110-CLG', category: 'Footwear', specialty: 'nursing', price: 9000, stock: 15, image: 'assets/medicare_footwear_1786615096505.png' }
+  ];
+
+  function getCombinedProductsList() {
+    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    const customMapped = customProds.map(p => ({
+      id: p.id,
+      name: p.name,
+      sku: p.id,
+      category: p.category || 'Medical Wear',
+      specialty: p.specialty || 'medicine',
+      price: p.price,
+      stock: p.stock || 25,
+      image: p.images && p.images[0] ? p.images[0] : 'assets/medicare_scrubs_hero_1786614154492.png'
+    }));
+    return [...customMapped, ...allAdminProducts];
+  }
+
+  function renderProductsTable() {
+    const tbody = document.getElementById('admin-products-table-body');
+    if (!tbody) return;
+
+    const list = getCombinedProductsList();
+    tbody.innerHTML = list.map(p => `
+      <tr>
+        <td>
+          <img src="${p.image}" alt="${p.name}" style="width:40px; height:40px; border-radius:6px; object-fit:cover; border:1px solid #E2E8F0;">
+        </td>
+        <td><strong>${p.name}</strong></td>
+        <td><code>${p.sku}</code></td>
+        <td><span class="adm-badge adm-badge-info">${p.category}</span></td>
+        <td><span style="font-size:12px; text-transform:capitalize;">${p.specialty}</span></td>
+        <td><strong>${Number(p.price).toLocaleString()} DZD</strong></td>
+        <td>
+          <span class="adm-badge ${p.stock > 10 ? 'adm-badge-success' : p.stock > 0 ? 'adm-badge-warning' : 'adm-badge-danger'}">
+            ${p.stock > 0 ? p.stock + ' in stock' : 'Out of Stock'}
+          </span>
+        </td>
+        <td><span class="adm-badge adm-badge-success">Active</span></td>
+        <td>
+          <button class="adm-btn-icon" onclick="deleteAdminProduct('${p.id}')" title="Delete Product">🗑️</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.deleteAdminProduct = function(sku) {
+    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    const updated = customProds.filter(p => p.id !== sku);
+    localStorage.setItem('medicare_custom_products', JSON.stringify(updated));
+    allAdminProducts = allAdminProducts.filter(p => p.id !== sku);
+    renderProductsTable();
+    logAuditAction('Deleted Product', `Product ${sku}`);
+    showToast(`🗑️ Product ${sku} deleted`);
+  };
+
   window.saveProductSubmit = async function(e) {
     e.preventDefault();
     const name      = document.getElementById('p-name')?.value.trim();
-    const sku       = document.getElementById('p-sku')?.value.trim() || `MC-${Date.now()}`;
+    const sku       = document.getElementById('p-sku')?.value.trim() || `MC-${Math.floor(100 + Math.random() * 900)}`;
     const category  = document.getElementById('p-category')?.value || 'Scrubs';
     const specialty = document.getElementById('p-specialty')?.value || 'medicine';
     const price     = parseFloat(document.getElementById('p-price')?.value) || 0;
-    const stock     = parseInt(document.getElementById('p-stock')?.value, 10) || 0;
+    const stock     = parseInt(document.getElementById('p-stock')?.value, 10) || 25;
 
     if (!name || !price) {
-      showToast('❌ Please fill out Name and Price');
+      showToast('❌ Please fill out Product Name and Price');
       return;
     }
 
@@ -736,6 +800,7 @@ document.addEventListener('DOMContentLoaded', () => {
       id: sku,
       name: name,
       name_ar: name,
+      category: category,
       specialty: specialty,
       price: price,
       original_price: Math.round(price * 1.25),
@@ -757,8 +822,9 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('medicare_custom_products', JSON.stringify(customProds));
 
     closeAddProductModal();
+    renderProductsTable();
     logAuditAction('Added New Product', `${name} (${sku}) — ${price} DZD — ${finalImages.length} image(s)`);
-    showToast(`🎉 Product "${name}" added to store catalog with ${finalImages.length} image(s)!`);
+    showToast(`🎉 Product "${name}" saved and added to catalog!`);
 
     if (e.target && typeof e.target.reset === 'function') e.target.reset();
     uploadedProductImages = [];
@@ -788,6 +854,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize Drag & Drop image uploader
   initImageUploader();
+
+  // Render initial Products Table
+  renderProductsTable();
 
   // Automatically fetch & render orders on load
   loadAndRenderOrders();
