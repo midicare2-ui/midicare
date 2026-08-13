@@ -609,9 +609,102 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ------------------------------------------------------------------
-     10. PRODUCT MODAL & CATEGORY FILTERING HANDLERS
+     10. PRODUCT MODAL & DRAG/DROP IMAGE UPLOADER
      ------------------------------------------------------------------ */
+  let uploadedProductImages = [];
+
+  function initImageUploader() {
+    const dropzone  = document.getElementById('adm-dropzone');
+    const fileInput = document.getElementById('p-file-input');
+
+    if (!dropzone || !fileInput) return;
+
+    // Trigger File Browser on Click
+    dropzone.addEventListener('click', (e) => {
+      e.preventDefault();
+      fileInput.click();
+    });
+
+    // File selection change
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleImageFiles(e.target.files);
+      }
+    });
+
+    // Drag and Drop hover states
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.style.borderColor = 'var(--adm-primary)';
+        dropzone.style.background = '#F0FDF4';
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.style.borderColor = '';
+        dropzone.style.background = '';
+      }, false);
+    });
+
+    // Drop files
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if (dt && dt.files && dt.files.length > 0) {
+        handleImageFiles(dt.files);
+      }
+    });
+  }
+
+  function handleImageFiles(files) {
+    const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if (validFiles.length === 0) {
+      showToast('❌ Please select valid image files (PNG, JPG, WEBP)');
+      return;
+    }
+
+    validFiles.forEach(file => {
+      if (file.size > 10 * 1024 * 1024) {
+        showToast(`⚠️ File "${file.name}" exceeds 10MB limit`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        uploadedProductImages.push(dataUrl);
+        renderImagePreviews();
+        showToast(`📷 Image "${file.name}" attached!`);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderImagePreviews() {
+    const grid = document.getElementById('p-image-preview-grid');
+    if (!grid) return;
+
+    grid.innerHTML = uploadedProductImages.map((imgSrc, idx) => `
+      <div style="position:relative; width:84px; height:84px; border-radius:8px; overflow:hidden; border:2px solid #0E4D45; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+        <img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover;">
+        <button type="button" onclick="removeUploadedImage(${idx})" title="Remove image" style="position:absolute; top:3px; right:3px; background:rgba(239,68,68,0.9); color:#FFF; border:none; border-radius:50%; width:20px; height:20px; font-size:11px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);">✕</button>
+      </div>
+    `).join('');
+  }
+
+  window.removeUploadedImage = function(idx) {
+    uploadedProductImages.splice(idx, 1);
+    renderImagePreviews();
+    showToast('🗑️ Image removed');
+  };
+
   window.openAddProductModal = function() {
+    uploadedProductImages = [];
+    renderImagePreviews();
     const modal = document.getElementById('modal-add-product');
     if (modal) modal.classList.add('open');
   };
@@ -635,6 +728,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const finalImages = uploadedProductImages.length > 0 
+      ? [...uploadedProductImages] 
+      : ['assets/medicare_scrubs_hero_1786614154492.png'];
+
     const newProduct = {
       id: sku,
       name: name,
@@ -649,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
       badge: 'new',
       colors: ['#0E4D45', '#1E3A5F'],
       sizes: ['S', 'M', 'L', 'XL'],
-      images: ['assets/medicare_scrubs_hero_1786614154492.png'],
+      images: finalImages,
       is_new: true,
       is_bestseller: false,
       stock: stock
@@ -660,10 +757,12 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('medicare_custom_products', JSON.stringify(customProds));
 
     closeAddProductModal();
-    logAuditAction('Added New Product', `${name} (${sku}) — ${price} DZD`);
-    showToast(`🎉 Product "${name}" added to store catalog!`);
+    logAuditAction('Added New Product', `${name} (${sku}) — ${price} DZD — ${finalImages.length} image(s)`);
+    showToast(`🎉 Product "${name}" added to store catalog with ${finalImages.length} image(s)!`);
 
     if (e.target && typeof e.target.reset === 'function') e.target.reset();
+    uploadedProductImages = [];
+    renderImagePreviews();
   };
 
   window.filterAdminCategory = function(category) {
@@ -686,6 +785,9 @@ document.addEventListener('DOMContentLoaded', () => {
     html.setAttribute('data-admin-theme', next);
     showToast(`🌙 Theme switched to ${next} mode`);
   };
+
+  // Initialize Drag & Drop image uploader
+  initImageUploader();
 
   // Automatically fetch & render orders on load
   loadAndRenderOrders();

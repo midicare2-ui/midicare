@@ -899,12 +899,15 @@
 
         <!-- Drag Image Upload -->
         <div class="chk-form-group" style="margin-bottom:1.25rem;">
-          <label class="chk-label">Product Images (Drag & Reorder):</label>
-          <div class="adm-image-upload-box" onclick="showToast('📷 Image Upload Simulated!')">
-            <div style="font-size:1.8rem;">🖼️</div>
-            <div style="font-size:13px; font-weight:700; color:var(--color-primary-800);">Drag & drop images here, or browse</div>
+          <label class="chk-label">Product Images (Drag & Drop or Browse):</label>
+          <input type="file" id="p-file-input" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display:none;">
+          <div class="adm-image-upload-box" id="adm-dropzone">
+            <div style="font-size:1.8rem; margin-bottom:0.25rem;">🖼️</div>
+            <div style="font-size:13px; font-weight:700; color:var(--color-primary-800);">Drag & drop images here, or click to browse</div>
             <div style="font-size:11px; color:#64748B;">Supports PNG, JPG, WEBP up to 10MB</div>
           </div>
+          <!-- Preview Thumbnails Container -->
+          <div id="p-image-preview-grid" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:0.75rem;"></div>
         </div>
 
         <button type="submit" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%;">Save Product to Store</button>
