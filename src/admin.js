@@ -702,9 +702,59 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('🗑️ Image removed');
   };
 
+  // -----------------------------------------------------------------------
+  // 10b. ADD / EDIT PRODUCT MODAL  (unified, mode-aware)
+  // -----------------------------------------------------------------------
+  let _editingProductId = null;   // null = Add mode  |  string id = Edit mode
+
+  /** Open modal in ADD mode */
   window.openAddProductModal = function() {
+    _editingProductId = null;
     uploadedProductImages = [];
     renderImagePreviews();
+
+    // Reset every field
+    _setField('p-name', '');
+    _setField('p-sku', '');
+    _setField('p-price', '');
+    _setField('p-stock', '25');
+    _setSelect('p-category', 'Scrubs');
+    _setSelect('p-specialty', 'medicine');
+
+    // Update title & button text
+    const title = document.getElementById('modal-product-title');
+    const btn   = document.getElementById('modal-product-save-btn');
+    if (title) title.textContent = '+ Add New Product to Catalog';
+    if (btn)   btn.textContent  = '💾 Save Product to Store Catalog';
+
+    const modal = document.getElementById('modal-add-product');
+    if (modal) modal.classList.add('open');
+  };
+
+  /** Open modal in EDIT mode pre-filled with product data */
+  window.openEditProductModal = function(productId) {
+    const allProds = getCombinedProductsList();
+    const prod = allProds.find(p => p.id === productId);
+    if (!prod) { showToast('❌ Product not found'); return; }
+
+    _editingProductId = productId;
+    uploadedProductImages = prod.images ? [...prod.images] : [];
+    renderImagePreviews();
+
+    // Pre-fill fields
+    _setField('p-name',  prod.name  || '');
+    _setField('p-sku',   prod.sku   || prod.id || '');
+    _setField('p-price', prod.price || '');
+    _setField('p-stock', prod.stock != null ? prod.stock : '25');
+    _setSelect('p-category', prod.category || 'Scrubs');
+    _setSelect('p-specialty', prod.specialty || 'medicine');
+
+    // Update title & button
+    const title = document.getElementById('modal-product-title');
+    const btn   = document.getElementById('modal-product-save-btn');
+    if (title) title.textContent = '✏️ Edit Product';
+    if (btn)   btn.textContent  = '✅ Update Product';
+
     const modal = document.getElementById('modal-add-product');
     if (modal) modal.classList.add('open');
   };
@@ -712,7 +762,23 @@ document.addEventListener('DOMContentLoaded', () => {
   window.closeAddProductModal = function() {
     const modal = document.getElementById('modal-add-product');
     if (modal) modal.classList.remove('open');
+    _editingProductId = null;
   };
+
+  /** Helper: set input value safely */
+  function _setField(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  }
+
+  /** Helper: set select value safely */
+  function _setSelect(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    for (let i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === val) { el.selectedIndex = i; break; }
+    }
+  }
 
   /* ------------------------------------------------------------------
      11. PRODUCTS CATALOG STORE & TABLE RENDERER
@@ -745,37 +811,51 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!tbody) return;
 
     const list = getCombinedProductsList();
+
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:2rem; color:#94A3B8;">No products yet. Click "+ Add Product" to get started.</td></tr>`;
+      return;
+    }
+
     tbody.innerHTML = list.map(p => `
-      <tr>
+      <tr data-product-id="${p.id}">
         <td>
-          <img src="${p.image}" alt="${p.name}" style="width:40px; height:40px; border-radius:6px; object-fit:cover; border:1px solid #E2E8F0;">
+          <img src="${p.image || 'assets/medicare_scrubs_hero_1786614154492.png'}" alt="${p.name}"
+               style="width:44px; height:44px; border-radius:8px; object-fit:cover; border:1px solid #E2E8F0;"
+               onerror="this.src='assets/medicare_scrubs_hero_1786614154492.png'">
         </td>
         <td><strong>${p.name}</strong></td>
-        <td><code>${p.sku}</code></td>
+        <td><code style="background:#F1F5F9; padding:2px 6px; border-radius:4px; font-size:12px;">${p.sku || p.id}</code></td>
         <td><span class="adm-badge adm-badge-info">${p.category}</span></td>
-        <td><span style="font-size:12px; text-transform:capitalize;">${p.specialty}</span></td>
-        <td><strong>${Number(p.price).toLocaleString()} DZD</strong></td>
+        <td><span style="font-size:12px; text-transform:capitalize; color:#475569;">${p.specialty}</span></td>
+        <td><strong style="color:#0E4D45;">${Number(p.price).toLocaleString()} DZD</strong></td>
         <td>
           <span class="adm-badge ${p.stock > 10 ? 'adm-badge-success' : p.stock > 0 ? 'adm-badge-warning' : 'adm-badge-danger'}">
             ${p.stock > 0 ? p.stock + ' in stock' : 'Out of Stock'}
           </span>
         </td>
         <td><span class="adm-badge adm-badge-success">Active</span></td>
-        <td>
-          <button class="adm-btn-icon" onclick="deleteAdminProduct('${p.id}')" title="Delete Product">🗑️</button>
+        <td style="display:flex; gap:6px; align-items:center;">
+          <button class="adm-btn-icon" onclick="openEditProductModal('${p.id}')" title="Edit Product"
+                  style="background:#EFF6FF; color:#1D4ED8; border-radius:6px; padding:5px 8px; border:1px solid #BFDBFE; font-size:14px;">✏️</button>
+          <button class="adm-btn-icon" onclick="deleteAdminProduct('${p.id}')" title="Delete Product"
+                  style="background:#FEF2F2; color:#DC2626; border-radius:6px; padding:5px 8px; border:1px solid #FECACA; font-size:14px;">🗑️</button>
         </td>
       </tr>
     `).join('');
   }
 
-  window.deleteAdminProduct = function(sku) {
+  window.deleteAdminProduct = function(productId) {
+    if (!confirm(`Delete this product? This cannot be undone.`)) return;
+    // Remove from custom products in localStorage
     const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
-    const updated = customProds.filter(p => p.id !== sku);
+    const updated = customProds.filter(p => p.id !== productId);
     localStorage.setItem('medicare_custom_products', JSON.stringify(updated));
-    allAdminProducts = allAdminProducts.filter(p => p.id !== sku);
+    // Remove from default allAdminProducts array too
+    allAdminProducts = allAdminProducts.filter(p => p.id !== productId);
     renderProductsTable();
-    logAuditAction('Deleted Product', `Product ${sku}`);
-    showToast(`🗑️ Product ${sku} deleted`);
+    logAuditAction('Deleted Product', `Product ID: ${productId}`);
+    showToast(`🗑️ Product deleted successfully`);
   };
 
   window.filterAdminProducts = function(query) {
@@ -787,87 +867,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  window.saveProductSubmit = async function(e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    const nameInput  = document.getElementById('p-name');
-    const skuInput   = document.getElementById('p-sku');
-    const priceInput = document.getElementById('p-price');
-    const stockInput = document.getElementById('p-stock');
-
-    const name      = nameInput ? nameInput.value.trim() : '';
-    const sku       = (skuInput && skuInput.value.trim()) ? skuInput.value.trim() : `MC-${Math.floor(100 + Math.random() * 900)}`;
-    const category  = document.getElementById('p-category')?.value || 'Scrubs';
-    const specialty = document.getElementById('p-specialty')?.value || 'medicine';
-    const price     = priceInput ? parseFloat(priceInput.value) : 0;
-    const stock     = stockInput ? (parseInt(stockInput.value, 10) || 25) : 25;
-
-    if (!name) {
-      alert('⚠️ Please enter a Product Name (يرجى كتابة اسم المنتج)!');
-      if (nameInput) nameInput.focus();
-      return;
-    }
-
-    if (!price || isNaN(price) || price <= 0) {
-      alert('⚠️ Please enter a valid Price in DZD (يرجى كتابة سعر المنتج بالدينار)!');
-      if (priceInput) priceInput.focus();
-      return;
-    }
-
-    const finalImages = uploadedProductImages.length > 0 
-      ? [...uploadedProductImages] 
-      : ['assets/medicare_scrubs_hero_1786614154492.png'];
-
-    const newProduct = {
-      id: sku,
-      name: name,
-      name_ar: name,
-      category: category,
-      specialty: specialty,
-      price: price,
-      original_price: Math.round(price * 1.25),
-      rating: 5.0,
-      reviews_count: 1,
-      material: 'antimicrobial',
-      brand: 'medicare',
-      badge: 'new',
-      colors: ['#0E4D45', '#1E3A5F'],
-      sizes: ['S', 'M', 'L', 'XL'],
-      images: finalImages,
-      is_new: true,
-      is_bestseller: false,
-      stock: stock
-    };
-
-    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
-    customProds.unshift(newProduct);
-    localStorage.setItem('medicare_custom_products', JSON.stringify(customProds));
-
-    closeAddProductModal();
-    renderProductsTable();
-
-    // Switch view to Products Catalog module tab
-    if (typeof window.switchModule === 'function') {
-      window.switchModule(document.querySelector("button[onclick*='mod-products']"), 'mod-products');
-    }
-
-    logAuditAction('Added New Product', `${name} (${sku}) — ${price} DZD — ${finalImages.length} image(s)`);
-    showToast(`🎉 Product "${name}" saved and added to catalog!`);
-
-    // Reset inputs
-    if (nameInput) nameInput.value = '';
-    if (skuInput) skuInput.value = '';
-    if (priceInput) priceInput.value = '';
-    if (stockInput) stockInput.value = '25';
-    uploadedProductImages = [];
-    renderImagePreviews();
-  };
-
   window.filterAdminCategory = function(category) {
-    showToast(`🔍 Filtering catalog by: ${category}`);
     const rows = document.querySelectorAll('#admin-products-table-body tr');
     rows.forEach(r => {
       if (category === 'all') {
@@ -878,6 +878,123 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   };
+
+  /**
+   * saveProductSubmit — handles BOTH Add and Edit modes.
+   * Called from type="button" onclick in the modal.
+   */
+  window.saveProductSubmit = function(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+
+    // --- Read form values ---
+    const nameInput  = document.getElementById('p-name');
+    const skuInput   = document.getElementById('p-sku');
+    const priceInput = document.getElementById('p-price');
+    const stockInput = document.getElementById('p-stock');
+    const catEl      = document.getElementById('p-category');
+    const specEl     = document.getElementById('p-specialty');
+
+    const name      = (nameInput  ? nameInput.value.trim()          : '');
+    const skuRaw    = (skuInput   ? skuInput.value.trim()           : '');
+    const priceRaw  = (priceInput ? parseFloat(priceInput.value)    : NaN);
+    const stockRaw  = (stockInput ? parseInt(stockInput.value, 10)  : NaN);
+    const category  = (catEl      ? catEl.value                     : 'Scrubs');
+    const specialty = (specEl     ? specEl.value                    : 'medicine');
+
+    // --- Validation ---
+    if (!name) {
+      _showFieldError(nameInput, 'يرجى كتابة اسم المنتج — Product Name is required!');
+      return;
+    }
+    if (isNaN(priceRaw) || priceRaw <= 0) {
+      _showFieldError(priceInput, 'يرجى كتابة سعر صحيح — Enter a valid Price in DZD!');
+      return;
+    }
+
+    const sku   = skuRaw  || (_editingProductId || `MC-${Math.floor(100 + Math.random() * 900)}`);
+    const stock = isNaN(stockRaw) ? 25 : stockRaw;
+    const finalImages = uploadedProductImages.length > 0
+      ? [...uploadedProductImages]
+      : ['assets/medicare_scrubs_hero_1786614154492.png'];
+
+    const productData = {
+      id:             sku,
+      name:           name,
+      name_ar:        name,
+      sku:            sku,
+      category:       category,
+      specialty:      specialty,
+      price:          priceRaw,
+      original_price: Math.round(priceRaw * 1.25),
+      rating:         5.0,
+      reviews_count:  1,
+      material:       'antimicrobial',
+      brand:          'medicare',
+      badge:          _editingProductId ? 'updated' : 'new',
+      colors:         ['#0E4D45', '#1E3A5F'],
+      sizes:          ['S', 'M', 'L', 'XL'],
+      images:         finalImages,
+      is_new:         !_editingProductId,
+      is_bestseller:  false,
+      stock:          stock
+    };
+
+    // --- Persist to localStorage ---
+    let customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+
+    if (_editingProductId) {
+      // EDIT MODE: replace existing entry by id
+      const existingIdx = customProds.findIndex(p => p.id === _editingProductId);
+      if (existingIdx >= 0) {
+        customProds[existingIdx] = productData;
+      } else {
+        // It was a default product — add an override to custom list
+        customProds.unshift(productData);
+        // Remove from in-memory defaults so custom takes priority
+        allAdminProducts = allAdminProducts.filter(p => p.id !== _editingProductId);
+      }
+      logAuditAction('Updated Product', `${name} (${sku}) — ${priceRaw} DZD`);
+      showToast(`✅ Product "${name}" updated successfully!`);
+    } else {
+      // ADD MODE: prepend new product
+      customProds.unshift(productData);
+      logAuditAction('Added New Product', `${name} (${sku}) — ${priceRaw} DZD`);
+      showToast(`🎉 Product "${name}" published to catalog!`);
+    }
+
+    localStorage.setItem('medicare_custom_products', JSON.stringify(customProds));
+
+    // Close modal & re-render table
+    closeAddProductModal();
+    renderProductsTable();
+
+    // Reset uploader
+    uploadedProductImages = [];
+    renderImagePreviews();
+  };
+
+  /** Show inline validation error under a field */
+  function _showFieldError(inputEl, msg) {
+    if (!inputEl) { alert(msg); return; }
+    inputEl.focus();
+    inputEl.style.borderColor = '#EF4444';
+    inputEl.style.boxShadow   = '0 0 0 3px rgba(239,68,68,0.2)';
+    // Remove error style after 2s
+    setTimeout(() => {
+      inputEl.style.borderColor = '';
+      inputEl.style.boxShadow   = '';
+    }, 2000);
+    // Show small error message below the field
+    let errEl = inputEl.parentNode.querySelector('.field-error-msg');
+    if (!errEl) {
+      errEl = document.createElement('p');
+      errEl.className = 'field-error-msg';
+      errEl.style.cssText = 'color:#EF4444;font-size:12px;margin:4px 0 0 2px;font-weight:600;';
+      inputEl.parentNode.appendChild(errEl);
+    }
+    errEl.textContent = msg;
+    setTimeout(() => { if (errEl) errEl.remove(); }, 2500);
+  }
 
   window.toggleAdminTheme = function() {
     const html = document.documentElement;
