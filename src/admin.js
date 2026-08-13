@@ -608,6 +608,85 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modal-order-detail')?.classList.remove('open');
   };
 
+  /* ------------------------------------------------------------------
+     10. PRODUCT MODAL & CATEGORY FILTERING HANDLERS
+     ------------------------------------------------------------------ */
+  window.openAddProductModal = function() {
+    const modal = document.getElementById('modal-add-product');
+    if (modal) modal.classList.add('open');
+  };
+
+  window.closeAddProductModal = function() {
+    const modal = document.getElementById('modal-add-product');
+    if (modal) modal.classList.remove('open');
+  };
+
+  window.saveProductSubmit = async function(e) {
+    e.preventDefault();
+    const name      = document.getElementById('p-name')?.value.trim();
+    const sku       = document.getElementById('p-sku')?.value.trim() || `MC-${Date.now()}`;
+    const category  = document.getElementById('p-category')?.value || 'Scrubs';
+    const specialty = document.getElementById('p-specialty')?.value || 'medicine';
+    const price     = parseFloat(document.getElementById('p-price')?.value) || 0;
+    const stock     = parseInt(document.getElementById('p-stock')?.value, 10) || 0;
+
+    if (!name || !price) {
+      showToast('❌ Please fill out Name and Price');
+      return;
+    }
+
+    const newProduct = {
+      id: sku,
+      name: name,
+      name_ar: name,
+      specialty: specialty,
+      price: price,
+      original_price: Math.round(price * 1.25),
+      rating: 5.0,
+      reviews_count: 1,
+      material: 'antimicrobial',
+      brand: 'medicare',
+      badge: 'new',
+      colors: ['#0E4D45', '#1E3A5F'],
+      sizes: ['S', 'M', 'L', 'XL'],
+      images: ['assets/medicare_scrubs_hero_1786614154492.png'],
+      is_new: true,
+      is_bestseller: false,
+      stock: stock
+    };
+
+    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    customProds.unshift(newProduct);
+    localStorage.setItem('medicare_custom_products', JSON.stringify(customProds));
+
+    closeAddProductModal();
+    logAuditAction('Added New Product', `${name} (${sku}) — ${price} DZD`);
+    showToast(`🎉 Product "${name}" added to store catalog!`);
+
+    if (e.target && typeof e.target.reset === 'function') e.target.reset();
+  };
+
+  window.filterAdminCategory = function(category) {
+    showToast(`🔍 Filtering catalog by: ${category}`);
+    const rows = document.querySelectorAll('#admin-products-table-body tr');
+    rows.forEach(r => {
+      if (category === 'all') {
+        r.style.display = '';
+      } else {
+        const text = r.textContent.toLowerCase();
+        r.style.display = text.includes(category.toLowerCase()) ? '' : 'none';
+      }
+    });
+  };
+
+  window.toggleAdminTheme = function() {
+    const html = document.documentElement;
+    const curr = html.getAttribute('data-admin-theme') || 'light';
+    const next = curr === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-admin-theme', next);
+    showToast(`🌙 Theme switched to ${next} mode`);
+  };
+
   // Automatically fetch & render orders on load
   loadAndRenderOrders();
 
