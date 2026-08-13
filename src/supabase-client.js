@@ -74,6 +74,59 @@
       return FALLBACK_PRODUCTS.find(p => p.id === id) || null;
     },
 
+    /**
+     * saveProduct — INSERT a new product or UPDATE an existing one.
+     * @param {Object} product  — full product object (must include `id`)
+     * @param {boolean} isEdit  — true → UPDATE, false → INSERT
+     * @returns {{ success: boolean, error: string|null }}
+     */
+    async saveProduct(product, isEdit = false) {
+      if (!_isLive || !supabase) {
+        console.warn('[MedicareDB] saveProduct: Supabase not connected, localStorage only.');
+        return { success: false, error: 'Supabase not connected' };
+      }
+      try {
+        let result;
+        if (isEdit) {
+          // UPDATE — match by primary key `id`
+          const { id, ...fields } = product;
+          result = await supabase.from('products').update(fields).eq('id', id);
+        } else {
+          // INSERT — upsert to handle duplicate SKUs gracefully
+          result = await supabase.from('products').upsert([product], { onConflict: 'id' });
+        }
+        if (result.error) {
+          console.error('[MedicareDB] saveProduct error:', result.error.message);
+          return { success: false, error: result.error.message };
+        }
+        return { success: true, error: null };
+      } catch (e) {
+        console.error('[MedicareDB] saveProduct exception:', e);
+        return { success: false, error: e.message };
+      }
+    },
+
+    /**
+     * deleteProduct — permanently removes a product from Supabase.
+     * @param {string} productId
+     * @returns {{ success: boolean, error: string|null }}
+     */
+    async deleteProduct(productId) {
+      if (!_isLive || !supabase) {
+        return { success: false, error: 'Supabase not connected' };
+      }
+      try {
+        const { error } = await supabase.from('products').delete().eq('id', productId);
+        if (error) {
+          console.error('[MedicareDB] deleteProduct error:', error.message);
+          return { success: false, error: error.message };
+        }
+        return { success: true, error: null };
+      } catch (e) {
+        console.error('[MedicareDB] deleteProduct exception:', e);
+        return { success: false, error: e.message };
+      }
+    },
 
     async updateStock(productId, newStock) {
       if (_isLive && supabase) {

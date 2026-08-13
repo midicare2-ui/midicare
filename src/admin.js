@@ -845,17 +845,28 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  window.deleteAdminProduct = function(productId) {
-    if (!confirm(`Delete this product? This cannot be undone.`)) return;
-    // Remove from custom products in localStorage
+  window.deleteAdminProduct = async function(productId) {
+    if (!confirm(`حذف هذا المنتج نهائياً؟ Delete this product permanently?`)) return;
+
+    // 1. Delete from Supabase
+    let sbStatus = '';
+    if (window.MedicareDB && typeof window.MedicareDB.deleteProduct === 'function') {
+      const res = await window.MedicareDB.deleteProduct(productId);
+      sbStatus = res.success ? '☁️ Removed from Supabase' : '⚠️ Supabase offline, removed locally';
+    } else {
+      sbStatus = '💾 Removed locally (Supabase not connected)';
+    }
+
+    // 2. Remove from localStorage
     const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
-    const updated = customProds.filter(p => p.id !== productId);
-    localStorage.setItem('medicare_custom_products', JSON.stringify(updated));
-    // Remove from default allAdminProducts array too
+    localStorage.setItem('medicare_custom_products', JSON.stringify(customProds.filter(p => p.id !== productId)));
+
+    // 3. Remove from in-memory default products
     allAdminProducts = allAdminProducts.filter(p => p.id !== productId);
+
     renderProductsTable();
     logAuditAction('Deleted Product', `Product ID: ${productId}`);
-    showToast(`🗑️ Product deleted successfully`);
+    showToast(`🗑️ Product deleted. ${sbStatus}`);
   };
 
   window.filterAdminProducts = function(query) {
@@ -883,7 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * saveProductSubmit — handles BOTH Add and Edit modes.
    * Called from type="button" onclick in the modal.
    */
-  window.saveProductSubmit = function(e) {
+  window.saveProductSubmit = async function(e) {
     if (e) { e.preventDefault(); e.stopPropagation(); }
 
     // --- Read form values ---
@@ -917,16 +928,15 @@ document.addEventListener('DOMContentLoaded', () => {
       ? [...uploadedProductImages]
       : ['assets/medicare_scrubs_hero_1786614154492.png'];
 
+    // Map to exact Supabase `products` table column names
     const productData = {
       id:             sku,
       name:           name,
       name_ar:        name,
-      sku:            sku,
-      category:       category,
       specialty:      specialty,
       price:          priceRaw,
       original_price: Math.round(priceRaw * 1.25),
-      rating:         5.0,
+      rating:         5.00,
       reviews_count:  1,
       material:       'antimicrobial',
       brand:          'medicare',
@@ -939,36 +949,47 @@ document.addEventListener('DOMContentLoaded', () => {
       stock:          stock
     };
 
-    // --- Persist to localStorage ---
-    let customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    // --- Disable button during save ---
+    const saveBtn = document.getElementById('modal-product-save-btn');
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Saving...، يرجى الانتظار'; }
 
-    if (_editingProductId) {
-      // EDIT MODE: replace existing entry by id
-      const existingIdx = customProds.findIndex(p => p.id === _editingProductId);
-      if (existingIdx >= 0) {
-        customProds[existingIdx] = productData;
-      } else {
-        // It was a default product — add an override to custom list
-        customProds.unshift(productData);
-        // Remove from in-memory defaults so custom takes priority
-        allAdminProducts = allAdminProducts.filter(p => p.id !== _editingProductId);
-      }
-      logAuditAction('Updated Product', `${name} (${sku}) — ${priceRaw} DZD`);
-      showToast(`✅ Product "${name}" updated successfully!`);
-    } else {
-      // ADD MODE: prepend new product
-      customProds.unshift(productData);
-      logAuditAction('Added New Product', `${name} (${sku}) — ${priceRaw} DZD`);
-      showToast(`🎉 Product "${name}" published to catalog!`);
+    // --- 1. Try Supabase first ---
+    let sbResult = { success: false, error: 'not tried' };
+    if (window.MedicareDB && typeof window.MedicareDB.saveProduct === 'function') {
+      sbResult = await window.MedicareDB.saveProduct(productData, !!_editingProductId);
     }
 
+    // --- 2. Always persist to localStorage as backup ---
+    let customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    if (_editingProductId) {
+      const idx = customProds.findIndex(p => p.id === _editingProductId);
+      if (idx >= 0) {
+        customProds[idx] = productData;
+      } else {
+        customProds.unshift(productData);
+        allAdminProducts = allAdminProducts.filter(p => p.id !== _editingProductId);
+      }
+    } else {
+      customProds.unshift(productData);
+    }
     localStorage.setItem('medicare_custom_products', JSON.stringify(customProds));
 
-    // Close modal & re-render table
+    // --- 3. Re-enable button ---
+    if (saveBtn) { saveBtn.disabled = false; }
+
+    // --- 4. Feedback ---
+    const sbStatus = sbResult.success ? '☁️ Synced to Supabase' : '💾 Saved locally (Supabase offline)';
+    if (_editingProductId) {
+      logAuditAction('Updated Product', `${name} (${sku}) — ${priceRaw} DZD`);
+      showToast(`✅ Product "${name}" updated! ${sbStatus}`);
+    } else {
+      logAuditAction('Added New Product', `${name} (${sku}) — ${priceRaw} DZD`);
+      showToast(`🎉 Product "${name}" published! ${sbStatus}`);
+    }
+
+    // --- 5. Close, re-render, reset ---
     closeAddProductModal();
     renderProductsTable();
-
-    // Reset uploader
     uploadedProductImages = [];
     renderImagePreviews();
   };
