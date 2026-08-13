@@ -513,23 +513,63 @@ document.addEventListener('DOMContentLoaded', () => {
           </tr>
         `).join('');
 
+        const deliveryCompany = order.delivery_company || (order.delivery_type === 'stopdesk' ? 'Yalidine Express (Stop-Desk Pickup)' : 'ZR Express (Home Delivery)');
+        const fullAddress = [order.address && order.address !== 'N/A' ? order.address : '', order.commune, order.wilaya].filter(Boolean).join(', ') || order.wilaya || 'N/A';
+        
+        const qrDataText = `ORDER: #${cleanId}\nCLIENT: ${order.customer_name}\nPHONE: ${order.phone}\nADDRESS: ${fullAddress}\nDELIVERY: ${deliveryCompany}\nTOTAL COD: ${Number(order.total || 0).toLocaleString()} DZD`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrDataText)}`;
+
         printArea.innerHTML = `
+          <!-- SHIPPING LABEL & CLIENT CARD (PROMINENT FOR PRINT & EXPRESS COURIERS) -->
+          <div style="border:2px dashed #0E4D45; background:#F0FDF4; padding:1.2rem; border-radius:10px; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; gap:1.25rem;">
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <span style="background:#0E4D45; color:#FFFFFF; font-size:11px; font-weight:800; padding:3px 10px; border-radius:4px; text-transform:uppercase; letter-spacing:0.05em;">📦 Shipping Label / وصل التسليم</span>
+                <span style="font-size:13px; font-weight:800; color:#0E4D45;">#${cleanId}</span>
+              </div>
+
+              <div style="font-size:16px; font-weight:800; color:#0F172A; margin-bottom:5px;">
+                👤 <span style="color:#64748B; font-size:13px; font-weight:600;">الاسم واللقب (Client Name):</span> <strong style="color:#0E4D45;">${order.customer_name}</strong>
+              </div>
+
+              <div style="font-size:14px; font-weight:700; color:#1E293B; margin-bottom:5px;">
+                📞 <span style="color:#64748B; font-size:13px; font-weight:600;">رقم الهاتف (Phone):</span> <code style="background:#E2E8F0; padding:2px 8px; border-radius:4px; font-size:15px; font-weight:800;">${order.phone}</code>
+              </div>
+
+              <div style="font-size:13px; color:#334155; margin-bottom:5px;">
+                📍 <span style="color:#64748B; font-size:13px; font-weight:600;">العنوان الكامل (Full Address):</span> <strong>${fullAddress}</strong>
+              </div>
+
+              <div style="font-size:13px; color:#0E4D45; font-weight:800;">
+                🚚 <span style="color:#64748B; font-size:13px; font-weight:600;">شركة/نوع التوصيل (Courier):</span> <strong>${deliveryCompany}</strong>
+              </div>
+            </div>
+
+            <!-- QR CODE BOX -->
+            <div style="text-align:center; background:#FFFFFF; padding:8px; border:1px solid #CBD5E1; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.06); flex-shrink:0;">
+              <img src="${qrUrl}" alt="Order QR Code" width="130" height="130" style="display:block; border-radius:4px;">
+              <span style="font-size:10px; font-weight:800; color:#475569; display:block; margin-top:4px; letter-spacing:0.04em;">SCAN ORDER QR</span>
+            </div>
+          </div>
+
+          <!-- INVOICE HEADER DETAILS -->
           <div style="display:flex; justify-content:space-between; margin-bottom:1rem; padding-bottom:1rem; border-bottom:2px solid #E2E8F0; font-size:13px;">
             <div>
-              <h4 style="margin:0 0 0.5rem 0; color:var(--color-primary-900);">🏥 MEDICARE Algeria</h4>
-              <strong>Customer:</strong> ${order.customer_name}<br>
-              <strong>Phone:</strong> <code>${order.phone}</code><br>
-              <strong>Address:</strong> ${order.address || 'N/A'}, ${order.commune || ''}, ${order.wilaya}<br>
-              <strong>Status:</strong> <span class="adm-badge adm-badge-info">${order.status}</span>
+              <h4 style="margin:0 0 0.5rem 0; color:var(--color-primary-900);">🏥 MEDICARE Algeria — Official Order Invoice</h4>
+              <strong>Customer Name:</strong> ${order.customer_name}<br>
+              <strong>Phone Number:</strong> <code>${order.phone}</code><br>
+              <strong>Full Address:</strong> ${fullAddress}<br>
+              <strong>Order Status:</strong> <span class="adm-badge adm-badge-info">${order.status}</span>
             </div>
             <div style="text-align:right;">
               <strong>Order #:</strong> #${cleanId}<br>
-              <strong>Payment:</strong> Cash on Delivery (COD)<br>
-              <strong>Delivery:</strong> ${order.delivery_type === 'stopdesk' ? 'Stop-Desk Pickup' : 'Home Delivery'}<br>
+              <strong>Payment Method:</strong> Cash on Delivery (COD)<br>
+              <strong>Courier Company:</strong> ${deliveryCompany}<br>
               <strong>Date:</strong> ${order.created_at ? new Date(order.created_at).toLocaleString() : 'Recent'}
             </div>
           </div>
 
+          <!-- ITEMS TABLE -->
           <table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:1rem;">
             <thead>
               <tr style="background:#F8FAFC; text-align:left;">
@@ -544,15 +584,17 @@ document.addEventListener('DOMContentLoaded', () => {
             </tbody>
           </table>
 
+          <!-- TOTAL SUMMARY -->
           <div style="display:flex; justify-content:flex-end; font-size:13px; margin-bottom:1.5rem;">
-            <div style="width:240px; background:#F1F5F9; padding:0.75rem 1rem; border-radius:8px;">
+            <div style="width:260px; background:#F1F5F9; padding:0.75rem 1rem; border-radius:8px;">
               <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Subtotal:</span> <span>${Number(order.subtotal || order.total || 0).toLocaleString()} DZD</span></div>
               <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Delivery Fee:</span> <span>${Number(order.delivery_fee || 0).toLocaleString()} DZD</span></div>
               <div style="display:flex; justify-content:space-between; font-weight:800; font-size:15px; border-top:1px solid #CBD5E1; padding-top:4px; margin-top:4px;"><span>Total COD:</span> <span style="color:var(--color-primary-900);">${Number(order.total || 0).toLocaleString()} DZD</span></div>
             </div>
           </div>
 
-          <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+          <!-- ACTION BUTTONS (HIDDEN WHEN PRINTING) -->
+          <div class="no-print" style="display:flex; gap:0.5rem; justify-content:flex-end;">
             <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="window.print()">🖨️ Print Invoice & Shipping Label</button>
             <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="closeOrderDetailModal()">Close</button>
           </div>
