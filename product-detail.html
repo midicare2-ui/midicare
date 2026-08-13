@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obsidian Flex Antimicrobial Scrub Set — MEDICARE | Medical Wear & Essentials</title>
+  <meta name="description" content="High-performance antimicrobial scrub set engineered for 24-hour shift endurance. 4-way flex stretch, fluid-shield technology. Express shipping across all 58 Wilayas in Algeria.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/showcase.css">
+  <link rel="stylesheet" href="styles/product-detail.css">
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Logo styles */
+    .mc-real-logo { height: 44px; width: auto; object-fit: contain; display: block; mix-blend-mode: multiply; }
+    .mc-real-logo-footer { height: 36px; mix-blend-mode: normal; filter: brightness(0) invert(1); opacity: 0.9; }
+    .mc-brand-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    @media (max-width: 640px) { .mc-real-logo { height: 34px; } }
+
+    /* Announcement bar */
+    .mc-announce-bar {
+      background: var(--color-primary-900); color: var(--color-primary-200);
+      text-align: center; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.04em; padding: 0.45rem 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 1.5rem;
+    }
+    .mc-announce-item { display: flex; align-items: center; gap: 0.35rem; }
+    @media (max-width: 640px) { .mc-announce-bar { font-size: 10.5px; gap: 0.5rem; } }
+
+    .mc-toggle-btn {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.5rem 0.875rem; border-radius: var(--radius-pill);
+      border: 1px solid var(--color-neutral-300); background: var(--color-white);
+      color: var(--color-neutral-800); font-family: var(--font-family-display);
+      font-size: var(--font-size-xs); font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: all var(--transition-fast);
+    }
+    .mc-toggle-btn:hover { border-color: var(--color-primary-600); color: var(--color-primary-800); background: var(--color-primary-50); }
+
+    .mc-copy-toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--color-primary-900); color: #FFF;
+      padding: 0.7rem 1.25rem; border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 700;
+      z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.25s; pointer-events: none;
+      font-family: var(--font-family-display);
+    }
+    .mc-copy-toast.show { opacity: 1; transform: translateY(0); }
+    [dir="rtl"] .mc-copy-toast { right: auto; left: 2rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="mc-announce-bar">
+    <span class="mc-announce-item">🚚 <span>Free Express Shipping on Orders Above 5,000 DZD</span></span>
+    <span class="mc-announce-item">💵 <span>Cash on Delivery — All 58 Wilayas</span></span>
+    <span class="mc-announce-item">🎓 <span>Student Bundles — Save up to 25%</span></span>
+  </div>
+
+  <!-- Sticky Header -->
+  <header class="mc-sticky-header">
+    <div class="mc-header-inner">
+      <a href="index.html" class="mc-brand-logo" aria-label="MEDICARE Homepage">
+        <img src="mid logo.png" alt="MEDICARE" class="mc-real-logo" width="150">
+      </a>
+
+      <!-- Search Container -->
+      <div class="mc-search-container">
+        <div class="mc-search-input-wrapper">
+          <span class="mc-search-icon">🔍</span>
+          <input type="text" id="pdp-search-input" class="mc-search-input" placeholder="Search scrubs, stethoscopes, lab coats..." autocomplete="off">
+        </div>
+        <div id="pdp-search-dropdown" class="mc-search-dropdown"></div>
+      </div>
+
+      <div class="mc-header-actions">
+        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+          <span>💬</span>
+          <span class="btn-text">اطلب الآن</span>
+        </a>
+        <button class="mc-icon-btn" aria-label="Wishlist">
+          <span>♥</span>
+          <span id="pdp-wishlist-badge" class="mc-icon-badge">2</span>
+        </button>
+        <button id="pdp-cart-btn" class="mc-icon-btn" aria-label="Shopping Cart">
+          <span>🛒</span>
+          <span id="pdp-cart-badge" class="mc-icon-badge">1</span>
+        </button>
+        <button class="mc-icon-btn mc-account-btn" onclick="window.location.href='account.html'" aria-label="My Account" title="My Account">
+          <span>👤</span>
+        </button>
+        <a href="category.html" class="mc-toggle-btn">
+          <span>👕</span>
+          <span class="btn-text">Category</span>
+        </a>
+        <button id="lang-toggle-btn" class="mc-toggle-btn">
+          <span>🌐</span>
+          <span class="btn-text">العربية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="mc-breadcrumb-bar" aria-label="Breadcrumb">
+    <ol class="mc-breadcrumb">
+      <li><a href="index.html">🏠 Home</a></li>
+      <li class="mc-breadcrumb-sep">/</li>
+      <li><a href="category.html">Medical Wear</a></li>
+      <li class="mc-breadcrumb-sep">/</li>
+      <li><a href="category.html">Scrubs</a></li>
+      <li class="mc-breadcrumb-sep">/</li>
+      <li class="mc-breadcrumb-current">Obsidian Flex Antimicrobial Scrub Set</li>
+    </ol>
+  </nav>
+
+  <!-- Main Product Detail Section -->
+  <main class="pdp-main">
+    <div class="pdp-grid">
+
+      <!-- Left Column: Interactive Image Gallery -->
+      <div class="pdp-gallery-container">
+        <div class="pdp-main-image-box" id="pdp-image-box">
+          <img id="pdp-main-img" src="assets/medicare_scrubs_hero_1786614154492.png" alt="Obsidian Flex Antimicrobial Scrub Set" class="pdp-main-img">
+          
+          <!-- Zoom Lens (Desktop) -->
+          <div id="pdp-zoom-lens" class="pdp-zoom-lens"></div>
+
+          <!-- Badges -->
+          <div class="pdp-gallery-badges">
+            <span class="mc-card-badge mc-badge-sale">−20% OFF</span>
+            <span class="mc-card-badge mc-badge-hot">🔥 Best Seller</span>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="pdp-gallery-actions">
+            <button class="pdp-gallery-btn" id="pdp-wishlist-toggle" onclick="togglePDPWishlist()" aria-label="Save to Wishlist">♥</button>
+            <button class="pdp-gallery-btn" onclick="openLightbox()" aria-label="Enlarge Image">🔍</button>
+          </div>
+        </div>
+
+        <!-- Thumbnail Gallery Carousel -->
+        <div class="pdp-thumbnails">
+          <button class="pdp-thumb active" onclick="switchMainImage(this, 'assets/medicare_scrubs_hero_1786614154492.png')">
+            <img src="assets/medicare_scrubs_hero_1786614154492.png" alt="Front View">
+          </button>
+          <button class="pdp-thumb" onclick="switchMainImage(this, 'assets/medicare_lab_coat_1786614177321.png')">
+            <img src="assets/medicare_lab_coat_1786614177321.png" alt="Layered View">
+          </button>
+          <button class="pdp-thumb" onclick="switchMainImage(this, 'assets/medicare_starter_kit_1786615195273.png')">
+            <img src="assets/medicare_starter_kit_1786615195273.png" alt="Complete Set View">
+          </button>
+          <button class="pdp-thumb" onclick="switchMainImage(this, 'assets/medicare_medical_bag_1786614187700.png')">
+            <img src="assets/medicare_medical_bag_1786614187700.png" alt="Fabric & Pocket Detail">
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Column: Product Info & Purchase Options -->
+      <div class="pdp-info-col">
+        
+        <div class="pdp-meta-row">
+          <span class="pdp-brand-tag">MEDICARE PRO | MD & SURGERY EDITION</span>
+          <span class="pdp-sku">SKU: MC-101-OBS</span>
+        </div>
+
+        <h1 class="pdp-title" id="pdp-product-title">Obsidian Flex Antimicrobial Scrub Set</h1>
+
+        <!-- Rating Summary -->
+        <div class="pdp-rating-summary">
+          <span class="pdp-stars-val">★★★★★ 4.8</span>
+          <span class="mc-review-count">(142 verified reviews)</span>
+          <span style="color:var(--color-neutral-300)">•</span>
+          <a href="#reviews-section" class="pdp-review-link">Read Reviews</a>
+        </div>
+
+        <!-- Price Display Box -->
+        <div class="pdp-price-box">
+          <span class="pdp-current-price" id="pdp-price">10,700 DZD</span>
+          <span class="pdp-original-price">13,400 DZD</span>
+          <span class="pdp-save-badge">SAVE 2,700 DZD</span>
+          <div class="pdp-vat-note">✓ Cash on Delivery (COD) available across all 58 Wilayas • Tax Exempt for Medical Staff</div>
+        </div>
+
+        <!-- Live Stock Indicator -->
+        <div class="pdp-stock-indicator low-stock" id="pdp-stock-indicator">
+          <span class="pdp-stock-dot"></span>
+          <span>In Stock — <strong style="color:var(--color-accent-700)">Only 4 sets left</strong> in Obsidian Teal!</span>
+        </div>
+
+        <!-- Short Description -->
+        <p class="pdp-short-desc">
+          Engineered for demanding 24-hour hospital shifts. Features 4-way flex stretch fabric, fluid-repellent nano-barrier, and Silver-Ion antimicrobial technology to keep you comfortable, cool, and protected all day.
+        </p>
+
+        <!-- Color Selector with Image Swap -->
+        <div class="pdp-selector-group">
+          <div class="pdp-selector-header">
+            <span class="pdp-selector-label">Color: <span id="selected-color-name" class="pdp-selected-val">Obsidian Teal</span></span>
+          </div>
+          <div class="pdp-color-options">
+            <button class="pdp-color-btn active" data-color="Obsidian Teal" data-img="assets/medicare_scrubs_hero_1786614154492.png" onclick="selectColor(this)">
+              <span class="pdp-color-swatch-dot" style="background:#0E4D45"></span>
+              <span class="pdp-color-name">Obsidian Teal</span>
+            </button>
+            <button class="pdp-color-btn" data-color="Navy Blue" data-img="assets/medicare_lab_coat_1786614177321.png" onclick="selectColor(this)">
+              <span class="pdp-color-swatch-dot" style="background:#1E3A5F"></span>
+              <span class="pdp-color-name">Navy Blue</span>
+            </button>
+            <button class="pdp-color-btn" data-color="Slate Grey" data-img="assets/medicare_medical_bag_1786614187700.png" onclick="selectColor(this)">
+              <span class="pdp-color-swatch-dot" style="background:#6B7280"></span>
+              <span class="pdp-color-name">Slate Grey</span>
+            </button>
+            <button class="pdp-color-btn" data-color="Royal Blue" data-img="assets/medicare_starter_kit_1786615195273.png" onclick="selectColor(this)">
+              <span class="pdp-color-swatch-dot" style="background:#1D4ED8"></span>
+              <span class="pdp-color-name">Royal Blue</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Size Selector + Size Guide Link -->
+        <div class="pdp-selector-group">
+          <div class="pdp-selector-header">
+            <span class="pdp-selector-label">Size: <span id="selected-size-name" class="pdp-selected-val">M (Medium)</span></span>
+            <button class="pdp-size-guide-link" onclick="openSizeGuideModal()">📐 Size Guide & Chart</button>
+          </div>
+          <div class="pdp-size-options">
+            <button class="pdp-size-btn" data-size="XS" onclick="selectSize(this)">XS</button>
+            <button class="pdp-size-btn" data-size="S" onclick="selectSize(this)">S</button>
+            <button class="pdp-size-btn active" data-size="M" onclick="selectSize(this)">M</button>
+            <button class="pdp-size-btn" data-size="L" onclick="selectSize(this)">L</button>
+            <button class="pdp-size-btn" data-size="XL" onclick="selectSize(this)">XL</button>
+            <button class="pdp-size-btn" data-size="XXL" onclick="selectSize(this)">XXL</button>
+          </div>
+        </div>
+
+        <!-- Quantity & CTAs -->
+        <div class="pdp-selector-group">
+          <span class="pdp-selector-label">Quantity:</span>
+          <div class="pdp-actions-row">
+            <!-- Stepper -->
+            <div class="pdp-qty-stepper">
+              <button class="pdp-qty-btn" onclick="updatePDPQty(-1)">−</button>
+              <input type="text" id="pdp-qty-input" value="1" readonly class="pdp-qty-input">
+              <button class="pdp-qty-btn" onclick="updatePDPQty(1)">+</button>
+            </div>
+
+            <!-- Primary Add to Cart -->
+            <button class="mc-btn mc-btn-primary mc-btn-lg pdp-btn-cart" id="pdp-buy-btn" onclick="addPDPToCart()">
+              🛒 Add to Cart
+            </button>
+
+            <!-- Secondary Order via WhatsApp -->
+            <a id="pdp-whatsapp-cta" href="#" target="_blank" class="pdp-btn-whatsapp" onclick="buildWhatsAppURL(event)">
+              💬 Order via WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <!-- Trust Badges Bar -->
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.75rem; margin-top:1rem; padding:1rem; background:var(--color-neutral-50); border-radius:var(--radius-lg); border:1px solid var(--color-neutral-200); font-size:12px; font-weight:600; text-align:center;">
+          <div>🚚 58 Wilayas COD</div>
+          <div>🔄 14-Day Free Exchange</div>
+          <div>🛡️ Antimicrobial Shield</div>
+        </div>
+
+      </div>
+    </div><!-- /.pdp-grid -->
+
+
+    <!-- ===================================================================
+         COMPLETE THE LOOK / FREQUENTLY BOUGHT TOGETHER (Bundle Cross-sell)
+         =================================================================== -->
+    <section class="pdp-bundle-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <span class="mc-card-badge mc-badge-bundle">⚡ Complete The Clinical Look</span>
+          <h2 style="font-family:var(--font-family-display); font-size:1.5rem; font-weight:800; margin:0.5rem 0 0 0;">Frequently Bought Together</h2>
+        </div>
+        <span style="font-size:13px; color:var(--color-accent-300); font-weight:700;">Save extra 15% on this 3-piece clinical bundle</span>
+      </div>
+
+      <div class="pdp-bundle-grid">
+        <div class="pdp-bundle-items">
+          <div class="pdp-bundle-item-card">
+            <img src="assets/medicare_scrubs_hero_1786614154492.png" alt="Scrub Top" class="pdp-bundle-item-img">
+            <div style="font-size:12px; font-weight:700;">Flex Scrub Set</div>
+            <div style="font-size:11px; color:var(--color-primary-200);">10,700 DZD</div>
+          </div>
+
+          <span class="pdp-bundle-plus">+</span>
+
+          <div class="pdp-bundle-item-card">
+            <img src="assets/medicare_footwear_1786615096505.png" alt="Clinical Clogs" class="pdp-bundle-item-img">
+            <div style="font-size:12px; font-weight:700;">Cushion Clogs</div>
+            <div style="font-size:11px; color:var(--color-primary-200);">9,000 DZD</div>
+          </div>
+
+          <span class="pdp-bundle-plus">+</span>
+
+          <div class="pdp-bundle-item-card">
+            <img src="assets/medicare_stethoscope_1786614166370.png" alt="Stethoscope" class="pdp-bundle-item-img">
+            <div style="font-size:12px; font-weight:700;">Titanium Steth</div>
+            <div style="font-size:11px; color:var(--color-primary-200);">19,800 DZD</div>
+          </div>
+        </div>
+
+        <div class="pdp-bundle-summary-card">
+          <div style="display:flex; justify-content:space-between; font-size:13px;">
+            <span>Total Bundle Value:</span>
+            <span style="text-decoration:line-through; color:rgba(255,255,255,0.6)">39,500 DZD</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:1.4rem; font-weight:800; color:var(--color-accent-400);">
+            <span>Bundle Price:</span>
+            <span>33,500 DZD</span>
+          </div>
+          <button class="mc-btn mc-btn-accent mc-btn-lg" onclick="addBundleToCart()">
+            🛒 Add Complete Bundle to Cart (Save 6,000 DZD)
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===================================================================
+         PRODUCT TABS & SPECIFICATIONS
+         =================================================================== -->
+    <section class="pdp-tabs-container">
+      <div class="pdp-tab-headers" role="tablist">
+        <button class="pdp-tab-btn active" onclick="switchTab(this, 'tab-desc')" role="tab">Description & Features</button>
+        <button class="pdp-tab-btn" onclick="switchTab(this, 'tab-materials')" role="tab">Materials & Care</button>
+        <button class="pdp-tab-btn" onclick="switchTab(this, 'tab-shipping')" role="tab">Shipping & 58 Wilayas COD</button>
+        <button class="pdp-tab-btn" onclick="switchTab(this, 'tab-reviews')" role="tab">Customer Reviews (142)</button>
+      </div>
+
+      <!-- Tab 1: Description -->
+      <div id="tab-desc" class="pdp-tab-panel active" role="tabpanel">
+        <h3 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; color:var(--color-neutral-900);">Engineered for 24-Hour Shift Endurance</h3>
+        <p>The MEDICARE Obsidian Flex Scrub Set is specifically crafted for medical residents, surgeons, nurses, and medical students who face long, high-intensity shifts. Our proprietary 4-way flex stretch fabric moves with your body while maintaining a sharp, tailored silhouette.</p>
+        
+        <div class="pdp-spec-grid">
+          <div class="pdp-spec-card">
+            <div class="pdp-spec-card-title">🛡️ Silver-Ion Antimicrobial Shield</div>
+            <p class="pdp-spec-card-desc">Inhibited bacterial growth and odor accumulation during 24h rotations.</p>
+          </div>
+          <div class="pdp-spec-card">
+            <div class="pdp-spec-card-title">💧 Fluid-Shield Barrier</div>
+            <p class="pdp-spec-card-desc">Hydrophobic nano-coating repels blood, fluids, and liquid spills on contact.</p>
+          </div>
+          <div class="pdp-spec-card">
+            <div class="pdp-spec-card-title">👜 6 Reinforced Utility Pockets</div>
+            <p class="pdp-spec-card-desc">Includes dedicated smartphone, stethoscope loop, and pen slots.</p>
+          </div>
+          <div class="pdp-spec-card">
+            <div class="pdp-spec-card-title">❄️ Breathable Heat Release</div>
+            <p class="pdp-spec-card-desc">Underarm and back mesh ventilation keep you cool under operating lights.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Materials & Care -->
+      <div id="tab-materials" class="pdp-tab-panel" role="tabpanel">
+        <h3 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; color:var(--color-neutral-900);">Fabric Composition & Washing Instructions</h3>
+        <ul style="padding-left:1.25rem; margin-top:0.75rem;">
+          <li>72% Polyester, 21% Rayon, 7% Spandex (4-Way Stretch Flex).</li>
+          <li>Machine wash cold with like colors inside out.</li>
+          <li>Tumble dry low or line dry in shade.</li>
+          <li>Do not bleach or use fabric softeners (to preserve Fluid-Shield coating).</li>
+          <li>Iron on low heat if needed.</li>
+        </ul>
+      </div>
+
+      <!-- Tab 3: Shipping -->
+      <div id="tab-shipping" class="pdp-tab-panel" role="tabpanel">
+        <h3 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; color:var(--color-neutral-900);">Fast Express Delivery Across Algeria</h3>
+        <p>We ship directly to all 58 Wilayas in Algeria via express courier partners with <strong>Cash on Delivery (COD)</strong> payment support.</p>
+        <ul>
+          <li><strong>Algiers & Surrounding (Blida, Tipaza, Boumerdes):</strong> 24–48 hours (400 DZD).</li>
+          <li><strong>Major Cities (Oran, Constantine, Annaba, Setif, Tlemcen):</strong> 48–72 hours (600 DZD).</li>
+          <li><strong>Southern & Sahara Wilayas:</strong> 3–5 business days (900 DZD).</li>
+          <li><strong>Free Shipping:</strong> Automatically applied on orders above 5,000 DZD.</li>
+        </ul>
+      </div>
+
+      <!-- Tab 4: Reviews -->
+      <div id="tab-reviews" class="pdp-tab-panel" role="tabpanel">
+        <p>See full customer review breakdown below.</p>
+      </div>
+    </section>
+
+
+    <!-- ===================================================================
+         CUSTOMER REVIEWS SECTION
+         =================================================================== -->
+    <section id="reviews-section" style="margin-top: 3.5rem;">
+      <h2 style="font-family:var(--font-family-display); font-size:1.5rem; font-weight:800; margin-bottom:1.5rem;">Customer Reviews & Ratings</h2>
+
+      <!-- Reviews Overview Box -->
+      <div class="pdp-reviews-header">
+        <div class="pdp-review-score-box">
+          <div class="pdp-review-big-score">4.8</div>
+          <div style="color:var(--color-accent-500); font-size:1.2rem;">★★★★★</div>
+          <div style="font-size:12px; color:var(--color-neutral-500); margin-top:0.25rem;">Based on 142 reviews</div>
+        </div>
+
+        <div class="pdp-review-histogram">
+          <div class="pdp-histo-row"><span>5 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:85%"></div></div><span>85%</span></div>
+          <div class="pdp-histo-row"><span>4 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:11%"></div></div><span>11%</span></div>
+          <div class="pdp-histo-row"><span>3 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:3%"></div></div><span>3%</span></div>
+          <div class="pdp-histo-row"><span>2 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:1%"></div></div><span>1%</span></div>
+          <div class="pdp-histo-row"><span>1 Star</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:0%"></div></div><span>0%</span></div>
+        </div>
+
+        <div style="text-align:center;">
+          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="alert('Write review modal coming soon!')">✍️ Write a Review</button>
+        </div>
+      </div>
+
+      <!-- Individual Review Cards -->
+      <div class="pdp-review-card">
+        <div class="pdp-review-user-row">
+          <div class="pdp-review-user-info">
+            <div class="pdp-user-avatar">DR</div>
+            <div>
+              <div style="font-weight:700; font-size:14px;">Dr. Reda K. <span class="pdp-verified-badge">✓ Verified Doctor</span></div>
+              <div style="font-size:11px; color:var(--color-neutral-400);">Resident Physician • Mustapha Pacha Hospital, Algiers</div>
+            </div>
+          </div>
+          <span style="font-size:12px; color:var(--color-neutral-400);">2 days ago</span>
+        </div>
+        <div style="color:var(--color-accent-500); margin-bottom:0.35rem;">★★★★★</div>
+        <h4 style="margin:0 0 0.25rem 0; font-size:14px;">Exceptional scrub set for 24h guards!</h4>
+        <p style="font-size:13.5px; color:var(--color-neutral-700); margin:0;">The flex fabric is unmatched. I wore this through a 24-hour ER guard at Mustapha Pacha. Stays wrinkle-free and super comfortable under heavy movement. Delivery to Algiers took less than 24h!</p>
+        <div class="pdp-review-photos">
+          <img src="assets/medicare_scrubs_hero_1786614154492.png" alt="Review Photo 1" class="pdp-review-photo-thumb">
+          <img src="assets/medicare_medical_bag_1786614187700.png" alt="Review Photo 2" class="pdp-review-photo-thumb">
+        </div>
+      </div>
+
+      <div class="pdp-review-card">
+        <div class="pdp-review-user-row">
+          <div class="pdp-review-user-info">
+            <div class="pdp-user-avatar" style="background:var(--color-accent-100); color:var(--color-accent-900);">AM</div>
+            <div>
+              <div style="font-weight:700; font-size:14px;">Amina M. <span class="pdp-verified-badge">✓ Verified Student</span></div>
+              <div style="font-size:11px; color:var(--color-neutral-400);">4th Year Pharmacy Student • Oran University</div>
+            </div>
+          </div>
+          <span style="font-size:12px; color:var(--color-neutral-400);">1 week ago</span>
+        </div>
+        <div style="color:var(--color-accent-500); margin-bottom:0.35rem;">★★★★★</div>
+        <h4 style="margin:0 0 0.25rem 0; font-size:14px;">Perfect fit and elegant color</h4>
+        <p style="font-size:13.5px; color:var(--color-neutral-700); margin:0;">The Obsidian Teal color is gorgeous in person. The pockets are well placed for notebooks and pens. Size M fit perfectly based on the size chart.</p>
+      </div>
+    </section>
+
+
+    <!-- ===================================================================
+         YOU MAY ALSO LIKE CAROUSEL
+         =================================================================== -->
+    <section style="margin-top: 4rem;">
+      <div class="mc-section-header">
+        <div>
+          <h2 class="mc-section-title">You May Also Like</h2>
+          <p class="mc-section-desc">Recommended high-performance gear for medical professionals.</p>
+        </div>
+      </div>
+
+      <div id="related-products-grid" class="mc-component-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+        <!-- Card 1 -->
+        <div class="mc-cat-card">
+          <div class="mc-card-img-wrap">
+            <img src="assets/medicare_stethoscope_1786614166370.png" class="mc-card-img-primary" alt="Stethoscope">
+          </div>
+          <div class="mc-card-body">
+            <span class="mc-card-specialty">🩺 Diagnostic Tools</span>
+            <h3 class="mc-card-name">Titanium Master Stethoscope</h3>
+            <div class="mc-card-pricing"><span class="mc-card-price">19,800 DZD</span></div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="mc-cat-card">
+          <div class="mc-card-img-wrap">
+            <img src="assets/medicare_lab_coat_1786614177321.png" class="mc-card-img-primary" alt="Lab Coat">
+          </div>
+          <div class="mc-card-body">
+            <span class="mc-card-specialty">🥼 Lab Coats</span>
+            <h3 class="mc-card-name">Executive Fluid-Shield Coat</h3>
+            <div class="mc-card-pricing"><span class="mc-card-price">13,400 DZD</span></div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="mc-cat-card">
+          <div class="mc-card-img-wrap">
+            <img src="assets/medicare_footwear_1786615096505.png" class="mc-card-img-primary" alt="Footwear">
+          </div>
+          <div class="mc-card-body">
+            <span class="mc-card-specialty">👟 Footwear</span>
+            <h3 class="mc-card-name">Clinical Cushion Clogs</h3>
+            <div class="mc-card-pricing"><span class="mc-card-price">9,000 DZD</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================================
+       SIZE GUIDE MODAL
+       ===================================================================== -->
+  <div id="size-guide-modal" class="pdp-modal-overlay" role="dialog" aria-modal="true" aria-label="Size Guide">
+    <div class="pdp-modal-box">
+      <div class="pdp-modal-header">
+        <h3 class="pdp-modal-title">📐 MEDICARE Size Guide (Measurements in CM)</h3>
+        <button class="pdp-modal-close" onclick="closeSizeGuideModal()">✕</button>
+      </div>
+
+      <div class="pdp-modal-body">
+        <p style="font-size:13px; color:var(--color-neutral-600);">For the best tailored clinical fit, measure your chest, waist, and hips with a flexible tape measure over thin clothing.</p>
+        
+        <table class="pdp-size-table">
+          <thead>
+            <tr>
+              <th>Size</th>
+              <th>Chest (cm)</th>
+              <th>Waist (cm)</th>
+              <th>Hips (cm)</th>
+              <th>Height (cm)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>XS</strong></td><td>82 – 87</td><td>66 – 71</td><td>88 – 93</td><td>158 – 165</td></tr>
+            <tr><td><strong>S</strong></td><td>88 – 93</td><td>72 – 77</td><td>94 – 99</td><td>165 – 172</td></tr>
+            <tr style="background:var(--color-primary-50); font-weight:bold;"><td><strong>M (Selected)</strong></td><td>94 – 99</td><td>78 – 83</td><td>100 – 105</td><td>172 – 178</td></tr>
+            <tr><td><strong>L</strong></td><td>100 – 105</td><td>84 – 89</td><td>106 – 111</td><td>178 – 184</td></tr>
+            <tr><td><strong>XL</strong></td><td>106 – 111</td><td>90 – 95</td><td>112 – 117</td><td>184 – 190</td></tr>
+            <tr><td><strong>XXL</strong></td><td>112 – 118</td><td>96 – 102</td><td>118 – 124</td><td>190 – 196</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =====================================================================
+       STICKY MOBILE ADD-TO-CART BAR (Appears on scroll past main BUY CTA)
+       ===================================================================== -->
+  <div id="pdp-sticky-bar" class="pdp-sticky-bar">
+    <div class="pdp-sticky-prod-info">
+      <img src="assets/medicare_scrubs_hero_1786614154492.png" alt="Thumb" class="pdp-sticky-thumb">
+      <div>
+        <div class="pdp-sticky-title">Obsidian Flex Scrub Set</div>
+        <div class="pdp-sticky-price">10,700 DZD</div>
+      </div>
+    </div>
+
+    <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="addPDPToCart()">
+      🛒 Add to Cart
+    </button>
+  </div>
+
+
+  <!-- Slide-Over Cart Drawer -->
+  <div id="pdp-cart-overlay" class="mc-cart-drawer-overlay">
+    <aside class="mc-cart-drawer">
+      <div class="mc-cart-header">
+        <div class="mc-cart-title"><span>🛒 Shopping Cart</span></div>
+        <button id="pdp-cart-close" class="mc-cart-close">✕</button>
+      </div>
+      <div id="pdp-cart-body" class="mc-cart-body"></div>
+      <div class="mc-cart-footer">
+        <div class="mc-cart-shipping-note">🚚 Express Delivery — All 58 Wilayas • COD</div>
+        <div class="mc-cart-total-row">
+          <span>Subtotal:</span>
+          <span id="pdp-cart-total">10,700 DZD</span>
+        </div>
+        <button class="mc-btn mc-btn-accent mc-btn-lg mc-btn-full" onclick="window.location.href='checkout.html'">Proceed to Checkout (COD) — الدفع عند الاستلام</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <!-- Supabase Backend SDK & Client Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/cart.js"></script>
+  <script src="src/account-header.js"></script>
+  <script src="src/product-detail.js"></script>
+</body>
+</html>
+
+

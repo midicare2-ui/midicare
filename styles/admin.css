@@ -1,0 +1,732 @@
+/* ==========================================================================
+   MEDICARE — ADMIN DASHBOARD COLOR THEME
+   Sourced directly from provided OKLCH color design system
+   Applied scope: .admin-body, .adm-login-body, [data-admin-theme]
+   ========================================================================== */
+
+/* -----------------------------------------------------------------------
+   ADMIN THEME TOKENS — Light (Default)
+   ----------------------------------------------------------------------- */
+:root, [data-admin-theme="light"] {
+  --adm-background:        oklch(0.9916 0.0050 228.8162);
+  --adm-foreground:        oklch(0.2012 0.0307 210.2063);
+  --adm-card:              oklch(1.0000 0 0);
+  --adm-card-foreground:   oklch(0.2012 0.0307 210.2063);
+  --adm-popover:           oklch(1.0000 0 0);
+  --adm-popover-foreground:oklch(0.2395 0.0455 282.4182);
+
+  --adm-primary:           oklch(0.7040 0.1400 182.5030);
+  --adm-primary-fg:        oklch(0.9911 0 0);
+
+  --adm-secondary:         oklch(0.9507 0.0148 196.9072);
+  --adm-secondary-fg:      oklch(0.4011 0.0399 210.3561);
+
+  --adm-muted:             oklch(0.9604 0.0096 196.9971);
+  --adm-muted-fg:          oklch(0.4999 0.0296 211.7976);
+
+  --adm-accent:            oklch(0.9104 0.0460 174.0259);
+  --adm-accent-fg:         oklch(0.4524 0.0772 194.7689);
+
+  --adm-destructive:       oklch(0.5993 0.1597 24.9573);
+  --adm-destructive-fg:    oklch(1.0000 0 0);
+
+  --adm-border:            oklch(0.9093 0.0098 204.9097);
+  --adm-input:             oklch(0.9093 0.0098 204.9097);
+  --adm-ring:              oklch(0.7040 0.1400 182.5030);
+
+  /* Sidebar */
+  --adm-sidebar:           oklch(0.9794 0.0045 214.3282);
+  --adm-sidebar-fg:        oklch(0.2514 0.0307 209.6770);
+  --adm-sidebar-primary:   oklch(0.7040 0.1400 182.5030);
+  --adm-sidebar-primary-fg:oklch(0.9859 0.0040 286.3269);
+  --adm-sidebar-accent:    oklch(0.9104 0.0460 174.0259);
+  --adm-sidebar-accent-fg: oklch(0.2395 0.0455 282.4182);
+  --adm-sidebar-border:    oklch(0.9202 0.0202 200.6310);
+  --adm-sidebar-ring:      oklch(0.5606 0.1650 288.1741);
+
+  /* Charts */
+  --adm-chart-1:           oklch(0.7040 0.1400 182.5030);
+  --adm-chart-2:           oklch(0.6700 0.1336 230.0356);
+  --adm-chart-3:           oklch(0.7217 0.1638 297.0816);
+  --adm-chart-4:           oklch(0.8614 0.1165 74.2273);
+  --adm-chart-5:           oklch(0.8975 0.0740 131.2181);
+
+  /* Radius */
+  --adm-radius:            0.5rem;
+  --adm-radius-sm:         calc(0.5rem - 4px);
+  --adm-radius-md:         calc(0.5rem - 2px);
+  --adm-radius-lg:         0.5rem;
+  --adm-radius-xl:         calc(0.5rem + 4px);
+
+  /* Shadows */
+  --adm-shadow-sm: 0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 1px 2px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow:    0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 1px 2px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow-md: 0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 2px 4px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow-lg: 0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 4px 6px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow-2xl:0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.30);
+}
+
+/* -----------------------------------------------------------------------
+   ADMIN THEME TOKENS — Dark
+   ----------------------------------------------------------------------- */
+[data-admin-theme="dark"] {
+  --adm-background:        oklch(0.1396 0.0155 195.5244);
+  --adm-foreground:        oklch(0.9396 0.0097 204.9127);
+  --adm-card:              oklch(0.1788 0.0202 201.3265);
+  --adm-card-foreground:   oklch(0.9396 0.0097 204.9127);
+  --adm-popover:           oklch(0.2101 0.0257 280.5303);
+  --adm-popover-foreground:oklch(0.9294 0.0202 286.0004);
+
+  --adm-primary:           oklch(0.7040 0.1400 182.5030);
+  --adm-primary-fg:        oklch(1.0000 0 0);
+
+  --adm-secondary:         oklch(0.2413 0.0307 198.8697);
+  --adm-secondary-fg:      oklch(0.8496 0.0299 199.2418);
+
+  --adm-muted:             oklch(0.2185 0.0195 201.5676);
+  --adm-muted-fg:          oklch(0.6494 0.0304 199.2066);
+
+  --adm-accent:            oklch(0.4370 0.0780 188.2160);
+  --adm-accent-fg:         oklch(0.7994 0.0596 196.0230);
+
+  --adm-destructive:       oklch(0.6593 0.2097 25.0107);
+  --adm-destructive-fg:    oklch(0.9859 0.0040 286.3269);
+
+  --adm-border:            oklch(0.2397 0.0193 201.5913);
+  --adm-input:             oklch(0.2397 0.0193 201.5913);
+  --adm-ring:              oklch(0.7040 0.1400 182.5030);
+
+  /* Sidebar */
+  --adm-sidebar:           oklch(0.1604 0.0209 201.0807);
+  --adm-sidebar-fg:        oklch(0.9396 0.0097 204.9127);
+  --adm-sidebar-primary:   oklch(0.7040 0.1400 182.5030);
+  --adm-sidebar-primary-fg:oklch(1.0000 0 0);
+  --adm-sidebar-accent:    oklch(0.4370 0.0780 188.2160);
+  --adm-sidebar-accent-fg: oklch(0.9294 0.0202 286.0004);
+  --adm-sidebar-border:    oklch(0.3008 0.0343 281.7840);
+  --adm-sidebar-ring:      oklch(0.7155 0.1583 288.7763);
+
+  /* Charts */
+  --adm-chart-1:           oklch(0.7040 0.1400 182.5030);
+  --adm-chart-2:           oklch(0.6700 0.1336 230.0356);
+  --adm-chart-3:           oklch(0.7217 0.1638 297.0816);
+  --adm-chart-4:           oklch(0.8614 0.1165 74.2273);
+  --adm-chart-5:           oklch(0.8975 0.0740 131.2181);
+
+  /* Shadows */
+  --adm-shadow-sm: 0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 1px 2px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow:    0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 1px 2px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow-md: 0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 2px 4px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow-lg: 0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.12), 0px 4px 6px -1px hsl(240 29.6875% 25.0980% / 0.12);
+  --adm-shadow-2xl:0px 4px 10px 0px hsl(240 29.6875% 25.0980% / 0.30);
+}
+
+
+/* ==========================================================================
+   ADMIN DASHBOARD LAYOUT — Using --adm-* tokens
+   ========================================================================== */
+
+.admin-body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--adm-background);
+  color: var(--adm-foreground);
+  font-family: 'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   SIDEBAR
+   -------------------------------------------------------------------------- */
+.adm-sidebar {
+  width: 260px;
+  background: var(--adm-sidebar);
+  color: var(--adm-sidebar-fg);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+  border-right: 1px solid var(--adm-sidebar-border);
+  transition: width 0.3s ease;
+}
+
+.adm-sidebar-brand {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--adm-sidebar-border);
+  text-decoration: none;
+}
+
+.adm-brand-name {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--adm-sidebar-fg);
+  letter-spacing: 0.05em;
+}
+
+.adm-brand-badge {
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--adm-sidebar-primary);
+  color: var(--adm-sidebar-primary-fg);
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--adm-radius-sm);
+  text-transform: uppercase;
+}
+
+.adm-nav-group {
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.adm-nav-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--adm-muted-fg);
+  padding: 0.5rem 0.75rem 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.adm-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.875rem;
+  border-radius: var(--adm-radius-md);
+  color: var(--adm-sidebar-fg);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: all 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[dir="rtl"] .adm-nav-item { text-align: right; }
+
+.adm-nav-item:hover {
+  background: var(--adm-sidebar-accent);
+  color: var(--adm-sidebar-accent-fg);
+}
+
+.adm-nav-item.active {
+  background: var(--adm-sidebar-primary);
+  color: var(--adm-sidebar-primary-fg);
+  box-shadow: var(--adm-shadow-sm);
+}
+
+.adm-nav-badge {
+  background: color-mix(in oklch, var(--adm-primary) 20%, transparent);
+  color: var(--adm-sidebar-primary-fg);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+}
+
+.adm-nav-item.active .adm-nav-badge {
+  background: color-mix(in oklch, white 25%, transparent);
+}
+
+.adm-sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--adm-sidebar-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.adm-role-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--adm-muted-fg);
+}
+
+/* --------------------------------------------------------------------------
+   MAIN WORKSPACE
+   -------------------------------------------------------------------------- */
+.adm-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.adm-header {
+  background: var(--adm-card);
+  border-bottom: 1px solid var(--adm-border);
+  padding: 0.875rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  box-shadow: var(--adm-shadow-sm);
+}
+
+.adm-header-title {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--adm-foreground);
+  margin: 0;
+}
+
+.adm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.adm-user-top-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--adm-secondary);
+  border: 1px solid var(--adm-border);
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--adm-secondary-fg);
+}
+
+/* --------------------------------------------------------------------------
+   MODULE PANELS
+   -------------------------------------------------------------------------- */
+.adm-module-panel {
+  display: none;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.adm-module-panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------------------------------------------
+   KPI CARDS
+   -------------------------------------------------------------------------- */
+.adm-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.adm-kpi-card {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-xl);
+  padding: 1.25rem;
+  box-shadow: var(--adm-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.adm-kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.adm-kpi-label {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--adm-muted-fg);
+}
+
+.adm-kpi-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--adm-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.adm-kpi-val {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--adm-foreground);
+  line-height: 1.2;
+}
+
+.adm-kpi-trend {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-top: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.adm-trend-up   { color: #15803D; }
+.adm-trend-down { color: var(--adm-destructive); }
+
+/* --------------------------------------------------------------------------
+   DATA TABLES
+   -------------------------------------------------------------------------- */
+.adm-table-card {
+  background: var(--adm-card);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-xl);
+  box-shadow: var(--adm-shadow-sm);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.adm-table-toolbar {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--adm-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  background: var(--adm-muted);
+}
+
+.adm-search-box {
+  position: relative;
+  min-width: 260px;
+}
+
+.adm-search-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 0.75rem 0 2.25rem;
+  border: 1px solid var(--adm-input);
+  border-radius: var(--adm-radius-md);
+  font-size: 13px;
+  background: var(--adm-background);
+  color: var(--adm-foreground);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+
+.adm-search-input:focus {
+  border-color: var(--adm-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--adm-ring) 25%, transparent);
+}
+
+[dir="rtl"] .adm-search-input { padding: 0 2.25rem 0 0.75rem; }
+
+.adm-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--adm-muted-fg);
+  font-size: 13px;
+}
+
+[dir="rtl"] .adm-search-icon { left: auto; right: 0.75rem; }
+
+.adm-table-wrap { overflow-x: auto; }
+
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+[dir="rtl"] .adm-table { text-align: right; }
+
+.adm-table th {
+  background: var(--adm-muted);
+  color: var(--adm-muted-fg);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--adm-border);
+  white-space: nowrap;
+}
+
+.adm-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--adm-border);
+  color: var(--adm-foreground);
+  vertical-align: middle;
+}
+
+.adm-table tr:last-child td { border-bottom: none; }
+
+.adm-table tr:hover td {
+  background: var(--adm-accent);
+}
+
+/* --------------------------------------------------------------------------
+   STATUS BADGES
+   -------------------------------------------------------------------------- */
+.adm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.adm-badge-success { background: oklch(0.95 0.05 160); color: oklch(0.35 0.10 160); }
+.adm-badge-warning { background: oklch(0.97 0.06 80);  color: oklch(0.45 0.14 70);  }
+.adm-badge-error   { background: color-mix(in oklch, var(--adm-destructive) 15%, white); color: var(--adm-destructive); }
+.adm-badge-info    { background: color-mix(in oklch, var(--adm-chart-2) 15%, white); color: var(--adm-chart-2); }
+.adm-badge-neutral { background: var(--adm-muted); color: var(--adm-muted-fg); }
+
+/* --------------------------------------------------------------------------
+   ICON BUTTONS
+   -------------------------------------------------------------------------- */
+.adm-btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--adm-radius-md);
+  border: 1px solid var(--adm-border);
+  background: var(--adm-card);
+  color: var(--adm-muted-fg);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-btn-icon:hover {
+  background: var(--adm-accent);
+  border-color: var(--adm-ring);
+  color: var(--adm-accent-fg);
+}
+
+/* --------------------------------------------------------------------------
+   CHART AREA
+   -------------------------------------------------------------------------- */
+.adm-split-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .adm-split-grid { grid-template-columns: 2fr 1fr; }
+}
+
+.adm-chart-placeholder {
+  height: 220px;
+  background: linear-gradient(180deg, var(--adm-accent) 0%, var(--adm-card) 100%);
+  border-radius: var(--adm-radius-lg);
+  border: 1px solid var(--adm-border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 0.5rem;
+  gap: 0.5rem;
+}
+
+.adm-chart-bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.adm-chart-bar {
+  width: 100%;
+  max-width: 32px;
+  background: var(--adm-chart-1);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.4s ease;
+}
+
+.adm-chart-bar.highlight { background: var(--adm-chart-4); }
+
+/* --------------------------------------------------------------------------
+   MODALS
+   -------------------------------------------------------------------------- */
+.adm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklch, var(--adm-foreground) 60%, transparent);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.adm-modal-box {
+  background: var(--adm-card);
+  color: var(--adm-card-foreground);
+  border-radius: calc(var(--adm-radius-xl));
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--adm-shadow-2xl);
+  border: 1px solid var(--adm-border);
+  transform: scale(0.96);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-modal-overlay.open .adm-modal-box { transform: scale(1); }
+
+.adm-modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--adm-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adm-modal-title {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--adm-card-foreground);
+  margin: 0;
+}
+
+.adm-modal-body { padding: 1.5rem; }
+
+/* --------------------------------------------------------------------------
+   ACCESS DENIED OVERLAY
+   -------------------------------------------------------------------------- */
+.adm-access-denied-box {
+  background: color-mix(in oklch, var(--adm-destructive) 8%, var(--adm-card));
+  border: 2px solid color-mix(in oklch, var(--adm-destructive) 50%, transparent);
+  border-radius: calc(var(--adm-radius-xl));
+  padding: 3rem 2rem;
+  text-align: center;
+  max-width: 580px;
+  margin: 4rem auto;
+  box-shadow: var(--adm-shadow-lg);
+}
+
+.adm-access-denied-icon  { font-size: 3.5rem; margin-bottom: 0.5rem; }
+.adm-access-denied-title { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--adm-destructive); margin: 0 0 0.5rem 0; }
+.adm-access-denied-desc  { font-size: 0.95rem; color: var(--adm-muted-fg); margin: 0 0 1.5rem 0; line-height: 1.6; }
+
+/* --------------------------------------------------------------------------
+   PERMISSIONS GRID
+   -------------------------------------------------------------------------- */
+.adm-permission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+  background: var(--adm-muted);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-xl);
+  padding: 1.25rem;
+}
+
+.adm-perm-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--adm-foreground);
+  cursor: pointer;
+}
+
+.adm-perm-checkbox input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--adm-primary);
+}
+
+/* --------------------------------------------------------------------------
+   IMAGE UPLOAD DROPZONE
+   -------------------------------------------------------------------------- */
+.adm-image-upload-box {
+  border: 2px dashed var(--adm-border);
+  border-radius: var(--adm-radius-xl);
+  padding: 2rem;
+  text-align: center;
+  background: var(--adm-muted);
+  cursor: pointer;
+  transition: border-color 120ms, background 120ms;
+}
+
+.adm-image-upload-box:hover {
+  border-color: var(--adm-primary);
+  background: var(--adm-accent);
+}
+
+/* --------------------------------------------------------------------------
+   MATRIX GRID (Inventory Variant)
+   -------------------------------------------------------------------------- */
+.adm-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.adm-matrix-item {
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  padding: 0.5rem;
+  text-align: center;
+  background: var(--adm-muted);
+}
+
+/* --------------------------------------------------------------------------
+   PRINT STYLES
+   -------------------------------------------------------------------------- */
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+}

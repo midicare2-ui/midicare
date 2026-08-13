@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Scrubs & Lab Coats — MEDICARE | Medical Wear & Essentials</title>
+  <meta name="description" content="Shop premium medical scrubs, lab coats, diagnostic tools and student starter kits. Filter by specialty, size, and color. Fast delivery to all 58 Wilayas in Algeria.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/showcase.css">
+  <link rel="stylesheet" href="styles/category.css">
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Real logo */
+    .mc-real-logo {
+      height: 44px; width: auto; object-fit: contain; display: block;
+      mix-blend-mode: multiply;
+    }
+    .mc-real-logo-footer {
+      height: 36px; mix-blend-mode: normal;
+      filter: brightness(0) invert(1); opacity: 0.9;
+    }
+    .mc-brand-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    @media (max-width: 640px) { .mc-real-logo { height: 34px; } }
+
+    /* Announcement bar */
+    .mc-announce-bar {
+      background: var(--color-primary-900); color: var(--color-primary-200);
+      text-align: center; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.04em; padding: 0.45rem 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 1.5rem;
+    }
+    .mc-announce-item { display: flex; align-items: center; gap: 0.35rem; }
+    @media (max-width: 640px) { .mc-announce-bar { font-size: 10.5px; gap: 0.5rem; } }
+
+    /* Category header badge */
+    .mc-cat-header-badge {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.25rem 0.625rem;
+      background: var(--color-primary-50); border: 1px solid var(--color-primary-200);
+      border-radius: var(--radius-pill); font-size: 11px; font-weight: 700;
+      color: var(--color-primary-700); font-family: var(--font-family-display);
+      margin-bottom: 0.25rem;
+    }
+
+    /* WhatsApp FAB (mobile) */
+    .mc-whatsapp-fab {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: #25D366; color: #FFF;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; box-shadow: 0 4px 20px rgba(37,211,102,0.45);
+      text-decoration: none; z-index: 150;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .mc-whatsapp-fab:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(37,211,102,0.6); }
+    [dir="rtl"] .mc-whatsapp-fab { right: auto; left: 1.5rem; }
+    @media (min-width: 1025px) { .mc-whatsapp-fab { display: none; } }
+
+    /* Toggle button */
+    .mc-toggle-btn {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.5rem 0.875rem; border-radius: var(--radius-pill);
+      border: 1px solid var(--color-neutral-300); background: var(--color-white);
+      color: var(--color-neutral-800); font-family: var(--font-family-display);
+      font-size: var(--font-size-xs); font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: all var(--transition-fast);
+    }
+    .mc-toggle-btn:hover { border-color: var(--color-primary-600); color: var(--color-primary-800); background: var(--color-primary-50); }
+
+    /* Copy toast */
+    .mc-copy-toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--color-primary-900); color: #FFF;
+      padding: 0.7rem 1.25rem; border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 700;
+      z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.25s; pointer-events: none;
+      font-family: var(--font-family-display);
+    }
+    .mc-copy-toast.show { opacity: 1; transform: translateY(0); }
+    [dir="rtl"] .mc-copy-toast { right: auto; left: 2rem; }
+  </style>
+</head>
+<body class="cat-body">
+
+  <!-- Announcement Bar -->
+  <div class="mc-announce-bar">
+    <span class="mc-announce-item">🚚 <span>Free Express Shipping on Orders Above 5,000 DZD</span></span>
+    <span class="mc-announce-item">💵 <span>Cash on Delivery — All 58 Wilayas</span></span>
+    <span class="mc-announce-item">🎓 <span>Student Bundles — Save up to 25%</span></span>
+  </div>
+
+  <!-- =====================================================================
+       STICKY HEADER
+       ===================================================================== -->
+  <header class="mc-sticky-header">
+    <div class="mc-header-inner">
+      <a href="index.html" class="mc-brand-logo" aria-label="MEDICARE Homepage">
+        <img src="mid logo.png" alt="MEDICARE" class="mc-real-logo" width="150">
+      </a>
+
+      <!-- Search -->
+      <div class="mc-search-container">
+        <div class="mc-search-input-wrapper">
+          <span class="mc-search-icon">🔍</span>
+          <input type="text" id="cat-search-input" class="mc-search-input" placeholder="Search scrubs, stethoscopes, lab coats…" autocomplete="off">
+        </div>
+        <div id="cat-search-dropdown" class="mc-search-dropdown"></div>
+      </div>
+
+      <div class="mc-header-actions">
+        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+          <span>💬</span>
+          <span class="btn-text">اطلب الآن</span>
+        </a>
+        <button class="mc-icon-btn" aria-label="Wishlist">
+          <span>♥</span>
+          <span id="wishlist-badge" class="mc-icon-badge">2</span>
+        </button>
+        <button id="cat-cart-btn" class="mc-icon-btn" aria-label="Shopping Cart">
+          <span>🛒</span>
+          <span id="cat-cart-badge" class="mc-icon-badge">0</span>
+        </button>
+        <button class="mc-icon-btn mc-account-btn" onclick="window.location.href='account.html'" aria-label="My Account" title="My Account">
+          <span>👤</span>
+        </button>
+        <a href="index.html" class="mc-toggle-btn" aria-label="Back to Home">
+          <span>🏠</span>
+          <span class="btn-text">Home</span>
+        </a>
+        <button id="lang-toggle-btn" class="mc-toggle-btn">
+          <span>🌐</span>
+          <span class="btn-text">العربية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       BREADCRUMB
+       ===================================================================== -->
+  <nav class="mc-breadcrumb-bar" aria-label="Breadcrumb">
+    <ol class="mc-breadcrumb">
+      <li><a href="index.html">🏠 Home</a></li>
+      <li class="mc-breadcrumb-sep">/</li>
+      <li><a href="#">Medical Apparel</a></li>
+      <li class="mc-breadcrumb-sep">/</li>
+      <li class="mc-breadcrumb-current">Scrubs & Lab Coats</li>
+    </ol>
+  </nav>
+
+  <!-- =====================================================================
+       CATEGORY HEADER BAR (Title + Sort + Controls)
+       ===================================================================== -->
+  <div class="mc-cat-header">
+    <div class="mc-cat-header-inner">
+      <div class="mc-cat-title-group">
+        <div class="mc-cat-header-badge">👕 Medical Apparel</div>
+        <h1 class="mc-cat-page-title" id="cat-page-title">Scrubs & Lab Coats</h1>
+        <p class="mc-cat-result-count" id="result-count">Showing 1–16 of 48 products</p>
+      </div>
+
+      <div class="mc-cat-controls">
+        <!-- Mobile filter trigger -->
+        <button id="filter-trigger-btn" class="mc-filter-trigger-btn" aria-label="Open Filters">
+          <span>⚙️</span>
+          <span>Filter</span>
+          <span id="filter-count-badge" class="filter-count-badge" style="display:none">0</span>
+        </button>
+
+        <!-- Sort dropdown -->
+        <select id="sort-select" class="mc-sort-select" aria-label="Sort products">
+          <option value="newest">✨ Newest First</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="best-selling" selected>🔥 Best Selling</option>
+          <option value="top-rated">⭐ Top Rated</option>
+        </select>
+
+        <!-- Grid/List view toggle -->
+        <div class="mc-view-toggle" role="group" aria-label="View style">
+          <button id="grid-view-btn" class="mc-view-btn active" aria-label="Grid view" title="Grid view">⊞</button>
+          <button id="list-view-btn" class="mc-view-btn" aria-label="List view" title="List view">☰</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active filter chips -->
+  <div id="chips-bar" class="mc-chips-bar" role="region" aria-label="Active filters">
+    <!-- Chips rendered by JS -->
+  </div>
+
+  <!-- =====================================================================
+       MAIN LAYOUT: SIDEBAR + PRODUCT GRID
+       ===================================================================== -->
+  <div class="mc-cat-layout">
+
+    <!-- ===================================================================
+         DESKTOP FILTER SIDEBAR
+         =================================================================== -->
+    <aside class="mc-filter-sidebar" aria-label="Product filters">
+      <div class="mc-filter-sidebar-header">
+        <h2 class="mc-filter-sidebar-title">⚙️ Filters</h2>
+        <button class="mc-filter-reset" id="sidebar-reset-btn">Clear all</button>
+      </div>
+
+      <!-- Specialty -->
+      <div class="mc-filter-group" id="group-specialty">
+        <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+          <span class="mc-filter-group-label">Specialty</span>
+          <span class="mc-filter-group-chevron">▾</span>
+        </div>
+        <div class="mc-filter-group-body">
+          <label class="mc-filter-option">
+            <input type="checkbox" name="specialty" value="medicine" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Medicine & Surgery</span>
+            <span class="mc-filter-option-count">(18)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="specialty" value="pharmacy" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Pharmacy</span>
+            <span class="mc-filter-option-count">(12)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="specialty" value="dentistry" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Dentistry</span>
+            <span class="mc-filter-option-count">(8)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="specialty" value="nursing" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Nursing</span>
+            <span class="mc-filter-option-count">(10)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Price Range -->
+      <div class="mc-filter-group" id="group-price">
+        <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+          <span class="mc-filter-group-label">Price (DZD)</span>
+          <span class="mc-filter-group-chevron">▾</span>
+        </div>
+        <div class="mc-filter-group-body">
+          <div class="mc-price-range">
+            <div class="mc-price-labels">
+              <span id="price-min-label">0 DZD</span>
+              <span id="price-max-label">50,000 DZD</span>
+            </div>
+            <div class="mc-range-slider-wrap">
+              <div class="mc-range-track"></div>
+              <div class="mc-range-fill" id="range-fill"></div>
+              <input type="range" class="mc-range-input" id="price-min" min="0" max="50000" value="0" step="500" oninput="updatePriceRange()">
+              <input type="range" class="mc-range-input" id="price-max" min="0" max="50000" value="50000" step="500" oninput="updatePriceRange()" style="z-index:2">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Size -->
+      <div class="mc-filter-group" id="group-size">
+        <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+          <span class="mc-filter-group-label">Size</span>
+          <span class="mc-filter-group-chevron">▾</span>
+        </div>
+        <div class="mc-filter-group-body">
+          <div class="mc-size-btns">
+            <button class="mc-size-btn" data-size="XS" onclick="toggleSize(this)">XS</button>
+            <button class="mc-size-btn" data-size="S"  onclick="toggleSize(this)">S</button>
+            <button class="mc-size-btn" data-size="M"  onclick="toggleSize(this)">M</button>
+            <button class="mc-size-btn" data-size="L"  onclick="toggleSize(this)">L</button>
+            <button class="mc-size-btn" data-size="XL" onclick="toggleSize(this)">XL</button>
+            <button class="mc-size-btn" data-size="XXL" onclick="toggleSize(this)">XXL</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Color -->
+      <div class="mc-filter-group" id="group-color">
+        <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+          <span class="mc-filter-group-label">Color</span>
+          <span class="mc-filter-group-chevron">▾</span>
+        </div>
+        <div class="mc-filter-group-body">
+          <div class="mc-color-swatches-filter">
+            <button class="mc-color-filter-swatch" style="background:#0E4D45" data-color="Teal" title="Obsidian Teal" onclick="toggleColor(this)"></button>
+            <button class="mc-color-filter-swatch" style="background:#1E3A5F" data-color="Navy" title="Navy Blue" onclick="toggleColor(this)"></button>
+            <button class="mc-color-filter-swatch" style="background:#F8F8F8;border:1px solid #E5E7EB" data-color="White" title="Clinical White" onclick="toggleColor(this)"></button>
+            <button class="mc-color-filter-swatch" style="background:#6B7280" data-color="Grey" title="Slate Grey" onclick="toggleColor(this)"></button>
+            <button class="mc-color-filter-swatch" style="background:#7C3AED" data-color="Violet" title="Violet" onclick="toggleColor(this)"></button>
+            <button class="mc-color-filter-swatch" style="background:#0F766E" data-color="Sage" title="Clinical Sage" onclick="toggleColor(this)"></button>
+            <button class="mc-color-filter-swatch" style="background:#1D4ED8" data-color="Royal" title="Royal Blue" onclick="toggleColor(this)"></button>
+            <button class="mc-color-filter-swatch" style="background:#BE185D" data-color="Rose" title="Clinical Rose" onclick="toggleColor(this)"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Material -->
+      <div class="mc-filter-group" id="group-material">
+        <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+          <span class="mc-filter-group-label">Material</span>
+          <span class="mc-filter-group-chevron">▾</span>
+        </div>
+        <div class="mc-filter-group-body">
+          <label class="mc-filter-option">
+            <input type="checkbox" name="material" value="antimicrobial" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Antimicrobial Blend</span>
+            <span class="mc-filter-option-count">(14)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="material" value="flex" onchange="applyFilters()">
+            <span class="mc-filter-option-label">4-Way Flex Stretch</span>
+            <span class="mc-filter-option-count">(11)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="material" value="cotton" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Premium Cotton</span>
+            <span class="mc-filter-option-count">(9)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="material" value="fluid-shield" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Fluid-Shield Pro</span>
+            <span class="mc-filter-option-count">(8)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="material" value="nano-coating" onchange="applyFilters()">
+            <span class="mc-filter-option-label">Nano-Coating Tech</span>
+            <span class="mc-filter-option-count">(6)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Brand -->
+      <div class="mc-filter-group" id="group-brand">
+        <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+          <span class="mc-filter-group-label">Brand</span>
+          <span class="mc-filter-group-chevron">▾</span>
+        </div>
+        <div class="mc-filter-group-body">
+          <label class="mc-filter-option">
+            <input type="checkbox" name="brand" value="medicare" onchange="applyFilters()">
+            <span class="mc-filter-option-label">MEDICARE Original</span>
+            <span class="mc-filter-option-count">(24)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="brand" value="surgicalpro" onchange="applyFilters()">
+            <span class="mc-filter-option-label">SurgicalPro</span>
+            <span class="mc-filter-option-count">(12)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="brand" value="clinflex" onchange="applyFilters()">
+            <span class="mc-filter-option-label">ClinFlex Elite</span>
+            <span class="mc-filter-option-count">(8)</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="checkbox" name="brand" value="pharmawear" onchange="applyFilters()">
+            <span class="mc-filter-option-label">PharmaWear</span>
+            <span class="mc-filter-option-count">(4)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div class="mc-filter-group" id="group-rating">
+        <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+          <span class="mc-filter-group-label">Min. Rating</span>
+          <span class="mc-filter-group-chevron">▾</span>
+        </div>
+        <div class="mc-filter-group-body">
+          <label class="mc-filter-option">
+            <input type="radio" name="rating" value="4.5" onchange="applyFilters()">
+            <span class="mc-filter-option-label">⭐⭐⭐⭐⭐ 4.5+</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="radio" name="rating" value="4.0" onchange="applyFilters()">
+            <span class="mc-filter-option-label">⭐⭐⭐⭐ 4.0+</span>
+          </label>
+          <label class="mc-filter-option">
+            <input type="radio" name="rating" value="3.0" onchange="applyFilters()">
+            <span class="mc-filter-option-label">⭐⭐⭐ 3.0+</span>
+          </label>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ===================================================================
+         PRODUCT GRID AREA
+         =================================================================== -->
+    <div class="mc-product-grid-area">
+
+      <!-- Product Grid (dynamically populated by JS) -->
+      <div id="product-grid" class="mc-product-grid" role="list" aria-label="Products">
+        <!-- Skeleton loaders shown on initial load -->
+      </div>
+
+      <!-- Results summary -->
+      <p class="mc-results-summary" id="results-summary"></p>
+
+      <!-- Pagination -->
+      <nav class="mc-pagination" id="pagination" aria-label="Product pages">
+        <!-- Rendered by JS -->
+      </nav>
+
+    </div>
+  </div><!-- /.mc-cat-layout -->
+
+
+  <!-- =====================================================================
+       MOBILE FILTER BOTTOM SHEET
+       ===================================================================== -->
+  <div id="filter-overlay" class="mc-filter-overlay" role="dialog" aria-modal="true" aria-label="Filters">
+    <div class="mc-filter-sheet">
+      <div class="mc-filter-sheet-handle"></div>
+
+      <div class="mc-filter-sheet-header">
+        <span class="mc-filter-sheet-title">⚙️ Filter Products</span>
+        <button id="filter-sheet-close" class="mc-filter-sheet-close" aria-label="Close filters">✕</button>
+      </div>
+
+      <div class="mc-filter-sheet-body">
+        <!-- Clone of sidebar filters for mobile -->
+
+        <!-- Specialty -->
+        <div class="mc-filter-group">
+          <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+            <span class="mc-filter-group-label">Specialty</span>
+            <span class="mc-filter-group-chevron">▾</span>
+          </div>
+          <div class="mc-filter-group-body">
+            <label class="mc-filter-option"><input type="checkbox" name="specialty" value="medicine" onchange="applyFilters()"><span class="mc-filter-option-label">Medicine & Surgery</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="specialty" value="pharmacy" onchange="applyFilters()"><span class="mc-filter-option-label">Pharmacy</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="specialty" value="dentistry" onchange="applyFilters()"><span class="mc-filter-option-label">Dentistry</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="specialty" value="nursing" onchange="applyFilters()"><span class="mc-filter-option-label">Nursing</span></label>
+          </div>
+        </div>
+
+        <!-- Price Range -->
+        <div class="mc-filter-group">
+          <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+            <span class="mc-filter-group-label">Price (DZD)</span>
+            <span class="mc-filter-group-chevron">▾</span>
+          </div>
+          <div class="mc-filter-group-body">
+            <div class="mc-price-range">
+              <div class="mc-price-labels">
+                <span id="m-price-min-label">0 DZD</span>
+                <span id="m-price-max-label">50,000 DZD</span>
+              </div>
+              <div class="mc-range-slider-wrap">
+                <div class="mc-range-track"></div>
+                <div class="mc-range-fill" id="m-range-fill"></div>
+                <input type="range" class="mc-range-input" id="m-price-min" min="0" max="50000" value="0" step="500" oninput="updateMobilePriceRange()">
+                <input type="range" class="mc-range-input" id="m-price-max" min="0" max="50000" value="50000" step="500" oninput="updateMobilePriceRange()" style="z-index:2">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Size -->
+        <div class="mc-filter-group">
+          <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+            <span class="mc-filter-group-label">Size</span>
+            <span class="mc-filter-group-chevron">▾</span>
+          </div>
+          <div class="mc-filter-group-body">
+            <div class="mc-size-btns">
+              <button class="mc-size-btn" data-size="XS" onclick="toggleSize(this)">XS</button>
+              <button class="mc-size-btn" data-size="S" onclick="toggleSize(this)">S</button>
+              <button class="mc-size-btn" data-size="M" onclick="toggleSize(this)">M</button>
+              <button class="mc-size-btn" data-size="L" onclick="toggleSize(this)">L</button>
+              <button class="mc-size-btn" data-size="XL" onclick="toggleSize(this)">XL</button>
+              <button class="mc-size-btn" data-size="XXL" onclick="toggleSize(this)">XXL</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Color -->
+        <div class="mc-filter-group">
+          <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+            <span class="mc-filter-group-label">Color</span>
+            <span class="mc-filter-group-chevron">▾</span>
+          </div>
+          <div class="mc-filter-group-body">
+            <div class="mc-color-swatches-filter">
+              <button class="mc-color-filter-swatch" style="background:#0E4D45" data-color="Teal" title="Obsidian Teal" onclick="toggleColor(this)"></button>
+              <button class="mc-color-filter-swatch" style="background:#1E3A5F" data-color="Navy" title="Navy Blue" onclick="toggleColor(this)"></button>
+              <button class="mc-color-filter-swatch" style="background:#F8F8F8;border:1px solid #E5E7EB" data-color="White" title="Clinical White" onclick="toggleColor(this)"></button>
+              <button class="mc-color-filter-swatch" style="background:#6B7280" data-color="Grey" title="Slate Grey" onclick="toggleColor(this)"></button>
+              <button class="mc-color-filter-swatch" style="background:#7C3AED" data-color="Violet" title="Violet" onclick="toggleColor(this)"></button>
+              <button class="mc-color-filter-swatch" style="background:#0F766E" data-color="Sage" title="Clinical Sage" onclick="toggleColor(this)"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Material -->
+        <div class="mc-filter-group">
+          <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+            <span class="mc-filter-group-label">Material</span>
+            <span class="mc-filter-group-chevron">▾</span>
+          </div>
+          <div class="mc-filter-group-body">
+            <label class="mc-filter-option"><input type="checkbox" name="material" value="antimicrobial" onchange="applyFilters()"><span class="mc-filter-option-label">Antimicrobial Blend</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="material" value="flex" onchange="applyFilters()"><span class="mc-filter-option-label">4-Way Flex Stretch</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="material" value="cotton" onchange="applyFilters()"><span class="mc-filter-option-label">Premium Cotton</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="material" value="fluid-shield" onchange="applyFilters()"><span class="mc-filter-option-label">Fluid-Shield Pro</span></label>
+          </div>
+        </div>
+
+        <!-- Brand -->
+        <div class="mc-filter-group">
+          <div class="mc-filter-group-header" onclick="toggleGroup(this)">
+            <span class="mc-filter-group-label">Brand</span>
+            <span class="mc-filter-group-chevron">▾</span>
+          </div>
+          <div class="mc-filter-group-body">
+            <label class="mc-filter-option"><input type="checkbox" name="brand" value="medicare" onchange="applyFilters()"><span class="mc-filter-option-label">MEDICARE Original</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="brand" value="surgicalpro" onchange="applyFilters()"><span class="mc-filter-option-label">SurgicalPro</span></label>
+            <label class="mc-filter-option"><input type="checkbox" name="brand" value="clinflex" onchange="applyFilters()"><span class="mc-filter-option-label">ClinFlex Elite</span></label>
+          </div>
+        </div>
+
+      </div><!-- /.mc-filter-sheet-body -->
+
+      <div class="mc-filter-sheet-footer">
+        <button class="mc-btn mc-btn-ghost" onclick="clearAllFilters()">Reset All</button>
+        <button class="mc-btn mc-btn-primary" onclick="closeFilterSheet()">Show Results</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart drawer overlay (reused from homepage) -->
+  <div id="cat-cart-overlay" class="mc-cart-drawer-overlay">
+    <aside class="mc-cart-drawer">
+      <div class="mc-cart-header">
+        <div class="mc-cart-title"><span id="cat-cart-title">🛒 Shopping Cart</span></div>
+        <button id="cat-cart-close" class="mc-cart-close">✕</button>
+      </div>
+      <div id="cat-cart-body" class="mc-cart-body"></div>
+      <div class="mc-cart-footer">
+        <div class="mc-cart-shipping-note">🚚 Cash on Delivery — All 58 Wilayas</div>
+        <div class="mc-cart-total-row">
+          <span>Subtotal:</span>
+          <span id="cat-cart-total">0 DZD</span>
+        </div>
+        <button class="mc-btn mc-btn-accent mc-btn-lg mc-btn-full" onclick="window.location.href='checkout.html'">Proceed to Checkout (COD) — الدفع عند الاستلام</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toast -->
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <!-- WhatsApp FAB -->
+  <a href="https://wa.me/213550000000" target="_blank" class="mc-whatsapp-fab" aria-label="WhatsApp Quick Order">💬</a>
+
+  <!-- Supabase Backend SDK & Client Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/cart.js"></script>
+  <script src="src/account-header.js"></script>
+  <script src="src/category.js"></script>
+</body>
+</html>
+
+

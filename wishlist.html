@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist & Product Reviews — MEDICARE</title>
+  <meta name="description" content="View your saved medical scrubs, lab coats, and stethoscopes. Share your wishlist, move items to cart, and read verified doctor reviews.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/showcase.css">
+  <link rel="stylesheet" href="styles/wishlist.css">
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .mc-real-logo { height: 44px; width: auto; object-fit: contain; display: block; mix-blend-mode: multiply; }
+    .mc-brand-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    @media (max-width: 640px) { .mc-real-logo { height: 34px; } }
+
+    .mc-announce-bar {
+      background: var(--color-primary-900); color: var(--color-primary-200);
+      text-align: center; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.04em; padding: 0.45rem 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 1.5rem;
+    }
+    .mc-announce-item { display: flex; align-items: center; gap: 0.35rem; }
+    @media (max-width: 640px) { .mc-announce-bar { font-size: 10.5px; gap: 0.5rem; } }
+
+    .mc-toggle-btn {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.5rem 0.875rem; border-radius: var(--radius-pill);
+      border: 1px solid var(--color-neutral-300); background: var(--color-white);
+      color: var(--color-neutral-800); font-family: var(--font-family-display);
+      font-size: var(--font-size-xs); font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: all var(--transition-fast);
+    }
+    .mc-toggle-btn:hover { border-color: var(--color-primary-600); color: var(--color-primary-800); background: var(--color-primary-50); }
+
+    .mc-copy-toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--color-primary-900); color: #FFF;
+      padding: 0.7rem 1.25rem; border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 700;
+      z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.25s; pointer-events: none;
+      font-family: var(--font-family-display);
+    }
+    .mc-copy-toast.show { opacity: 1; transform: translateY(0); }
+    [dir="rtl"] .mc-copy-toast { right: auto; left: 2rem; }
+  </style>
+</head>
+<body class="wsh-page-body">
+
+  <!-- Top Announcement Bar -->
+  <div class="mc-announce-bar">
+    <span class="mc-announce-item">🚚 <span>Free Express Shipping on Orders Above 5,000 DZD</span></span>
+    <span class="mc-announce-item">💵 <span>Cash on Delivery — All 58 Wilayas</span></span>
+    <span class="mc-announce-item">🎓 <span>Student Bundles — Save up to 25%</span></span>
+  </div>
+
+  <!-- Sticky Header -->
+  <header class="mc-sticky-header">
+    <div class="mc-header-inner">
+      <a href="index.html" class="mc-brand-logo" aria-label="MEDICARE Homepage">
+        <img src="mid logo.png" alt="MEDICARE" class="mc-real-logo" width="150">
+      </a>
+
+      <!-- Search Container -->
+      <div class="mc-search-container">
+        <div class="mc-search-input-wrapper">
+          <span class="mc-search-icon">🔍</span>
+          <input type="text" id="wsh-search-input" class="mc-search-input" placeholder="Search scrubs, stethoscopes, lab coats..." autocomplete="off">
+        </div>
+        <div id="wsh-search-dropdown" class="mc-search-dropdown"></div>
+      </div>
+
+      <div class="mc-header-actions">
+        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+          <span>💬</span>
+          <span class="btn-text">اطلب الآن</span>
+        </a>
+        <button class="mc-icon-btn" aria-label="Wishlist">
+          <span style="color:#EF4444">♥</span>
+          <span id="wsh-wishlist-count-badge" class="mc-icon-badge">4</span>
+        </button>
+        <button id="wsh-cart-btn" class="mc-icon-btn" aria-label="Shopping Cart">
+          <span>🛒</span>
+          <span id="wsh-cart-badge" class="mc-icon-badge">2</span>
+        </button>
+        <button class="mc-icon-btn mc-account-btn" onclick="window.location.href='account.html'" aria-label="My Account" title="My Account">
+          <span>👤</span>
+        </button>
+        <a href="category.html" class="mc-toggle-btn">
+          <span>👕</span>
+          <span class="btn-text">Category</span>
+        </a>
+        <button id="lang-toggle-btn" class="mc-toggle-btn">
+          <span>🌐</span>
+          <span class="btn-text">العربية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Wishlist Container -->
+  <main class="wsh-container">
+
+    <!-- Wishlist Header -->
+    <div class="wsh-page-header">
+      <div>
+        <h1 class="wsh-title">
+          <span>♥</span> My Saved Wishlist <span id="wsh-total-count" style="font-size:1.1rem; color:var(--color-primary-700); font-weight:700;">(4 Items)</span>
+        </h1>
+        <p class="wsh-subtitle">Keep track of your favorite medical wear and diagnostic tools. Saved automatically in local storage.</p>
+      </div>
+
+      <div class="wsh-actions-bar">
+        <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="shareWishlistLink()">
+          🔗 Share Wishlist Link
+        </button>
+        <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="moveAllWishlistToCart()">
+          🛒 Move All to Cart
+        </button>
+      </div>
+    </div>
+
+    <!-- Wishlist Grid Container (Rendered by JS) -->
+    <div id="wishlist-grid" class="wsh-grid" role="list">
+      <!-- Items populated dynamically -->
+    </div>
+
+
+    <!-- ===================================================================
+         PRODUCT REVIEWS & FEEDBACK EXPERIENCE SECTION
+         =================================================================== -->
+    <section class="rev-section" id="reviews-hub">
+      
+      <div class="mc-section-header">
+        <div>
+          <h2 class="mc-section-title">Verified Customer Reviews & Feedback</h2>
+          <p class="mc-section-desc">Authentic reviews and clinical feedback from doctors, surgeons, pharmacy students, and nurses.</p>
+        </div>
+      </div>
+
+      <!-- Rating Overview Histogram -->
+      <div class="rev-overview-card">
+        <div class="rev-score-box">
+          <div class="rev-score-big">4.8</div>
+          <div class="rev-score-stars">★★★★★</div>
+          <div style="font-size:12.5px; color:var(--color-neutral-500); font-weight:600;">Based on 142 reviews</div>
+        </div>
+
+        <div class="pdp-review-histogram">
+          <div class="pdp-histo-row"><span>5 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:85%"></div></div><span>85% (121)</span></div>
+          <div class="pdp-histo-row"><span>4 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:11%"></div></div><span>11% (16)</span></div>
+          <div class="pdp-histo-row"><span>3 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:3%"></div></div><span>3% (4)</span></div>
+          <div class="pdp-histo-row"><span>2 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:1%"></div></div><span>1% (1)</span></div>
+          <div class="pdp-histo-row"><span>1 Star</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:0%"></div></div><span>0% (0)</span></div>
+        </div>
+
+        <div style="text-align:center;">
+          <button class="mc-btn mc-btn-accent" onclick="openReviewModal()">
+            ✍️ Write a Review — أضف تقييمك
+          </button>
+        </div>
+      </div>
+
+      <!-- Reviews Sort & Filter Bar -->
+      <div class="rev-controls-row">
+        <div style="font-family:var(--font-family-display); font-size:14px; font-weight:700; color:var(--color-neutral-800);">
+          Showing 3 of 142 Reviews
+        </div>
+
+        <select id="review-sort-select" class="mc-sort-select" onchange="sortReviews(this.value)">
+          <option value="recent">✨ Most Recent</option>
+          <option value="helpful" selected>👍 Most Helpful</option>
+          <option value="highest">⭐ Highest Rating</option>
+          <option value="lowest">⭐ Lowest Rating</option>
+        </select>
+      </div>
+
+      <!-- Review Cards List Container -->
+      <div id="reviews-list-container">
+        
+        <!-- Review 1 (With Store Owner Reply) -->
+        <div class="rev-card">
+          <div class="rev-user-header">
+            <div class="rev-user-name">
+              <span>Dr. Reda K.</span>
+              <span class="rev-verified-tag">✓ Verified Doctor (طبيب مقيم)</span>
+            </div>
+            <span style="font-size:12px; color:var(--color-neutral-400);">August 11, 2026</span>
+          </div>
+
+          <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">★★★★★</div>
+          <h4 style="margin:0 0 0.35rem 0; font-family:var(--font-family-display); font-size:15px; color:var(--color-neutral-900);">
+            Exceptional scrub set for 24-hour ER shifts!
+          </h4>
+          <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">
+            The 4-way flex stretch fabric is unmatched. I wore this through a demanding 24-hour ER guard at Mustapha Pacha University Hospital. Stays wrinkle-free, repels liquid spills, and keeps cool under intense movement. Express shipping to Algiers arrived in under 24h!
+          </p>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+            <div style="display:flex; gap:0.5rem;">
+              <img src="assets/medicare_scrubs_hero_1786614154492.png" alt="Review photo 1" style="width:60px; height:60px; border-radius:var(--radius-md); object-fit:cover; border:1px solid var(--color-neutral-200);">
+              <img src="assets/medicare_medical_bag_1786614187700.png" alt="Review photo 2" style="width:60px; height:60px; border-radius:var(--radius-md); object-fit:cover; border:1px solid var(--color-neutral-200);">
+            </div>
+
+            <button class="rev-helpful-btn" onclick="voteHelpful(this, 24)">
+              👍 Helpful (<span class="vote-count">24</span>)
+            </button>
+          </div>
+
+          <!-- Official Store Owner Reply -->
+          <div class="rev-owner-reply-box">
+            <div class="rev-owner-title">
+              <span>💬 Official Response from MEDICARE Team</span>
+              <span style="font-size:11px; font-weight:500; color:var(--color-primary-700);">• August 12, 2026</span>
+            </div>
+            <div>
+              Thank you Dr. Reda! We are thrilled to hear that the Obsidian Flex Scrub Set performed so well during your 24-hour ER shift at Mustapha Pacha. Thank you for your dedication to patient care!
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="rev-card">
+          <div class="rev-user-header">
+            <div class="rev-user-name">
+              <span>Amina M.</span>
+              <span class="rev-verified-tag">✓ Verified Student (طالبة صيدلة)</span>
+            </div>
+            <span style="font-size:12px; color:var(--color-neutral-400);">August 08, 2026</span>
+          </div>
+
+          <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">★★★★★</div>
+          <h4 style="margin:0 0 0.35rem 0; font-family:var(--font-family-display); font-size:15px; color:var(--color-neutral-900);">
+            Perfect fit and elegant Obsidian Teal color
+          </h4>
+          <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">
+            Ordered the Pharmacy Starter Kit bundle. The lab coat fabric feels super premium and the stethoscope acoustic clarity is amazing. Size M fit perfectly according to the size chart table.
+          </p>
+
+          <div style="display:flex; justify-content:flex-end;">
+            <button class="rev-helpful-btn" onclick="voteHelpful(this, 18)">
+              👍 Helpful (<span class="vote-count">18</span>)
+            </button>
+          </div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="rev-card">
+          <div class="rev-user-header">
+            <div class="rev-user-name">
+              <span>Dr. Yacine B.</span>
+              <span class="rev-verified-tag">✓ Verified Surgeon (طبيب جراح)</span>
+            </div>
+            <span style="font-size:12px; color:var(--color-neutral-400);">August 02, 2026</span>
+          </div>
+
+          <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">★★★★★</div>
+          <h4 style="margin:0 0 0.35rem 0; font-family:var(--font-family-display); font-size:15px; color:var(--color-neutral-900);">
+            Best medical shoes for long operating room hours
+          </h4>
+          <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">
+            The Clinical Cushion Clogs drastically reduced my back and foot fatigue during 6-hour surgical procedures. Highly recommended for all surgeons in Algeria.
+          </p>
+
+          <div style="display:flex; justify-content:flex-end;">
+            <button class="rev-helpful-btn" onclick="voteHelpful(this, 31)">
+              👍 Helpful (<span class="vote-count">31</span>)
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /#reviews-list-container -->
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================================
+       REVIEW SUBMISSION MODAL
+       ===================================================================== -->
+  <div id="review-modal" class="rev-modal-overlay" role="dialog" aria-modal="true" aria-label="Write a Review">
+    <div class="rev-modal-box">
+      <div class="pdp-modal-header">
+        <h3 class="pdp-modal-title">✍️ Write a Product Review (أضف تقييمك)</h3>
+        <button class="pdp-modal-close" onclick="closeReviewModal()">✕</button>
+      </div>
+
+      <form class="pdp-modal-body" onsubmit="handleReviewSubmit(event)">
+        
+        <!-- Interactive Star Selector -->
+        <div style="text-align:center; margin-bottom:1rem;">
+          <label style="font-weight:700; font-size:13px; font-family:var(--font-family-display);">Select Star Rating:</label>
+          <div class="rev-interactive-stars" id="interactive-star-picker">
+            <span class="star selected" data-val="1" onclick="setRating(1)">★</span>
+            <span class="star selected" data-val="2" onclick="setRating(2)">★</span>
+            <span class="star selected" data-val="3" onclick="setRating(3)">★</span>
+            <span class="star selected" data-val="4" onclick="setRating(4)">★</span>
+            <span class="star selected" data-val="5" onclick="setRating(5)">★</span>
+          </div>
+        </div>
+
+        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+          <div class="chk-form-group">
+            <label class="chk-label" for="rev-author">Your Name & Title <span class="required">*</span></label>
+            <input type="text" id="rev-author" class="chk-input" placeholder="e.g. Dr. Karim S. or Sara B." required>
+          </div>
+
+          <div class="chk-form-group">
+            <label class="chk-label" for="rev-role">Medical Specialty / Role <span class="required">*</span></label>
+            <select id="rev-role" class="chk-select" required>
+              <option value="Resident Physician">Resident Physician (طبيب مقيم)</option>
+              <option value="Specialist Doctor">Specialist / Surgeon (طبيب أخصائي)</option>
+              <option value="Pharmacy Student">Pharmacy Student (طالب صيدلة)</option>
+              <option value="Dental Surgeon">Dental Surgeon (طبيب أسنان)</option>
+              <option value="Registered Nurse">Registered Nurse (ممرض مؤهل)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chk-form-group" style="margin-bottom:1rem;">
+          <label class="chk-label" for="rev-headline">Review Headline <span class="required">*</span></label>
+          <input type="text" id="rev-headline" class="chk-input" placeholder="e.g. Excellent 24h shift comfort" required>
+        </div>
+
+        <div class="chk-form-group" style="margin-bottom:1rem;">
+          <label class="chk-label" for="rev-body">Written Review <span class="required">*</span></label>
+          <textarea id="rev-body" class="chk-input" style="height:100px; padding:0.75rem;" placeholder="Describe how the product fit, fabric quality, and performance met your medical practice needs..." required></textarea>
+        </div>
+
+        <!-- Optional Photo Upload Dropzone -->
+        <div class="chk-form-group" style="margin-bottom:1.25rem;">
+          <label class="chk-label">Add Product Photos (Optional):</label>
+          <div class="rev-photo-dropzone" onclick="simulatePhotoUpload()">
+            <div style="font-size:1.5rem;">📷</div>
+            <div style="font-size:13px; font-weight:700; color:var(--color-primary-800);">Click to upload photos</div>
+            <div style="font-size:11px; color:var(--color-neutral-500);">PNG, JPG up to 5MB</div>
+          </div>
+          <div id="rev-photo-preview-msg" style="font-size:11.5px; color:var(--color-success-700); font-weight:700; display:none; margin-top:0.35rem;">
+            ✓ 1 photo attached (scrub_preview.jpg)
+          </div>
+        </div>
+
+        <button type="submit" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%;">
+          Submit Review — إرسال التقييم
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Slide-Over Cart Drawer -->
+  <div id="wsh-cart-overlay" class="mc-cart-drawer-overlay">
+    <aside class="mc-cart-drawer">
+      <div class="mc-cart-header">
+        <div class="mc-cart-title"><span>🛒 Shopping Cart</span></div>
+        <button id="wsh-cart-close" class="mc-cart-close">✕</button>
+      </div>
+      <div id="wsh-cart-body" class="mc-cart-body"></div>
+      <div class="mc-cart-footer">
+        <div class="mc-cart-shipping-note">🚚 Express Delivery — All 58 Wilayas • COD</div>
+        <div class="mc-cart-total-row">
+          <span>Subtotal:</span>
+          <span id="wsh-cart-total">30,500 DZD</span>
+        </div>
+        <button class="mc-btn mc-btn-accent mc-btn-lg mc-btn-full" onclick="window.location.href='checkout.html'">Proceed to Checkout (COD) — الدفع عند الاستلام</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <!-- Supabase Backend SDK & Client Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/cart.js"></script>
+  <script src="src/account-header.js"></script>
+  <script src="src/wishlist.js"></script>
+</body>
+</html>
+
+

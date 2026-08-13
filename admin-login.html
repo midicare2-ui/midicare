@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Primary button on the dark login page */
+    .adm-login-body .mc-btn-primary {
+      background: oklch(0.7040 0.1400 182.5030);
+      color: oklch(0.9911 0 0);
+      border-color: oklch(0.7040 0.1400 182.5030);
+    }
+    .adm-login-body .mc-btn-primary:hover {
+      background: oklch(0.65 0.1400 182.5030);
+      border-color: oklch(0.65 0.1400 182.5030);
+    }
+    /* Toast */
+    .mc-copy-toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: oklch(0.1788 0.0202 201.3265);
+      color: oklch(0.9396 0.0097 204.9127);
+      border: 1px solid oklch(0.2397 0.0193 201.5913);
+      padding: 0.7rem 1.25rem; border-radius: 9999px;
+      font-size: 13px; font-weight: 700;
+      z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.2s; pointer-events: none;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    .mc-copy-toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+  <title>Admin Portal Login — MEDICARE</title>
+  <meta name="description" content="Isolated security gateway login for MEDICARE store owner and staff members.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/admin-login.css">
+</head>
+<body class="adm-login-body">
+
+  <div class="adm-login-card">
+    
+    <div class="adm-login-brand">
+      <img src="mid logo.png" alt="MEDICARE" class="adm-login-logo-img">
+      <h1 class="adm-login-title">Admin Control Gateway</h1>
+      <p class="adm-login-subtitle">Restricted staff authentication portal for MEDICARE</p>
+    </div>
+
+    <!-- Lockout & Error Alert Box -->
+    <div id="login-alert" class="adm-alert-box" role="alert">
+      ⚠️ Invalid credentials or account locked.
+    </div>
+
+    <form id="admin-login-form" onsubmit="handleAdminLogin(event)" novalidate>
+      
+      <!-- Email -->
+      <div class="adm-login-group">
+        <label class="adm-login-label" for="login-email">Staff Email Address</label>
+        <input type="email" id="login-email" class="adm-login-input" placeholder="e.g. owner@medicare.dz" value="owner@medicare.dz" required>
+      </div>
+
+      <!-- Password -->
+      <div class="adm-login-group">
+        <label class="adm-login-label" for="login-password">Password</label>
+        <input type="password" id="login-password" class="adm-login-input" placeholder="••••••••••••" value="medicare2026" required>
+      </div>
+
+      <div class="adm-login-row">
+        <label class="adm-remember-label">
+          <input type="checkbox" id="remember-me" checked style="accent-color:var(--color-primary-500);">
+          <span>Remember session</span>
+        </label>
+        <a href="#" class="adm-forgot-link" onclick="openForgotPasswordModal(); return false;">Forgot password?</a>
+      </div>
+
+      <button type="submit" id="login-submit-btn" class="mc-btn mc-btn-primary mc-btn-lg adm-login-btn">
+        🔓 Secure Login
+      </button>
+
+    </form>
+
+    <!-- Demo Role Pre-fill Selector -->
+    <div class="adm-demo-credentials">
+      <strong style="color:#FFF;">⚡ Quick Demo Login (Select Role):</strong>
+      <div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.5rem;">
+        <button class="adm-demo-role-btn" onclick="fillCredentials('owner@medicare.dz', '👑 Owner (Full Access)')">👑 Owner</button>
+        <button class="adm-demo-role-btn" onclick="fillCredentials('manager@medicare.dz', '💼 Store Manager')">💼 Manager</button>
+        <button class="adm-demo-role-btn" onclick="fillCredentials('handler@medicare.dz', '📦 Order Handler')">📦 Handler</button>
+        <button class="adm-demo-role-btn" onclick="fillCredentials('support@medicare.dz', '🎧 Support & Content')">🎧 Support</button>
+      </div>
+      <div style="font-size:10.5px; color:#64748B; margin-top:0.5rem;" id="selected-role-notice">
+        Currently selected: <strong>👑 Owner (Full Access)</strong>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- 2FA OTP MODAL -->
+  <div id="modal-2fa" class="adm-modal-overlay" style="display:flex; visibility:hidden; opacity:0; pointer-events:none;" role="dialog">
+    <div class="adm-modal-box" style="max-width:400px; background:#1E293B; color:#FFF; border:1px solid #334155; text-align:center; padding:2rem;">
+      <div style="font-size:2.5rem; margin-bottom:0.5rem;">🛡️</div>
+      <h3 style="font-family:var(--font-family-display); font-size:1.3rem; margin:0 0 0.5rem 0;">Two-Factor Authentication (2FA)</h3>
+      <p style="font-size:12.5px; color:#94A3B8; margin:0 0 1rem 0;">Owner security verification required. Enter the 6-digit OTP code sent to your authenticator app.</p>
+
+      <div class="otp-inputs-grid">
+        <input type="text" maxlength="1" class="otp-digit-input" value="1" onkeyup="moveOtp(this, 1)">
+        <input type="text" maxlength="1" class="otp-digit-input" value="2" onkeyup="moveOtp(this, 2)">
+        <input type="text" maxlength="1" class="otp-digit-input" value="3" onkeyup="moveOtp(this, 3)">
+        <input type="text" maxlength="1" class="otp-digit-input" value="4" onkeyup="moveOtp(this, 4)">
+        <input type="text" maxlength="1" class="otp-digit-input" value="5" onkeyup="moveOtp(this, 5)">
+        <input type="text" maxlength="1" class="otp-digit-input" value="6" onkeyup="moveOtp(this, 6)">
+      </div>
+
+      <button class="mc-btn mc-btn-primary mc-btn-lg" style="width:100%; margin-top:1rem;" onclick="verifyOtpSubmit()">
+        Verify & Continue ➔
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <!-- Supabase Backend SDK & Client Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/admin-login.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fast Checkout (Cash on Delivery) — MEDICARE</title>
+  <meta name="description" content="Fast, secure Cash on Delivery checkout for medical apparel and supplies across all 58 Wilayas in Algeria.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/showcase.css">
+  <link rel="stylesheet" href="styles/checkout.css">
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .mc-real-logo { height: 44px; width: auto; object-fit: contain; display: block; mix-blend-mode: multiply; }
+    .mc-brand-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    @media (max-width: 640px) { .mc-real-logo { height: 34px; } }
+
+    .mc-toggle-btn {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.5rem 0.875rem; border-radius: var(--radius-pill);
+      border: 1px solid var(--color-neutral-300); background: var(--color-white);
+      color: var(--color-neutral-800); font-family: var(--font-family-display);
+      font-size: var(--font-size-xs); font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: all var(--transition-fast);
+    }
+    .mc-toggle-btn:hover { border-color: var(--color-primary-600); color: var(--color-primary-800); background: var(--color-primary-50); }
+
+    .mc-copy-toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--color-primary-900); color: #FFF;
+      padding: 0.7rem 1.25rem; border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 700;
+      z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.25s; pointer-events: none;
+      font-family: var(--font-family-display);
+    }
+    .mc-copy-toast.show { opacity: 1; transform: translateY(0); }
+    [dir="rtl"] .mc-copy-toast { right: auto; left: 2rem; }
+  </style>
+</head>
+<body class="checkout-page-body">
+
+  <!-- Header Bar -->
+  <header class="chk-header">
+    <div class="chk-header-inner">
+      <a href="index.html" class="mc-brand-logo" aria-label="MEDICARE Homepage">
+        <img src="mid logo.png" alt="MEDICARE" class="mc-real-logo" width="150">
+      </a>
+
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <div class="chk-secure-badge">
+          🔒 <span>Cash on Delivery (الدفع عند الاستلام)</span>
+        </div>
+
+        <button class="mc-icon-btn mc-account-btn" onclick="window.location.href='account.html'" aria-label="My Account" title="My Account">
+          <span>👤</span>
+        </button>
+
+        <button id="lang-toggle-btn" class="mc-toggle-btn">
+          <span>🌐</span>
+          <span class="btn-text">العربية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Checkout Container -->
+  <main class="chk-container">
+    
+    <!-- Step Wizard Form Container -->
+    <div id="checkout-active-view">
+
+      <!-- Free Shipping Progress Bar -->
+      <div class="chk-shipping-progress-card">
+        <div class="chk-progress-header">
+          <span id="shipping-progress-text">🚚 Add 4,300 DZD more for FREE Express Shipping!</span>
+          <span id="shipping-progress-pct" style="color:var(--color-primary-700)">70%</span>
+        </div>
+        <div class="chk-progress-bar-bg">
+          <div id="shipping-progress-fill" class="chk-progress-bar-fill" style="width: 70%;"></div>
+        </div>
+      </div>
+
+      <!-- Step Wizard Header -->
+      <div class="chk-wizard-steps">
+        <div class="chk-wizard-step active" id="wizard-step-1">
+          <div class="chk-step-num">1</div>
+          <span class="chk-step-label">Shipping & Address</span>
+        </div>
+        <div class="chk-wizard-step" id="wizard-step-2">
+          <div class="chk-step-num">2</div>
+          <span class="chk-step-label">Review & Confirm</span>
+        </div>
+        <div class="chk-wizard-step" id="wizard-step-3">
+          <div class="chk-step-num">3</div>
+          <span class="chk-step-label">Order Complete</span>
+        </div>
+      </div>
+
+      <!-- Grid: Form Left, Summary Right -->
+      <div class="chk-grid">
+
+        <!-- Left Column: Checkout Forms -->
+        <div class="chk-forms-col">
+          <!-- Customer Account Notice (hidden when guest) -->
+          <div id="chk-customer-notice" style="display:none; align-items:center; gap:0.75rem; padding:0.75rem 1rem; background:linear-gradient(135deg,#ECFDF5,#D1FAE5); border:1px solid #6EE7B7; border-radius:10px; margin-bottom:1rem; font-size:13px; font-weight:600; color:#065F46;">
+            <span style="font-size:1.3rem;">👤</span>
+            <span>Welcome back, <strong id="chk-notice-name">Customer</strong>! Your details have been pre-filled. <a href="account.html" style="color:#0E4D45;">View Account →</a></span>
+          </div>
+
+          <form id="checkout-form" onsubmit="handleOrderSubmit(event)" novalidate>
+
+            <!-- Card 1: Contact Information -->
+            <div class="chk-card">
+              <h2 class="chk-card-title">👤 Contact Information (معلومات الاتصال)</h2>
+              
+              <div class="chk-form-grid two-col">
+                <div class="chk-form-group" id="group-fullname">
+                  <label class="chk-label" for="chk-fullname">Full Name <span class="required">*</span></label>
+                  <input type="text" id="chk-fullname" class="chk-input" placeholder="e.g. Dr. Ahmed Benali" required oninput="validateField(this)">
+                  <span class="chk-error-msg">Please enter your full name.</span>
+                </div>
+
+                <div class="chk-form-group" id="group-phone">
+                  <label class="chk-label" for="chk-phone">Primary Phone Number (رقم الهاتف) <span class="required">*</span></label>
+                  <input type="tel" id="chk-phone" class="chk-input" placeholder="05XX XX XX XX or 06/07" required oninput="validateField(this)">
+                  <span class="chk-error-msg">Please enter a valid 10-digit Algerian phone number (05/06/07).</span>
+                </div>
+              </div>
+
+              <div class="chk-form-grid" style="margin-top: 1rem;">
+                <div class="chk-form-group">
+                  <label class="chk-label" for="chk-phone2">Secondary Phone Number (Optional / رقم إضافي)</label>
+                  <input type="tel" id="chk-phone2" class="chk-input" placeholder="Optional back-up number for delivery driver">
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Delivery Location & Provider -->
+            <div class="chk-card">
+              <h2 class="chk-card-title">📍 Delivery Location (عنوان التوصيل - 58 ولاية)</h2>
+
+              <div class="chk-form-grid two-col">
+                <!-- Wilaya Dropdown -->
+                <div class="chk-form-group" id="group-wilaya">
+                  <label class="chk-label" for="chk-wilaya">Wilaya (الولاية) <span class="required">*</span></label>
+                  <select id="chk-wilaya" class="chk-select" required onchange="onWilayaChange(this)">
+                    <option value="">-- Select Wilaya --</option>
+                    <!-- Populated dynamically by JS with 58 Wilayas -->
+                  </select>
+                  <span class="chk-error-msg">Please select your Wilaya.</span>
+                </div>
+
+                <!-- Dependent Commune Dropdown -->
+                <div class="chk-form-group" id="group-commune">
+                  <label class="chk-label" for="chk-commune">Commune (البلدية) <span class="required">*</span></label>
+                  <select id="chk-commune" class="chk-select" required disabled onchange="validateField(this)">
+                    <option value="">-- Select Wilaya First --</option>
+                  </select>
+                  <span class="chk-error-msg">Please select your Commune.</span>
+                </div>
+              </div>
+
+              <!-- Delivery Method Selector (Home vs Stop-Desk) -->
+              <div style="margin-top: 1.25rem;">
+                <label class="chk-label">Delivery Option (طريقة التوصيل) <span class="required">*</span></label>
+                
+                <div class="chk-delivery-types">
+                  <!-- Home Delivery -->
+                  <div class="chk-delivery-card active" id="delivery-option-home" onclick="selectDeliveryType('home')">
+                    <div class="chk-delivery-header">
+                      <span class="chk-delivery-title">🚚 Home Delivery</span>
+                      <span class="chk-delivery-price" id="home-fee-label">500 DZD</span>
+                    </div>
+                    <div class="chk-delivery-desc">Direct delivery to your doorstep/clinic.</div>
+                    <span class="chk-provider-badge">ZR Express / Yalidine Home</span>
+                  </div>
+
+                  <!-- Stop-Desk Pickup -->
+                  <div class="chk-delivery-card" id="delivery-option-stopdesk" onclick="selectDeliveryType('stopdesk')">
+                    <div class="chk-delivery-header">
+                      <span class="chk-delivery-title">📦 Stop-Desk Pickup</span>
+                      <span class="chk-delivery-price" id="stopdesk-fee-label">300 DZD</span>
+                    </div>
+                    <div class="chk-delivery-desc">Pickup from nearest courier agency desk.</div>
+                    <span class="chk-provider-badge">Yalidine Agency Desk</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Full Address -->
+              <div class="chk-form-group" id="group-address" style="margin-top: 1.25rem;">
+                <label class="chk-label" for="chk-address">Full Street Address / Hospital / Clinic <span class="required">*</span></label>
+                <input type="text" id="chk-address" class="chk-input" placeholder="Building no, street name, hospital department..." required oninput="validateField(this)">
+                <span class="chk-error-msg">Please enter your detailed delivery address.</span>
+              </div>
+
+              <!-- Order Notes -->
+              <div class="chk-form-group" style="margin-top: 1rem;">
+                <label class="chk-label" for="chk-notes">Order Notes / Delivery Time Preferences (ملاحظات)</label>
+                <input type="text" id="chk-notes" class="chk-input" placeholder="e.g. Please deliver after 14:00 or leave with hospital reception">
+              </div>
+
+            </div>
+
+          </form>
+        </div>
+
+
+        <!-- Right Column: Persistent Order Summary Sidebar -->
+        <aside class="chk-summary-sidebar">
+          <div class="chk-summary-card">
+            
+            <div class="chk-summary-header">
+              <h3 class="chk-summary-title">Order Summary</h3>
+              <span style="font-size:12px; font-weight:700; color:var(--color-primary-700);" id="chk-summary-count">2 Items</span>
+            </div>
+
+            <!-- Line Items -->
+            <div class="chk-items-list" id="chk-items-list">
+              <!-- Rendered by JS -->
+            </div>
+
+            <!-- Coupon Code Field -->
+            <div class="chk-coupon-box">
+              <input type="text" id="chk-coupon-input" class="chk-input chk-coupon-input" placeholder="Coupon Code (e.g. STUDENT10)">
+              <button type="button" class="mc-btn mc-btn-secondary chk-coupon-btn" onclick="applyCoupon()">Apply</button>
+            </div>
+
+            <!-- Totals Breakdown Table -->
+            <div class="chk-totals-table">
+              <div class="chk-total-row">
+                <span>Items Subtotal:</span>
+                <span id="chk-subtotal-val">30,500 DZD</span>
+              </div>
+
+              <div class="chk-total-row">
+                <span>Delivery Fee (<span id="chk-delivery-type-label">Home</span>):</span>
+                <span id="chk-shipping-val">500 DZD</span>
+              </div>
+
+              <div class="chk-total-row" id="coupon-discount-row" style="display:none; color:var(--color-success-700); font-weight:700;">
+                <span>Coupon Discount (10%):</span>
+                <span id="chk-discount-val">−3,050 DZD</span>
+              </div>
+
+              <div class="chk-total-row grand-total">
+                <span>Total (الدفع عند الاستلام):</span>
+                <span id="chk-grand-total-val">31,000 DZD</span>
+              </div>
+            </div>
+
+            <!-- Cash on Delivery Notice Box -->
+            <div class="chk-cod-notice">
+              <span style="font-size:1.25rem;">💵</span>
+              <div>
+                <strong>Cash on Delivery (COD)</strong><br>
+                Pay in cash directly to the courier driver upon receiving and inspecting your package. No advance payment required.
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" form="checkout-form" class="mc-btn mc-btn-accent mc-btn-lg chk-place-order-btn" id="place-order-btn">
+              Place Order — تأكيد الطلب ➔
+            </button>
+
+            <div style="font-size:11px; text-align:center; color:var(--color-neutral-400); margin-top:0.75rem;">
+              By placing your order, you agree to MEDICARE's terms of service & 14-day easy return policy.
+            </div>
+
+          </div>
+        </aside>
+
+      </div><!-- /.chk-grid -->
+
+    </div><!-- /#checkout-active-view -->
+
+
+    <!-- Step 3: Order Confirmation View (Initially Hidden) -->
+    <div id="checkout-confirmation-view" style="display: none;">
+      <div class="chk-confirmation-card">
+        <div class="chk-success-icon">✓</div>
+
+        <h1 style="font-family:var(--font-family-display); font-size:2rem; font-weight:800; color:var(--color-neutral-900); margin:0 0 0.5rem 0;">
+          Order Placed Successfully!
+        </h1>
+        <p style="font-size:1.05rem; color:var(--color-neutral-600); margin:0 0 1.25rem 0;">
+          Thank you for choosing MEDICARE. Your order has been registered and is being prepared for dispatch.
+        </p>
+
+        <div class="chk-order-number-badge" id="conf-order-num">
+          Order #MC-2026-9418
+        </div>
+
+        <div class="chk-delivery-window-box">
+          <div style="font-family:var(--font-family-display); font-size:14px; font-weight:800; color:var(--color-primary-900); margin-bottom:0.5rem;">
+            📦 Order Details & Estimated Delivery
+          </div>
+          <div style="font-size:13px; color:var(--color-neutral-700); line-height:1.6;">
+            • <strong>Customer:</strong> <span id="conf-customer-name">Dr. Ahmed Benali</span> (<span id="conf-customer-phone">0550 00 00 00</span>)<br>
+            • <strong>Destination:</strong> <span id="conf-destination">Wilaya 16 - Alger (Commune: El Biar)</span><br>
+            • <strong>Delivery Type:</strong> <span id="conf-delivery-type">Home Delivery via ZR Express</span><br>
+            • <strong>Estimated Delivery Window:</strong> <span id="conf-delivery-window" style="color:var(--color-success-700); font-weight:700;">24–48 Hours</span><br>
+            • <strong>Total Amount Due (COD):</strong> <span id="conf-total-due" style="font-weight:800; color:var(--color-primary-900);">31,000 DZD</span>
+          </div>
+        </div>
+
+        <div class="chk-confirmation-ctas">
+          <a id="conf-whatsapp-track-link" href="#" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-lg">
+            💬 Track Order via WhatsApp — تتبع الطلب
+          </a>
+          <a href="index.html" class="mc-btn mc-btn-secondary mc-btn-lg">
+            🏠 Return to Store
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <!-- Supabase Backend SDK & Client Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/cart.js"></script>
+  <script src="src/account-header.js"></script>
+  <script src="src/checkout.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Tracking & Account Dashboard — MEDICARE</title>
+  <meta name="description" content="Track your MEDICARE order status in real time using your order number and phone number. Access order history, reorder clinical items, and view delivery updates.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/showcase.css">
+  <link rel="stylesheet" href="styles/order-tracking.css">
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .mc-real-logo { height: 44px; width: auto; object-fit: contain; display: block; mix-blend-mode: multiply; }
+    .mc-brand-logo { display: flex; align-items: center; text-decoration: none; flex-shrink: 0; }
+    @media (max-width: 640px) { .mc-real-logo { height: 34px; } }
+
+    .mc-announce-bar {
+      background: var(--color-primary-900); color: var(--color-primary-200);
+      text-align: center; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.04em; padding: 0.45rem 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 1.5rem;
+    }
+    .mc-announce-item { display: flex; align-items: center; gap: 0.35rem; }
+    @media (max-width: 640px) { .mc-announce-bar { font-size: 10.5px; gap: 0.5rem; } }
+
+    .mc-toggle-btn {
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      padding: 0.5rem 0.875rem; border-radius: var(--radius-pill);
+      border: 1px solid var(--color-neutral-300); background: var(--color-white);
+      color: var(--color-neutral-800); font-family: var(--font-family-display);
+      font-size: var(--font-size-xs); font-weight: 600; cursor: pointer;
+      white-space: nowrap; transition: all var(--transition-fast);
+    }
+    .mc-toggle-btn:hover { border-color: var(--color-primary-600); color: var(--color-primary-800); background: var(--color-primary-50); }
+
+    .mc-copy-toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--color-primary-900); color: #FFF;
+      padding: 0.7rem 1.25rem; border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-lg); font-size: 13px; font-weight: 700;
+      z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.25s; pointer-events: none;
+      font-family: var(--font-family-display);
+    }
+    .mc-copy-toast.show { opacity: 1; transform: translateY(0); }
+    [dir="rtl"] .mc-copy-toast { right: auto; left: 2rem; }
+  </style>
+</head>
+<body class="trk-page-body">
+
+  <!-- Announcement Bar -->
+  <div class="mc-announce-bar">
+    <span class="mc-announce-item">🚚 <span>Free Express Shipping on Orders Above 5,000 DZD</span></span>
+    <span class="mc-announce-item">💵 <span>Cash on Delivery — All 58 Wilayas</span></span>
+    <span class="mc-announce-item">🎓 <span>Student Bundles — Save up to 25%</span></span>
+  </div>
+
+  <!-- Sticky Header -->
+  <header class="mc-sticky-header">
+    <div class="mc-header-inner">
+      <a href="index.html" class="mc-brand-logo" aria-label="MEDICARE Homepage">
+        <img src="mid logo.png" alt="MEDICARE" class="mc-real-logo" width="150">
+      </a>
+
+      <!-- Search -->
+      <div class="mc-search-container">
+        <div class="mc-search-input-wrapper">
+          <span class="mc-search-icon">🔍</span>
+          <input type="text" id="trk-search-input" class="mc-search-input" placeholder="Search scrubs, stethoscopes, lab coats..." autocomplete="off">
+        </div>
+        <div id="trk-search-dropdown" class="mc-search-dropdown"></div>
+      </div>
+
+      <div class="mc-header-actions">
+        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+          <span>💬</span>
+          <span class="btn-text">اطلب الآن</span>
+        </a>
+        <button class="mc-icon-btn" aria-label="Wishlist">
+          <span>♥</span>
+          <span id="trk-wishlist-badge" class="mc-icon-badge">2</span>
+        </button>
+        <button id="trk-cart-btn" class="mc-icon-btn" aria-label="Shopping Cart">
+          <span>🛒</span>
+          <span id="trk-cart-badge" class="mc-icon-badge">2</span>
+        </button>
+        <button class="mc-icon-btn mc-account-btn" onclick="window.location.href='account.html'" aria-label="My Account" title="My Account">
+          <span>👤</span>
+        </button>
+        <a href="index.html" class="mc-toggle-btn">
+          <span>🏠</span>
+          <span class="btn-text">Home</span>
+        </a>
+        <button id="lang-toggle-btn" class="mc-toggle-btn">
+          <span>🌐</span>
+          <span class="btn-text">العربية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="trk-container">
+
+    <!-- Guest Order Lookup Banner -->
+    <section class="trk-lookup-box">
+      <div class="trk-lookup-content">
+        <span class="mc-card-badge mc-badge-new" style="margin-bottom:0.5rem; display:inline-block;">⚡ Live Order Tracker</span>
+        <h1 class="trk-lookup-title">Track Your MEDICARE Order</h1>
+        <p class="trk-lookup-desc">No login required! Enter your order number and phone number to track your package delivery in real time across all 58 Wilayas.</p>
+
+        <form class="trk-lookup-form" onsubmit="handleGuestLookup(event)">
+          <input type="text" id="lookup-ordernum" class="trk-lookup-input" placeholder="Order Number (e.g. MC-2026-9418)" required>
+          <input type="tel" id="lookup-phone" class="trk-lookup-input" placeholder="Phone Number (e.g. 0550000000)" required>
+          <button type="submit" class="mc-btn mc-btn-accent" style="height:48px; padding:0 1.5rem; white-space:nowrap;">
+            🔍 Track Order — تتبع الطلب
+          </button>
+        </form>
+      </div>
+    </section>
+
+
+    <!-- Order Not Found Error Card -->
+    <div id="trk-not-found-card" class="trk-card" style="display:none; text-align:center; padding:3rem 1.5rem;">
+      <div style="font-size:3.5rem; margin-bottom:1rem;">⚠️</div>
+      <h2 style="font-size:1.5rem; font-weight:800; color:var(--color-neutral-900); margin-bottom:0.5rem;">Order Not Found — لم يتم العثور على الطلب</h2>
+      <p style="color:var(--color-neutral-600); font-size:14px; max-width:500px; margin:0 auto 1.5rem auto; line-height:1.6;">
+        Order not found — check your order number and phone number and try again.
+      </p>
+    </div>
+
+
+    <!-- Live Order Status Timeline Card -->
+    <section id="order-timeline-card" class="trk-card">
+      
+      <!-- Order Header Metadata -->
+      <div class="trk-order-header">
+        <div>
+          <h2 class="trk-order-num-title" id="trk-order-id-display">Order #MC-2026-9418</h2>
+          <div class="trk-order-date" id="trk-order-date-display">Placed on August 13, 2026 at 10:15 • Cash on Delivery (COD)</div>
+        </div>
+
+        <div style="text-align:right;">
+          <span id="trk-status-badge" class="dash-status-badge dash-status-shipped">🚚 In Transit — ZR Express</span>
+          <div id="trk-total-display" style="font-size:13px; font-weight:800; color:var(--color-primary-900); margin-top:0.35rem;">Total: 31,000 DZD</div>
+        </div>
+      </div>
+
+      <!-- Step Timeline Visualizer -->
+      <div class="trk-timeline" id="trk-timeline-container">
+        <!-- Desktop background fill line -->
+        <div class="trk-timeline-line-fill" id="trk-timeline-line-fill" style="width: 72%;"></div>
+
+        <!-- Step 1: Placed -->
+        <div class="trk-step completed" id="step-placed">
+          <div class="trk-step-icon-bg">📝</div>
+          <div>
+            <div class="trk-step-title">Order Placed</div>
+            <div class="trk-step-time" id="step-placed-time">Done</div>
+          </div>
+        </div>
+
+        <!-- Step 2: Confirmed -->
+        <div class="trk-step completed" id="step-confirmed">
+          <div class="trk-step-icon-bg">✅</div>
+          <div>
+            <div class="trk-step-title">Confirmed</div>
+            <div class="trk-step-time" id="step-confirmed-time">Done</div>
+          </div>
+        </div>
+
+        <!-- Step 3: Preparing -->
+        <div class="trk-step completed" id="step-preparing">
+          <div class="trk-step-icon-bg">📦</div>
+          <div>
+            <div class="trk-step-title">Preparing</div>
+            <div class="trk-step-time" id="step-preparing-time">Done</div>
+          </div>
+        </div>
+
+        <!-- Step 4: Shipped -->
+        <div class="trk-step active" id="step-shipped">
+          <div class="trk-step-icon-bg">🚚</div>
+          <div>
+            <div class="trk-step-title">Shipped</div>
+            <div class="trk-step-time" id="step-shipped-time">In Transit</div>
+          </div>
+        </div>
+
+        <!-- Step 5: Delivered -->
+        <div class="trk-step" id="step-delivered">
+          <div class="trk-step-icon-bg">🎉</div>
+          <div>
+            <div class="trk-step-title">Delivered</div>
+            <div class="trk-step-time" id="step-delivered-time">Pending</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Tracking Info & Courier Details -->
+      <div id="trk-details-box" style="background:var(--color-primary-50); border:1px solid var(--color-primary-200); border-radius:var(--radius-xl); padding:1.25rem; display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; font-size:13px;">
+        <div>
+          <strong style="color:var(--color-primary-900);">📦 Courier Partner:</strong><br>
+          <span id="trk-courier-name">ZR Express / Yalidine</span>
+        </div>
+        <div>
+          <strong style="color:var(--color-primary-900);">📍 Destination:</strong><br>
+          <span id="trk-destination">Wilaya 16 - Alger</span>
+        </div>
+        <div>
+          <strong style="color:var(--color-primary-900);">👤 Customer Name:</strong><br>
+          <span id="trk-customer-name">Dr. Ahmed</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Automated WhatsApp Status Notifications Concept Section -->
+    <section class="trk-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+        <div>
+          <span class="mc-card-badge mc-badge-new">💬 WhatsApp Notifications Concept</span>
+          <h2 style="font-family:var(--font-family-display); font-size:1.4rem; font-weight:800; margin:0.35rem 0 0 0;">Automated WhatsApp Delivery Alerts</h2>
+        </div>
+        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+          💬 Test Live WhatsApp Assistant
+        </a>
+      </div>
+
+      <p style="font-size:13.5px; color:var(--color-neutral-600); margin-bottom:1.5rem;">
+        MEDICARE sends instant automated WhatsApp notifications to your phone number at every major milestone so you never miss your delivery driver.
+      </p>
+
+      <div class="trk-wa-concept-box">
+        
+        <!-- WA Bubble 1 -->
+        <div class="trk-wa-bubble">
+          <strong>🏥 MEDICARE — Order Confirmation</strong><br>
+          Hello Dr. Ahmed! Your order <strong>#MC-2026-9418</strong> (Obsidian Scrub Set + Stethoscope) has been confirmed! Our team is preparing your package for express dispatch to <strong>Alger (El Biar)</strong>.<br>
+          💵 Total Due on Delivery: <strong>31,000 DZD</strong>.
+          <div class="trk-wa-time">11:30 AM ✓✓</div>
+        </div>
+
+        <!-- WA Bubble 2 -->
+        <div class="trk-wa-bubble">
+          <strong>🚚 MEDICARE — Package Shipped!</strong><br>
+          Great news! Your package has been handed over to <strong>ZR Express</strong>.<br>
+          Tracking #: <code>ZR-88914-DZ</code><br>
+          🔗 Live Status: <a href="#" style="color:#0284C7;">medicare.dz/track?id=9418</a>
+          <div class="trk-wa-time">09:00 AM ✓✓</div>
+        </div>
+
+        <!-- WA Bubble 3 -->
+        <div class="trk-wa-bubble">
+          <strong>🛵 MEDICARE — Out for Delivery Today!</strong><br>
+          Your delivery driver <strong>Farid</strong> (ZR Express) is on his way with your package. Please keep <strong>31,000 DZD</strong> in cash ready.<br>
+          📞 Driver Phone: 0555 12 34 56
+          <div class="trk-wa-time">11:30 AM ✓✓</div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Account Dashboard Hub (Order History, Addresses, Profile) -->
+    <section id="account-dashboard-section">
+      <h2 style="font-family:var(--font-family-display); font-size:1.5rem; font-weight:800; margin-bottom:1.5rem;">Medical Account Hub</h2>
+
+      <div class="dash-grid">
+        
+        <!-- Left Nav Sidebar -->
+        <aside class="dash-nav-card">
+          <div class="dash-user-profile-header">
+            <div class="dash-avatar">DR</div>
+            <div>
+              <div style="font-family:var(--font-family-display); font-weight:800; font-size:14px;">Dr. Ahmed Benali</div>
+              <div style="font-size:11.5px; color:var(--color-primary-700); font-weight:700;">Resident Physician • Algiers</div>
+            </div>
+          </div>
+
+          <nav style="display:flex; flex-direction:column; gap:0.25rem;">
+            <button class="dash-nav-item active" onclick="switchDashTab(this, 'dash-orders')">
+              📦 Order History
+            </button>
+            <button class="dash-nav-item" onclick="switchDashTab(this, 'dash-addresses')">
+              📍 Saved Addresses
+            </button>
+            <button class="dash-nav-item" onclick="switchDashTab(this, 'dash-profile')">
+              👤 Medical Profile
+            </button>
+            <button class="dash-nav-item" onclick="switchDashTab(this, 'dash-rewards')">
+              🎁 Student VIP Rewards (15%)
+            </button>
+          </nav>
+        </aside>
+
+        <!-- Right Main Panel -->
+        <div class="dash-main-panel">
+
+          <!-- Tab 1: Order History -->
+          <div id="dash-orders" class="dash-tab-content active">
+            <h3 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; margin:0 0 1rem 0;">Past & Active Orders</h3>
+
+            <!-- Past Order Card 1 -->
+            <div class="dash-history-card">
+              <div class="dash-history-header">
+                <div>
+                  <strong style="font-family:var(--font-family-display);">Order #MC-2026-9418</strong>
+                  <div style="font-size:12px; color:var(--color-neutral-500);">August 13, 2026 • 2 items</div>
+                </div>
+                <span class="dash-status-badge dash-status-shipped">🚚 In Transit</span>
+              </div>
+
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                <div style="font-size:13px; color:var(--color-neutral-700);">
+                  Obsidian Flex Scrub Set (M) + Titanium Master Stethoscope
+                </div>
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                  <span style="font-family:var(--font-family-display); font-weight:800; font-size:1rem;">31,000 DZD</span>
+                  <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="reorderItems('MC-101-OBS', 'MC-202')">🔄 Reorder</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Past Order Card 2 -->
+            <div class="dash-history-card">
+              <div class="dash-history-header">
+                <div>
+                  <strong style="font-family:var(--font-family-display);">Order #MC-2026-4102</strong>
+                  <div style="font-size:12px; color:var(--color-neutral-500);">May 24, 2026 • 1 item</div>
+                </div>
+                <span class="dash-status-badge dash-status-delivered">✓ Delivered</span>
+              </div>
+
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                <div style="font-size:13px; color:var(--color-neutral-700);">
+                  Executive Fluid-Shield Lab Coat (Size L, White)
+                </div>
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                  <span style="font-family:var(--font-family-display); font-weight:800; font-size:1rem;">13,400 DZD</span>
+                  <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="reorderItems('MC-303')">🔄 Reorder</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Tab 2: Saved Addresses -->
+          <div id="dash-addresses" class="dash-tab-content" style="display:none;">
+            <h3 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; margin:0 0 1rem 0;">Saved Delivery Locations</h3>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+              <!-- Address 1 -->
+              <div class="dash-address-card">
+                <span class="dash-address-badge">Default</span>
+                <strong style="font-family:var(--font-family-display);">Dr. Ahmed Benali (Home/Residence)</strong>
+                <p style="font-size:13px; color:var(--color-neutral-600); margin:0.5rem 0 0 0;">
+                  Wilaya 16 - Alger (Commune: El Biar)<br>
+                  Residence Les Pins, Apt 4B, Rue Pasteur<br>
+                  📞 0550 00 00 00
+                </p>
+              </div>
+
+              <!-- Address 2 -->
+              <div class="dash-address-card">
+                <strong style="font-family:var(--font-family-display);">Mustapha Pacha Hospital (Clinic)</strong>
+                <p style="font-size:13px; color:var(--color-neutral-600); margin:0.5rem 0 0 0;">
+                  Wilaya 16 - Alger (Commune: Sidi M'Hamed)<br>
+                  Department of General Surgery, 3rd Floor<br>
+                  📞 0550 00 00 00
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Medical Profile -->
+          <div id="dash-profile" class="dash-tab-content" style="display:none;">
+            <h3 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; margin:0 0 1rem 0;">Medical Professional Profile</h3>
+
+            <div class="chk-card">
+              <div class="chk-form-grid two-col">
+                <div><strong>Full Name:</strong> Dr. Ahmed Benali</div>
+                <div><strong>Role:</strong> Resident Physician (طبيب مقيم)</div>
+                <div><strong>Specialty:</strong> General Surgery</div>
+                <div><strong>Hospital:</strong> Mustapha Pacha University Hospital</div>
+                <div><strong>Email:</strong> ahmed.benali@sante.gov.dz</div>
+                <div><strong>Phone:</strong> 0550 00 00 00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 4: VIP Student Rewards -->
+          <div id="dash-rewards" class="dash-tab-content" style="display:none;">
+            <h3 style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; margin:0 0 1rem 0;">Student & Resident VIP Rewards</h3>
+
+            <div style="background:linear-gradient(135deg, var(--color-primary-900), #0E4D45); color:#FFF; padding:2rem; border-radius:var(--radius-2xl);">
+              <span class="mc-card-badge mc-badge-bundle">🎓 Active Student Tier</span>
+              <h2 style="font-family:var(--font-family-display); font-size:1.75rem; font-weight:800; margin:0.5rem 0;">15% Medical Student Discount Active</h2>
+              <p style="font-size:13.5px; color:var(--color-primary-200);">Your medical student/resident status has been verified. Enjoy an automatic 15% discount on all scrubs, lab coats, and starter kits.</p>
+              <div style="font-family:var(--font-family-display); font-size:1.25rem; font-weight:800; color:var(--color-accent-400); margin-top:1rem;">
+                Promo Code: <code>STUDENT15</code>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Slide-Over Cart Drawer -->
+  <div id="trk-cart-overlay" class="mc-cart-drawer-overlay">
+    <aside class="mc-cart-drawer">
+      <div class="mc-cart-header">
+        <div class="mc-cart-title"><span>🛒 Shopping Cart</span></div>
+        <button id="trk-cart-close" class="mc-cart-close">✕</button>
+      </div>
+      <div id="trk-cart-body" class="mc-cart-body"></div>
+      <div class="mc-cart-footer">
+        <div class="mc-cart-shipping-note">🚚 Express Delivery — All 58 Wilayas • COD</div>
+        <div class="mc-cart-total-row">
+          <span>Subtotal:</span>
+          <span id="trk-cart-total">30,500 DZD</span>
+        </div>
+        <button class="mc-btn mc-btn-accent mc-btn-lg mc-btn-full" onclick="window.location.href='checkout.html'">Proceed to Checkout (COD) — الدفع عند الاستلام</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <!-- Supabase Backend SDK & Client Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/cart.js"></script>
+  <script src="src/account-header.js"></script>
+  <script src="src/order-tracking.js"></script>
+</body>
+</html>
+
+

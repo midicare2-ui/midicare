@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — MEDICARE Medical E-Commerce</title>
+  <meta name="description" content="Manage your MEDICARE customer account, track orders, save addresses, and manage your wishlist.">
+  <link rel="icon" type="image/jpg" href="mid logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/showcase.css">
+  <link rel="stylesheet" href="styles/checkout.css">
+  <link rel="stylesheet" href="styles/order-tracking.css">
+  <link rel="stylesheet" href="styles/account.css">
+</head>
+<body>
+
+  <!-- ===================================================
+       STICKY HEADER
+  =================================================== -->
+  <header class="mc-sticky-header">
+    <div class="mc-header-inner">
+      <a href="index.html" class="mc-brand-logo" aria-label="MEDICARE Homepage">
+        <img src="mid logo.png" alt="MEDICARE" class="mc-real-logo" width="160">
+      </a>
+      <div class="mc-header-actions">
+        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+          <span>💬</span><span class="btn-text">اطلب الآن</span>
+        </a>
+        <a href="wishlist.html" class="mc-icon-btn" aria-label="Wishlist"><span>♥</span></a>
+        <button id="acc-cart-btn" class="mc-icon-btn" aria-label="Shopping Cart">
+          <span>🛒</span>
+          <span id="acc-cart-badge" class="mc-icon-badge">0</span>
+        </button>
+        <button class="mc-icon-btn mc-account-btn" aria-label="My Account" title="My Account">
+          <span>👤</span>
+        </button>
+        <button id="lang-toggle-btn" class="mc-toggle-btn">
+          <span>🌐</span><span class="btn-text">العربية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ===================================================
+       VIEW 1: AUTH — Split-screen Login / Register
+  =================================================== -->
+  <div id="account-auth-view" style="display:none;">
+    <div class="acc-auth-wrapper">
+
+      <!-- Left Hero Panel -->
+      <div class="acc-auth-hero">
+        <div class="acc-hero-logo">
+          <img src="mid logo.png" alt="MEDICARE">
+        </div>
+        <h1 class="acc-hero-title">Your Medical<br><span>Account Hub</span></h1>
+        <p class="acc-hero-subtitle">
+          Join thousands of Algerian healthcare professionals who shop smarter with MEDICARE.
+        </p>
+        <ul class="acc-hero-features">
+          <li class="acc-hero-feature">
+            <div class="acc-hero-feature-icon">📦</div>
+            <span>Track all your orders in real time across all 58 wilayas</span>
+          </li>
+          <li class="acc-hero-feature">
+            <div class="acc-hero-feature-icon">🔄</div>
+            <span>Reorder your favourite clinical gear in one click</span>
+          </li>
+          <li class="acc-hero-feature">
+            <div class="acc-hero-feature-icon">📍</div>
+            <span>Save multiple delivery addresses for fast checkout</span>
+          </li>
+          <li class="acc-hero-feature">
+            <div class="acc-hero-feature-icon">❤️</div>
+            <span>Wishlist synced across all your devices</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Right Form Panel -->
+      <div class="acc-auth-panel">
+        <div class="acc-auth-panel-inner">
+
+          <!-- Tab Switcher -->
+          <div class="acc-tab-switcher">
+            <button id="tab-btn-login" class="acc-tab-btn active" onclick="switchAuthTab('login')">
+              🔑 Sign In
+            </button>
+            <button id="tab-btn-register" class="acc-tab-btn" onclick="switchAuthTab('register')">
+              ✨ Create Account
+            </button>
+          </div>
+
+          <!-- LOGIN FORM -->
+          <div id="form-login">
+            <h2 class="acc-form-title">Welcome back 👋</h2>
+            <p class="acc-form-sub">Sign in to your MEDICARE customer account</p>
+
+            <form onsubmit="handleCustomerLogin(event)">
+              <div class="acc-field">
+                <label class="acc-label" for="login-input">Phone or Email <span class="req">*</span></label>
+                <input type="text" id="login-input" class="acc-input" placeholder="0550 000 000 or doctor@email.dz" autocomplete="username">
+              </div>
+              <div class="acc-field">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                  <label class="acc-label" for="login-password" style="margin-bottom:0;">Password <span class="req">*</span></label>
+                  <button type="button" class="acc-forgot-btn" onclick="openForgotPasswordModal()">Forgot password?</button>
+                </div>
+                <div class="acc-password-wrap">
+                  <input type="password" id="login-password" class="acc-input" placeholder="••••••••••" autocomplete="current-password">
+                  <button type="button" class="acc-pass-toggle" onclick="togglePasswordVisibility('login-password', this)" title="Show/Hide Password">👁️</button>
+                </div>
+              </div>
+              <button type="submit" class="acc-btn-primary">
+                🔐 Sign In to My Account
+              </button>
+            </form>
+
+            <button type="button" class="acc-demo-btn" onclick="fillDemoCustomerCredentials()">
+              ⚡ Use Demo Credentials — (0550000000 / doctor2026)
+            </button>
+          </div>
+
+          <!-- REGISTER FORM -->
+          <div id="form-register" style="display:none;">
+            <h2 class="acc-form-title">Join MEDICARE 🩺</h2>
+            <p class="acc-form-sub">Create your free account in under 60 seconds</p>
+
+            <form onsubmit="handleCustomerRegister(event)">
+              <div class="acc-field">
+                <label class="acc-label" for="reg-fullname">Full Name <span class="req">*</span></label>
+                <input type="text" id="reg-fullname" class="acc-input" placeholder="e.g. Dr. Leila Said" autocomplete="name">
+              </div>
+              <div class="acc-field">
+                <label class="acc-label" for="reg-phone">Phone Number <span class="req">*</span></label>
+                <input type="tel" id="reg-phone" class="acc-input" placeholder="0550 00 00 00" autocomplete="tel">
+              </div>
+              <div class="acc-field">
+                <label class="acc-label" for="reg-email">Email <span class="opt">(optional)</span></label>
+                <input type="email" id="reg-email" class="acc-input" placeholder="dr.leila@example.dz" autocomplete="email">
+              </div>
+              <div class="acc-field">
+                <label class="acc-label" for="reg-password">Password <span class="req">*</span></label>
+                <div class="acc-password-wrap">
+                  <input type="password" id="reg-password" class="acc-input" placeholder="At least 6 characters" minlength="6" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+                  <button type="button" class="acc-pass-toggle" onclick="togglePasswordVisibility('reg-password', this)" title="Show/Hide Password">👁️</button>
+                </div>
+                <div class="acc-strength-meter">
+                  <div id="strength-bar" class="acc-strength-bar"></div>
+                </div>
+                <span id="strength-text" class="acc-strength-text">Password strength</span>
+              </div>
+              <div class="acc-field">
+                <label class="acc-label" for="reg-role">Medical Specialty</label>
+                <div class="acc-select-wrap">
+                  <select id="reg-role" class="acc-select">
+                    <option value="Medicine &amp; Surgery">🩺 Physician / Surgeon</option>
+                    <option value="Pharmacy">💊 Pharmacist / Pharmacy Student</option>
+                    <option value="Dentistry">🦷 Dentist</option>
+                    <option value="Nursing">🏥 Nurse / Medical Staff</option>
+                    <option value="Other">📋 Other Healthcare Professional</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="acc-btn-accent">
+                ✨ Create My MEDICARE Account
+              </button>
+            </form>
+          </div>
+
+          <div class="acc-divider">or</div>
+
+          <div class="acc-guest-link">
+            Prefer not to register? <a href="checkout.html">Continue as Guest →</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       VIEW 2: CUSTOMER DASHBOARD
+  =================================================== -->
+  <div id="account-dashboard-view" style="display:none;">
+    <div class="acc-dash-wrapper">
+
+      <!-- Profile Hero -->
+      <div class="acc-profile-hero">
+        <div class="acc-profile-hero-inner">
+          <div class="acc-profile-left">
+            <div class="acc-avatar-ring">🩺</div>
+            <div>
+              <h1 id="dash-cust-name" class="acc-profile-name">Dr. Ahmed Benali</h1>
+              <div id="dash-cust-role" class="acc-profile-role">Resident • General Surgery</div>
+              <div id="dash-cust-contact" class="acc-profile-contact">📞 0550000000</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+            <button class="acc-logout-btn" onclick="openEditProfileModal()" style="background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.4);">
+              ✏️ Edit Profile
+            </button>
+            <a href="category.html" style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.6rem 1.1rem; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); border-radius:999px; color:#fff; font-size:13px; font-weight:700; text-decoration:none; transition:all 0.2s; backdrop-filter:blur(8px);" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+              🛍️ Shop Now
+            </a>
+            <button class="acc-logout-btn" onclick="handleCustomerLogout()">
+              🚪 Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="acc-stats-bar">
+        <div class="acc-stats-inner">
+          <div class="acc-stat-item">
+            <span class="acc-stat-val" id="stat-orders">—</span>
+            <span class="acc-stat-lbl">Total Orders</span>
+          </div>
+          <div class="acc-stat-item">
+            <span class="acc-stat-val" id="stat-spent">—</span>
+            <span class="acc-stat-lbl">DZD Spent</span>
+          </div>
+          <div class="acc-stat-item">
+            <span class="acc-stat-val" id="stat-wishlist">—</span>
+            <span class="acc-stat-lbl">Wishlist Items</span>
+          </div>
+          <div class="acc-stat-item">
+            <span class="acc-stat-val" id="stat-addresses">—</span>
+            <span class="acc-stat-lbl">Saved Addresses</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="acc-tab-nav">
+        <div class="acc-tab-nav-inner">
+          <button id="dash-tab-btn-orders" class="acc-dash-tab-btn active" onclick="switchDashTab('orders')">
+            📦 Orders <span class="acc-tab-count" id="dash-orders-count">0</span>
+          </button>
+          <button id="dash-tab-btn-addresses" class="acc-dash-tab-btn" onclick="switchDashTab('addresses')">
+            📍 Addresses
+          </button>
+          <button id="dash-tab-btn-wishlist" class="acc-dash-tab-btn" onclick="switchDashTab('wishlist')">
+            ❤️ Wishlist
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Panels -->
+      <div class="acc-dash-content">
+
+        <!-- TAB 1: ORDERS -->
+        <div id="dash-panel-orders" class="acc-dash-panel">
+          <div class="acc-orders-toolbar">
+            <div class="acc-order-search-wrap">
+              <span class="acc-search-icon">🔍</span>
+              <input type="text" id="order-search-input" class="acc-order-search" placeholder="Search orders by Order #, product name, or Wilaya..." oninput="filterOrdersList()">
+            </div>
+            <div class="acc-status-filter-pills">
+              <button class="acc-filter-pill active" onclick="setOrderFilter('all', this)">All Orders</button>
+              <button class="acc-filter-pill" onclick="setOrderFilter('Pending', this)">⏳ Pending</button>
+              <button class="acc-filter-pill" onclick="setOrderFilter('Shipped', this)">🚚 Shipped</button>
+              <button class="acc-filter-pill" onclick="setOrderFilter('Delivered', this)">🎉 Delivered</button>
+            </div>
+          </div>
+          <div id="dash-orders-container">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- TAB 2: ADDRESSES -->
+        <div id="dash-panel-addresses" class="acc-dash-panel" style="display:none;">
+          <div id="dash-addresses-list"><!-- Populated by JS --></div>
+
+          <div class="acc-add-addr-form">
+            <p class="acc-add-addr-title">＋ Add New Shipping Address</p>
+            <form onsubmit="handleSaveAddressSubmit(event)">
+              <div class="acc-two-col">
+                <div class="acc-field">
+                  <label class="acc-label" for="new-addr-wilaya">Wilaya <span class="req">*</span></label>
+                  <div class="acc-select-wrap">
+                    <select id="new-addr-wilaya" class="acc-select" required>
+                      <option value="">-- Select Wilaya --</option>
+                      <option value="16 - Alger (العاصمة)">16 - Alger (العاصمة)</option>
+                      <option value="31 - Oran (وهران)">31 - Oran (وهران)</option>
+                      <option value="25 - Constantine">25 - Constantine</option>
+                      <option value="09 - Blida">09 - Blida</option>
+                      <option value="35 - Boumerdès">35 - Boumerdès</option>
+                      <option value="19 - Sétif">19 - Sétif</option>
+                      <option value="23 - Annaba">23 - Annaba</option>
+                      <option value="15 - Tizi Ouzou">15 - Tizi Ouzou</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="acc-field">
+                  <label class="acc-label" for="new-addr-commune">Commune <span class="req">*</span></label>
+                  <input type="text" id="new-addr-commune" class="acc-input" placeholder="e.g. El Biar" required>
+                </div>
+              </div>
+              <div class="acc-field">
+                <label class="acc-label" for="new-addr-street">Street Address <span class="req">*</span></label>
+                <input type="text" id="new-addr-street" class="acc-input" placeholder="e.g. 14 Rue Didouche Mourad, Apt 4B" required>
+              </div>
+              <button type="submit" class="acc-save-addr-btn">📍 Save Address</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- TAB 3: WISHLIST -->
+        <div id="dash-panel-wishlist" class="acc-dash-panel" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.5rem;">
+            <h2 class="acc-section-title">❤️ My Saved Items</h2>
+            <a href="wishlist.html" style="font-size:13px; font-weight:700; color:#0B4A40; text-decoration:none;">Open Full Wishlist →</a>
+          </div>
+          <div id="dash-wishlist-container" class="acc-wishlist-grid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       CART DRAWER
+  =================================================== -->
+  <div id="acc-cart-overlay" class="mc-cart-drawer-overlay">
+    <aside class="mc-cart-drawer">
+      <div class="mc-cart-header">
+        <div class="mc-cart-title"><span>🛒 Shopping Cart</span></div>
+        <button id="acc-cart-close" class="mc-cart-close">✕</button>
+      </div>
+      <div id="acc-cart-body" class="mc-cart-body"></div>
+      <div class="mc-cart-footer">
+        <div class="mc-cart-subtotal-row">
+          <span>Subtotal:</span>
+          <span id="acc-cart-total" class="mc-cart-total-val">0 DZD</span>
+        </div>
+        <a href="checkout.html" class="mc-btn mc-btn-primary mc-btn-lg" style="width:100%;">
+          Proceed to Checkout →
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===================================================
+       MODAL: EDIT PROFILE
+  =================================================== -->
+  <div id="modal-edit-profile" class="acc-modal-overlay">
+    <div class="acc-modal-card">
+      <button class="acc-modal-close" onclick="closeEditProfileModal()">✕</button>
+      <h3 style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1.3rem; margin:0 0 0.4rem; color:#0F172A;">✏️ Edit Account Profile</h3>
+      <p style="font-size:13px; color:#64748B; margin:0 0 1.25rem;">Update your personal details and medical title.</p>
+      <form onsubmit="handleSaveProfileSubmit(event)">
+        <div class="acc-field">
+          <label class="acc-label" for="edit-prof-name">Full Name <span class="req">*</span></label>
+          <input type="text" id="edit-prof-name" class="acc-input" required>
+        </div>
+        <div class="acc-field">
+          <label class="acc-label" for="edit-prof-phone">Phone Number <span class="req">*</span></label>
+          <input type="tel" id="edit-prof-phone" class="acc-input" required>
+        </div>
+        <div class="acc-field">
+          <label class="acc-label" for="edit-prof-email">Email Address</label>
+          <input type="email" id="edit-prof-email" class="acc-input">
+        </div>
+        <div class="acc-field">
+          <label class="acc-label" for="edit-prof-role">Medical Specialty / Role</label>
+          <div class="acc-select-wrap">
+            <select id="edit-prof-role" class="acc-select">
+              <option value="Medicine &amp; Surgery">🩺 Physician / Surgeon</option>
+              <option value="Pharmacy">💊 Pharmacist / Pharmacy Student</option>
+              <option value="Dentistry">🦷 Dentist</option>
+              <option value="Nursing">🏥 Nurse / Medical Staff</option>
+              <option value="Other">📋 Other Healthcare Professional</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="acc-btn-primary" style="margin-top:1rem;">💾 Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       MODAL: FORGOT PASSWORD
+  =================================================== -->
+  <div id="modal-forgot-password" class="acc-modal-overlay">
+    <div class="acc-modal-card">
+      <button class="acc-modal-close" onclick="closeForgotPasswordModal()">✕</button>
+      <h3 style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1.3rem; margin:0 0 0.4rem; color:#0F172A;">🔑 Reset Password</h3>
+      <p style="font-size:13px; color:#64748B; margin:0 0 1.25rem;">Enter your registered Phone or Email. We'll send you an instant verification code.</p>
+      <form onsubmit="handleForgotPasswordSubmit(event)">
+        <div class="acc-field">
+          <label class="acc-label" for="forgot-input">Phone or Email <span class="req">*</span></label>
+          <input type="text" id="forgot-input" class="acc-input" placeholder="0550 000 000 or doctor@email.dz" required>
+        </div>
+        <button type="submit" class="acc-btn-primary" style="margin-top:1rem;">📩 Send Reset Instructions</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/cart.js"></script>
+  <script src="src/account-header.js"></script>
+
+  <script src="src/account.js"></script>
+</body>
+</html>
+
+

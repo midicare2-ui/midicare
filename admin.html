@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-admin-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEDICARE Admin — Store Operational Control Center</title>
+  <meta name="description" content="Operational admin control center for MEDICARE store owner. Manage products, orders, inventory, Wilaya delivery fees, and customer reviews.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/admin.css">
+
+  <style>
+    /* ---------------------------------------------------------------
+       ADMIN SCOPED BUTTON OVERRIDES — Using OKLCH token palette
+    --------------------------------------------------------------- */
+
+    /* Primary CTA — uses --adm-primary */
+    .admin-body .mc-btn-primary,
+    .admin-body .mc-btn-accent {
+      background: oklch(0.7040 0.1400 182.5030);
+      color: oklch(0.9911 0 0);
+      border-color: oklch(0.7040 0.1400 182.5030);
+    }
+
+    .admin-body .mc-btn-primary:hover,
+    .admin-body .mc-btn-accent:hover {
+      background: oklch(0.65 0.1400 182.5030);
+      border-color: oklch(0.65 0.1400 182.5030);
+    }
+
+    /* Secondary Button */
+    .admin-body .mc-btn-secondary {
+      background: var(--adm-secondary);
+      color: var(--adm-secondary-fg);
+      border-color: var(--adm-border);
+    }
+
+    .admin-body .mc-btn-secondary:hover {
+      background: var(--adm-accent);
+      color: var(--adm-accent-fg);
+      border-color: var(--adm-ring);
+    }
+
+    /* Ghost Button */
+    .admin-body .mc-btn-ghost {
+      background: transparent;
+      color: var(--adm-muted-fg);
+      border-color: var(--adm-border);
+    }
+
+    .admin-body .mc-btn-ghost:hover {
+      background: var(--adm-accent);
+      color: var(--adm-accent-fg);
+    }
+
+    /* Form inputs from checkout.css reused in admin */
+    .admin-body .chk-input,
+    .admin-body .chk-select {
+      background: var(--adm-background);
+      border-color: var(--adm-input);
+      color: var(--adm-foreground);
+    }
+
+    .admin-body .chk-input:focus,
+    .admin-body .chk-select:focus {
+      border-color: var(--adm-ring);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--adm-ring) 25%, transparent);
+    }
+
+    .admin-body .chk-label { color: var(--adm-muted-fg); }
+
+    /* Toast */
+    .mc-copy-toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: oklch(0.1788 0.0202 201.3265);
+      color: oklch(0.9396 0.0097 204.9127);
+      border: 1px solid oklch(0.2397 0.0193 201.5913);
+      padding: 0.7rem 1.25rem;
+      border-radius: 9999px;
+      box-shadow: var(--adm-shadow-lg);
+      font-size: 13px; font-weight: 700;
+      z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.2s; pointer-events: none;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    .mc-copy-toast.show { opacity: 1; transform: translateY(0); }
+    [dir="rtl"] .mc-copy-toast { right: auto; left: 2rem; }
+
+    /* Section heading inside modules */
+    .admin-body h3 { color: var(--adm-foreground); }
+    .admin-body p  { color: var(--adm-muted-fg); }
+    code { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 12px; color: var(--adm-accent-fg); background: var(--adm-accent); padding: 0.1rem 0.35rem; border-radius: 4px; }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- =====================================================================
+       SIDEBAR NAVIGATION
+       ===================================================================== -->
+  <aside class="adm-sidebar">
+    <a href="index.html" class="adm-sidebar-brand" title="View Storefront">
+      <div class="adm-brand-name">MEDICARE</div>
+      <span class="adm-brand-badge">Admin</span>
+    </a>
+
+    <div class="adm-nav-group">
+      <div class="adm-nav-label">MAIN CONTROL</div>
+      
+      <button class="adm-nav-item active" onclick="switchModule(this, 'mod-dashboard')">
+        <span>📊 Dashboard</span>
+      </button>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-orders')">
+        <span>📦 Orders</span>
+        <span class="adm-nav-badge" style="background:#EF4444;">7</span>
+      </button>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-products')">
+        <span>👕 Products</span>
+        <span class="adm-nav-badge">48</span>
+      </button>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-inventory')">
+        <span>🏬 Inventory & Variants</span>
+        <span class="adm-nav-badge" style="background:#F59E0B;">4</span>
+      </button>
+
+      <div class="adm-nav-label">STORE MANAGEMENT</div>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-customers')">
+        <span>👥 Customers</span>
+      </button>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-categories')">
+        <span>🏷️ Categories & Specialties</span>
+      </button>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-coupons')">
+        <span>🎁 Coupons & Bundles</span>
+      </button>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-reviews')">
+        <span>✍️ Reviews Moderation</span>
+        <span class="adm-nav-badge" style="background:#10B981;">142</span>
+      </button>
+
+      <div class="adm-nav-label">SECURITY & ACCESS</div>
+
+      <button class="adm-nav-item" id="nav-item-staff" onclick="switchModule(this, 'mod-staff')">
+        <span>🔐 Staff & Permissions</span>
+        <span class="adm-nav-badge" style="background:var(--color-primary-600);">4</span>
+      </button>
+
+      <button class="adm-nav-item" id="nav-item-audit" onclick="switchModule(this, 'mod-audit')">
+        <span>📜 Audit Activity Log</span>
+      </button>
+
+      <div class="adm-nav-label">CONFIG & SETTINGS</div>
+
+      <button class="adm-nav-item" id="nav-item-homepage" onclick="switchModule(this, 'mod-homepage')">
+        <span>🖼️ Homepage CMS</span>
+      </button>
+
+      <button class="adm-nav-item" id="nav-item-delivery" onclick="switchModule(this, 'mod-delivery')">
+        <span>🚚 58 Wilayas & Fees</span>
+      </button>
+
+      <button class="adm-nav-item" id="nav-item-reports" onclick="switchModule(this, 'mod-reports')">
+        <span>📈 Analytics & Reports</span>
+      </button>
+    </div>
+
+    <div class="adm-sidebar-footer">
+      <div class="adm-role-box">
+        <span>Active User: <strong id="sidebar-role-label">Dr. Karim (Owner)</strong></span>
+        <button class="adm-btn-icon" onclick="toggleAdminTheme()" title="Toggle Dark Mode">🌙</button>
+      </div>
+      <a href="index.html" class="mc-btn mc-btn-secondary mc-btn-sm" style="width:100%; text-align:center;">
+        🏪 View Storefront
+      </a>
+      <button class="mc-btn mc-btn-ghost mc-btn-sm" style="color:#EF4444; width:100%;" onclick="handleAdminLogout()">
+        🚪 Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- =====================================================================
+       MAIN CONTENT WORKSPACE
+       ===================================================================== -->
+  <main class="adm-main">
+
+    <!-- Top Header -->
+    <header class="adm-header">
+      <h1 class="adm-header-title" id="adm-header-title">📊 Executive Dashboard Overview</h1>
+
+      <div class="adm-header-actions">
+        <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddProductModal()">
+          + Add New Product
+        </button>
+        <button id="lang-toggle-btn" class="adm-btn-icon" title="Toggle RTL Arabic">
+          🌐
+        </button>
+      </div>
+    </header>
+
+    <!-- -----------------------------------------------------------------
+         MODULE 1: DASHBOARD HOME
+         ----------------------------------------------------------------- -->
+    <div id="mod-dashboard" class="adm-module-panel active">
+      
+      <!-- KPI Metric Cards -->
+      <div class="adm-kpi-grid">
+        <div class="adm-kpi-card">
+          <div class="adm-kpi-header">
+            <span class="adm-kpi-label">TODAY'S ORDERS</span>
+            <div class="adm-kpi-icon" style="background:#E0F2FE; color:#0284C7;">📦</div>
+          </div>
+          <div class="adm-kpi-val">24</div>
+          <div class="adm-kpi-trend adm-trend-up">↑ +12.5% vs yesterday</div>
+        </div>
+
+        <div class="adm-kpi-card">
+          <div class="adm-kpi-header">
+            <span class="adm-kpi-label">TODAY'S REVENUE (COD)</span>
+            <div class="adm-kpi-icon" style="background:#DCFCE7; color:#15803D;">💵</div>
+          </div>
+          <div class="adm-kpi-val">485,000 DZD</div>
+          <div class="adm-kpi-trend adm-trend-up">↑ +18.3% this week</div>
+        </div>
+
+        <div class="adm-kpi-card">
+          <div class="adm-kpi-header">
+            <span class="adm-kpi-label">LOW STOCK ALERTS</span>
+            <div class="adm-kpi-icon" style="background:#FEF3C7; color:#B45309;">⚠️</div>
+          </div>
+          <div class="adm-kpi-val">4 Items</div>
+          <div class="adm-kpi-trend adm-trend-down">Requires reorder</div>
+        </div>
+
+        <div class="adm-kpi-card">
+          <div class="adm-kpi-header">
+            <span class="adm-kpi-label">PENDING DISPATCH</span>
+            <div class="adm-kpi-icon" style="background:#F3E8FF; color:#7E22CE;">🚚</div>
+          </div>
+          <div class="adm-kpi-val">7 Orders</div>
+          <div class="adm-kpi-trend adm-trend-up">ZR Express / Yalidine</div>
+        </div>
+      </div>
+
+      <!-- Split Grid: Sales Chart + Top Sellers -->
+      <div class="adm-split-grid">
+        <!-- Sales Chart Box -->
+        <div class="adm-table-card" style="padding:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3 style="font-family:var(--font-family-display); margin:0; font-size:1.05rem;">Sales Performance (DZD)</h3>
+            <div style="display:flex; gap:0.5rem;">
+              <button class="mc-btn mc-btn-secondary mc-btn-sm active" onclick="updateChartPeriod('7d')">7 Days</button>
+              <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="updateChartPeriod('30d')">30 Days</button>
+            </div>
+          </div>
+
+          <!-- Bar Chart Visualizer -->
+          <div class="adm-chart-placeholder" id="chart-bars-box">
+            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:55%"></div><span style="font-size:10px;">Sat</span></div>
+            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:70%"></div><span style="font-size:10px;">Sun</span></div>
+            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:45%"></div><span style="font-size:10px;">Mon</span></div>
+            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:85%"></div><span style="font-size:10px;">Tue</span></div>
+            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:60%"></div><span style="font-size:10px;">Wed</span></div>
+            <div class="adm-chart-bar-group"><div class="adm-chart-bar highlight" style="height:95%"></div><span style="font-size:10px; font-weight:bold;">Thu</span></div>
+            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:75%"></div><span style="font-size:10px;">Fri</span></div>
+          </div>
+        </div>
+
+        <!-- Top Sellers Box -->
+        <div class="adm-table-card" style="padding:1.25rem;">
+          <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0; font-size:1.05rem;">🔥 Top Selling Products</h3>
+          <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <img src="assets/medicare_scrubs_hero_1786614154492.png" style="width:40px; height:40px; border-radius:6px; object-fit:cover;">
+              <div style="flex:1;">
+                <div style="font-weight:700; font-size:12.5px;">Obsidian Flex Scrub Set</div>
+                <div style="font-size:11px; color:#64748B;">142 sold • 1,519,400 DZD</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <img src="assets/medicare_stethoscope_1786614166370.png" style="width:40px; height:40px; border-radius:6px; object-fit:cover;">
+              <div style="flex:1;">
+                <div style="font-weight:700; font-size:12.5px;">Titanium Stethoscope</div>
+                <div style="font-size:11px; color:#64748B;">98 sold • 1,940,400 DZD</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+              <img src="assets/medicare_lab_coat_1786614177321.png" style="width:40px; height:40px; border-radius:6px; object-fit:cover;">
+              <div style="flex:1;">
+                <div style="font-weight:700; font-size:12.5px;">Executive Lab Coat</div>
+                <div style="font-size:11px; color:#64748B;">76 sold • 1,018,400 DZD</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders Table -->
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0; font-size:1.05rem;">Recent Orders</h3>
+          <button class="mc-btn mc-btn-ghost mc-btn-sm" onclick="switchModule(null, 'mod-orders')">View All Orders →</button>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Wilaya</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Delivery Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-dashboard-orders-body">
+              <tr>
+                <td><strong>#MC-9418</strong></td>
+                <td>Dr. Ahmed Benali</td>
+                <td>16 - Alger (El Biar)</td>
+                <td>Today, 10:15</td>
+                <td><strong>31,000 DZD</strong></td>
+                <td>Home Delivery</td>
+                <td><span class="adm-badge adm-badge-info">Shipped</span></td>
+                <td><button class="adm-btn-icon" onclick="openOrderDetailModal('MC-9418')">👁️</button></td>
+              </tr>
+              <tr>
+                <td><strong>#MC-9417</strong></td>
+                <td>Amina M.</td>
+                <td>31 - Oran</td>
+                <td>Today, 09:40</td>
+                <td><strong>17,400 DZD</strong></td>
+                <td>Stop-Desk</td>
+                <td><span class="adm-badge adm-badge-warning">Preparing</span></td>
+                <td><button class="adm-btn-icon" onclick="openOrderDetailModal('MC-9417')">👁️</button></td>
+              </tr>
+              <tr>
+                <td><strong>#MC-9416</strong></td>
+                <td>Dr. Yacine B.</td>
+                <td>25 - Constantine</td>
+                <td>Yesterday</td>
+                <td><strong>9,000 DZD</strong></td>
+                <td>Home Delivery</td>
+                <td><span class="adm-badge adm-badge-success">Delivered</span></td>
+                <td><button class="adm-btn-icon" onclick="openOrderDetailModal('MC-9416')">👁️</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 2: PRODUCTS MANAGEMENT
+         ----------------------------------------------------------------- -->
+    <div id="mod-products" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <div class="adm-search-box">
+            <span class="adm-search-icon">🔍</span>
+            <input type="text" class="adm-search-input" placeholder="Search product name, SKU..." oninput="filterAdminProducts(this.value)">
+          </div>
+
+          <div style="display:flex; gap:0.5rem;">
+            <select class="chk-select" style="height:38px; font-size:12.5px;" onchange="filterAdminCategory(this.value)">
+              <option value="all">All Categories</option>
+              <option value="scrubs">Scrubs</option>
+              <option value="labcoats">Lab Coats</option>
+              <option value="diagnostic">Diagnostic Tools</option>
+              <option value="footwear">Footwear</option>
+            </select>
+
+            <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddProductModal()">
+              + Add Product
+            </button>
+          </div>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Product Name</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Specialty</th>
+                <th>Price (DZD)</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-products-table-body">
+              <!-- Populated dynamically by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 3: INVENTORY MANAGEMENT
+         ----------------------------------------------------------------- -->
+    <div id="mod-inventory" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0;">Stock Levels per Variant (Size × Color)</h3>
+          <button class="mc-btn mc-btn-accent mc-btn-sm" onclick="showToast('✓ Bulk Stock Saved!')">💾 Save Bulk Stock Changes</button>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Color</th>
+                <th>Size XS</th>
+                <th>Size S</th>
+                <th>Size M</th>
+                <th>Size L</th>
+                <th>Size XL</th>
+                <th>Total Stock</th>
+                <th>Alert Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Obsidian Flex Scrub Set</strong></td>
+                <td>Obsidian Teal</td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="2"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="5"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="4"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="1"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="0"></td>
+                <td><strong>12</strong></td>
+                <td><span class="adm-badge adm-badge-warning">Low Stock</span></td>
+              </tr>
+              <tr>
+                <td><strong>Executive Fluid-Shield Lab Coat</strong></td>
+                <td>Clinical White</td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="10"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="15"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="20"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="8"></td>
+                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="5"></td>
+                <td><strong>58</strong></td>
+                <td><span class="adm-badge adm-badge-success">Optimal</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 4: ORDERS MANAGEMENT
+         ----------------------------------------------------------------- -->
+    <div id="mod-orders" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button class="mc-btn mc-btn-secondary mc-btn-sm active" onclick="filterOrderTab(this, 'all')">All (24)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="filterOrderTab(this, 'pending')">Pending (7)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="filterOrderTab(this, 'shipped')">Shipped (8)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="filterOrderTab(this, 'delivered')">Delivered (9)</button>
+          </div>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer Name</th>
+                <th>Phone</th>
+                <th>Wilaya & Delivery</th>
+                <th>Total COD</th>
+                <th>Status Workflow</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-orders-table-body">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 5: CUSTOMERS MANAGEMENT
+         ----------------------------------------------------------------- -->
+    <div id="mod-customers" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0;">Medical Customer Directory</h3>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Role & Specialty</th>
+                <th>Phone</th>
+                <th>Wilaya</th>
+                <th>Total Orders</th>
+                <th>Lifetime Spend</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dr. Ahmed Benali</strong></td>
+                <td>Resident • General Surgery</td>
+                <td>0550 00 00 00</td>
+                <td>16 - Alger</td>
+                <td>3 orders</td>
+                <td><strong>68,400 DZD</strong></td>
+                <td><button class="mc-btn mc-btn-ghost mc-btn-sm">View Profile</button></td>
+              </tr>
+              <tr>
+                <td><strong>Amina M.</strong></td>
+                <td>Pharmacy Student</td>
+                <td>0661 22 33 44</td>
+                <td>31 - Oran</td>
+                <td>2 orders</td>
+                <td><strong>30,800 DZD</strong></td>
+                <td><button class="mc-btn mc-btn-ghost mc-btn-sm">View Profile</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 6: CATEGORIES & SPECIALTIES
+         ----------------------------------------------------------------- -->
+    <div id="mod-categories" class="adm-module-panel">
+      <div class="adm-split-grid">
+        <div class="adm-table-card" style="padding:1.25rem;">
+          <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0;">Categories Tree</h3>
+          <ul>
+            <li>👕 Medical Scrubs (18 products)</li>
+            <li>🥼 Lab Coats (12 products)</li>
+            <li>👟 Medical Footwear (8 products)</li>
+            <li>🩺 Diagnostic Tools (10 products)</li>
+            <li>🎒 Medical Bags (6 products)</li>
+            <li>📦 Student Starter Kits (4 bundles)</li>
+          </ul>
+        </div>
+
+        <div class="adm-table-card" style="padding:1.25rem;">
+          <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0;">Specialty Tags</h3>
+          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <div>🩺 Medicine & Surgery (أطباء البشري)</div>
+            <div>💊 Pharmacy (الصيدلة)</div>
+            <div>🦷 Dentistry (طب الأسنان)</div>
+            <div>🏥 Nursing (التمريض)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 7: COUPONS & BUNDLES
+         ----------------------------------------------------------------- -->
+    <div id="mod-coupons" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0;">Active Discount Codes</h3>
+          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="showToast('New coupon modal created!')">+ Create Coupon</button>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Discount Type</th>
+                <th>Usage Limit</th>
+                <th>Used</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>STUDENT10</strong></td>
+                <td>10% OFF</td>
+                <td>500 uses</td>
+                <td>142 uses</td>
+                <td><span class="adm-badge adm-badge-success">Active</span></td>
+              </tr>
+              <tr>
+                <td><strong>MEDICARE2026</strong></td>
+                <td>2,000 DZD OFF</td>
+                <td>200 uses</td>
+                <td>89 uses</td>
+                <td><span class="adm-badge adm-badge-success">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 8: REVIEWS MODERATION
+         ----------------------------------------------------------------- -->
+    <div id="mod-reviews" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0;">Customer Reviews Moderation</h3>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Reviewer</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dr. Reda K.</strong> (Resident)</td>
+                <td>★★★★★ 5.0</td>
+                <td>Exceptional scrub set for 24h ER shifts...</td>
+                <td><span class="adm-badge adm-badge-success">Approved</span></td>
+                <td><button class="mc-btn mc-btn-ghost mc-btn-sm" onclick="showToast('Reply saved!')">Reply</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 8.5: STAFF & PERMISSIONS SYSTEM (Owner Only)
+         ----------------------------------------------------------------- -->
+    <div id="mod-staff" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0;">Staff Members & Role Permissions</h3>
+          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddStaffModal()">
+            + Add Staff Member
+          </button>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Staff Member</th>
+                <th>Email</th>
+                <th>Role Template</th>
+                <th>Granular Permissions</th>
+                <th>Status</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-staff-table-body">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 8.6: AUDIT ACTIVITY LOG
+         ----------------------------------------------------------------- -->
+    <div id="mod-audit" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0;">System Audit Activity Log</h3>
+          <span style="font-size:12px; color:#64748B;">Tracking staff changes in real time</span>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Staff Member</th>
+                <th>Action Performed</th>
+                <th>Target Resource</th>
+                <th>IP Address</th>
+              </tr>
+            </thead>
+            <tbody id="admin-audit-table-body">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         RESTRICTED ACCESS DENIED OVERLAY
+         ----------------------------------------------------------------- -->
+    <div id="adm-access-denied" class="adm-module-panel">
+      <div class="adm-access-denied-box">
+        <div class="adm-access-denied-icon">⛔</div>
+        <h2 class="adm-access-denied-title">Access Restricted</h2>
+        <p class="adm-access-denied-desc">
+          You do not have permission to access this module. Your active staff account does not have the required permission assigned by the Store Owner.
+        </p>
+        <button class="mc-btn mc-btn-primary mc-btn-md" onclick="switchModule(null, 'mod-dashboard')">
+          ↩ Return to Dashboard Home
+        </button>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 9: HOMEPAGE CMS
+         ----------------------------------------------------------------- -->
+    <div id="mod-homepage" class="adm-module-panel">
+      <div class="adm-table-card" style="padding:1.5rem;">
+        <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0;">Edit Hero Carousel Banners (No Code Required)</h3>
+        
+        <div class="chk-form-group" style="margin-bottom:1rem;">
+          <label class="chk-label">Banner 1 Title:</label>
+          <input type="text" class="chk-input" value="Obsidian Flex Antimicrobial Scrubs">
+        </div>
+
+        <div class="chk-form-group" style="margin-bottom:1rem;">
+          <label class="chk-label">Banner 1 Subtitle:</label>
+          <input type="text" class="chk-input" value="Engineered for 24-hour shift endurance — 4-way stretch flex fabric with liquid barrier.">
+        </div>
+
+        <button class="mc-btn mc-btn-accent" onclick="showToast('✓ Homepage Content Saved!')">💾 Save Banner Changes</button>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 10: 58 WILAYAS & DELIVERY FEES
+         ----------------------------------------------------------------- -->
+    <div id="mod-delivery" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar">
+          <h3 style="font-family:var(--font-family-display); margin:0;">58 Wilayas Delivery Rates Matrix (DZD)</h3>
+          <button class="mc-btn mc-btn-accent mc-btn-sm" onclick="showToast('✓ Delivery Fees Saved!')">💾 Save Delivery Fee Table</button>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Zone</th>
+                <th>Wilayas</th>
+                <th>Home Delivery Fee</th>
+                <th>Stop-Desk Fee</th>
+                <th>Est. Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Capital Zone</strong></td>
+                <td>16-Alger, 09-Blida, 42-Tipaza, 35-Boumerdes</td>
+                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="400"> DZD</td>
+                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="250"> DZD</td>
+                <td>24–48 Hours</td>
+              </tr>
+              <tr>
+                <td><strong>Northern / Coastal</strong></td>
+                <td>Oran, Constantine, Annaba, Setif, Tlemcen, Tizi Ouzou...</td>
+                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="600"> DZD</td>
+                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="350"> DZD</td>
+                <td>48–72 Hours</td>
+              </tr>
+              <tr>
+                <td><strong>Southern Sahara</strong></td>
+                <td>Ouargla, Ghardaia, Bechar, Adrar, Tamanrasset...</td>
+                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="900"> DZD</td>
+                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="500"> DZD</td>
+                <td>3–5 Days</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 11: ANALYTICS & REPORTS
+         ----------------------------------------------------------------- -->
+    <div id="mod-reports" class="adm-module-panel">
+      <div class="adm-split-grid">
+        <div class="adm-table-card" style="padding:1.5rem;">
+          <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0;">Sales by Specialty Tag</h3>
+          <p>🩺 Medicine & Surgery: <strong>45% (2,182,500 DZD)</strong></p>
+          <p>💊 Pharmacy: <strong>28% (1,358,000 DZD)</strong></p>
+          <p>🦷 Dentistry: <strong>15% (727,500 DZD)</strong></p>
+          <p>🏥 Nursing: <strong>12% (582,000 DZD)</strong></p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- =====================================================================
+       ADD / EDIT PRODUCT MODAL
+       ===================================================================== -->
+  <div id="modal-add-product" class="adm-modal-overlay">
+    <div class="adm-modal-box">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title">+ Add New Product to Catalog</h3>
+        <button class="adm-btn-icon" onclick="closeAddProductModal()">✕</button>
+      </div>
+
+      <form class="adm-modal-body" onsubmit="saveProductSubmit(event)">
+        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">Product Name <span class="required">*</span></label>
+            <input type="text" id="p-name" class="chk-input" placeholder="e.g. Obsidian Flex Scrub Set" required>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">SKU <span class="required">*</span></label>
+            <input type="text" id="p-sku" class="chk-input" placeholder="MC-101-OBS" required>
+          </div>
+        </div>
+
+        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">Category <span class="required">*</span></label>
+            <select id="p-category" class="chk-select" required>
+              <option value="Scrubs">Medical Scrubs</option>
+              <option value="Lab Coats">Lab Coats</option>
+              <option value="Footwear">Medical Footwear</option>
+              <option value="Diagnostic Tools">Diagnostic Tools</option>
+            </select>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">Specialty Tag <span class="required">*</span></label>
+            <select id="p-specialty" class="chk-select" required>
+              <option value="medicine">Medicine & Surgery</option>
+              <option value="pharmacy">Pharmacy</option>
+              <option value="dentistry">Dentistry</option>
+              <option value="nursing">Nursing</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">Price (DZD) <span class="required">*</span></label>
+            <input type="number" id="p-price" class="chk-input" placeholder="10700" required>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">Initial Stock <span class="required">*</span></label>
+            <input type="number" id="p-stock" class="chk-input" placeholder="25" required>
+          </div>
+        </div>
+
+        <!-- Drag Image Upload -->
+        <div class="chk-form-group" style="margin-bottom:1.25rem;">
+          <label class="chk-label">Product Images (Drag & Reorder):</label>
+          <div class="adm-image-upload-box" onclick="showToast('📷 Image Upload Simulated!')">
+            <div style="font-size:1.8rem;">🖼️</div>
+            <div style="font-size:13px; font-weight:700; color:var(--color-primary-800);">Drag & drop images here, or browse</div>
+            <div style="font-size:11px; color:#64748B;">Supports PNG, JPG, WEBP up to 10MB</div>
+          </div>
+        </div>
+
+        <button type="submit" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%;">Save Product to Store</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ORDER DETAIL & INVOICE MODAL -->
+  <div id="modal-order-detail" class="adm-modal-overlay">
+    <div class="adm-modal-box">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title" id="order-modal-title">Order #MC-9418 — Details & Invoice</h3>
+        <button class="adm-btn-icon" onclick="closeOrderDetailModal()">✕</button>
+      </div>
+
+      <div class="adm-modal-body" id="print-area">
+        <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+          <div>
+            <strong>Customer:</strong> Dr. Ahmed Benali<br>
+            <strong>Phone:</strong> 0550 00 00 00<br>
+            <strong>Address:</strong> Wilaya 16 - Alger (Commune: El Biar)
+          </div>
+          <div style="text-align:right;">
+            <strong>Payment:</strong> Cash on Delivery (COD)<br>
+            <strong>Delivery:</strong> Home Delivery via ZR Express<br>
+            <strong>Total:</strong> 31,000 DZD
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem; display:flex; gap:0.5rem;">
+          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="window.print()">🖨️ Print Invoice & Shipping Label</button>
+          <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="closeOrderDetailModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ADD NEW STAFF MEMBER MODAL -->
+  <div id="modal-add-staff" class="adm-modal-overlay">
+    <div class="adm-modal-box">
+      <div class="adm-modal-header">
+        <h3 class="adm-modal-title">🔐 Add New Staff Member & Permissions</h3>
+        <button class="adm-btn-icon" onclick="closeAddStaffModal()">✕</button>
+      </div>
+
+      <form class="adm-modal-body" onsubmit="saveStaffSubmit(event)">
+        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">Full Name <span class="required">*</span></label>
+            <input type="text" id="stf-name" class="chk-input" placeholder="e.g. Dr. Leila Said" required>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">Email Address <span class="required">*</span></label>
+            <input type="email" id="stf-email" class="chk-input" placeholder="leila@medicare.dz" required>
+          </div>
+        </div>
+
+        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">Initial Password <span class="required">*</span></label>
+            <input type="password" id="stf-pass" class="chk-input" placeholder="••••••••••••" value="medicare2026" required>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">Role Template <span class="required">*</span></label>
+            <select id="stf-role-preset" class="chk-select" onchange="onRolePresetChange(this.value)">
+              <option value="Store Manager">💼 Store Manager</option>
+              <option value="Order Handler" selected>📦 Order Handler</option>
+              <option value="Support & Content">🎧 Support & Content</option>
+              <option value="Custom">⚙️ Custom Granular Permissions</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="chk-label">Custom Granular Permissions (Toggle Access):</label>
+        <div class="adm-permission-grid">
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-products" checked> <span>👕 Manage Products</span></label>
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-inventory" checked> <span>🏬 Manage Inventory</span></label>
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-orders" checked> <span>📦 Manage Orders</span></label>
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-coupons"> <span>🎁 Manage Coupons</span></label>
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-reviews" checked> <span>✍️ Moderate Reviews</span></label>
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-homepage"> <span>🖼️ Edit Homepage CMS</span></label>
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-delivery"> <span>🚚 Edit Delivery Fees</span></label>
+          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-reports"> <span>📈 View Reports</span></label>
+        </div>
+
+        <button type="submit" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%;">
+          Create Staff Account & Send Invite
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
+
+  <!-- Supabase Backend SDK & Client Config -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="src/config.js"></script>
+  <script src="src/supabase-client.js"></script>
+  <script src="src/admin.js"></script>
+</body>
+</html>
+
+
