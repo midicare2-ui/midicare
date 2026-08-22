@@ -5,3 +5,4 @@ scratch/
 test_audit.js
 audit_extractor.js
 *.log
+*.zip
