@@ -10,26 +10,31 @@
   let supabase = null;
   let _isLive = false;
 
-  // Initialize Supabase SDK
+  // Initialize Supabase SDK — singleton, exposed globally to avoid multiple GoTrueClient instances
   if (window.supabase && typeof window.supabase.createClient === 'function') {
-    try {
-      supabase = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+    if (!window._medicareSupabaseClient) {
+      try {
+        supabase = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+        window._medicareSupabaseClient = supabase;
+        _isLive = true;
+        console.log('⚡ MEDICARE — Supabase Live DB Connected:', config.SUPABASE_URL);
+      } catch (e) {
+        console.warn('⚠️ Supabase init failed, using local fallback:', e);
+      }
+    } else {
+      supabase = window._medicareSupabaseClient;
       _isLive = true;
-      console.log('⚡ MEDICARE — Supabase Live DB Connected:', config.SUPABASE_URL);
-    } catch (e) {
-      console.warn('⚠️ Supabase init failed, using local fallback:', e);
     }
   }
 
-  /* ---- LOCAL FALLBACK (only used if Supabase is unreachable) ---- */
-  const FALLBACK_PRODUCTS = [
-    { id:'MC-101', name:'Obsidian Flex Antimicrobial Scrub Set', name_ar:'طقم سكراب أوبسيديان المضاد للبكتيريا', specialty:'medicine', price:10700, original_price:13400, rating:4.8, reviews_count:142, material:'antimicrobial', brand:'medicare', badge:'sale', colors:['#0E4D45','#1E3A5F','#6B7280'], sizes:['XS','S','M','L','XL','XXL'], images:['assets/medicare_scrubs_hero_1786614154492.png','assets/medicare_lab_coat_1786614177321.png'], is_new:false, is_bestseller:true, stock:12 },
-    { id:'MC-102', name:'ClinFlex 4-Way Stretch Scrub Pants', name_ar:'بنطلون سكراب مرن بـ 4 اتجاهات', specialty:'nursing', price:6800, original_price:null, rating:4.7, reviews_count:98, material:'flex', brand:'clinflex', badge:'new', colors:['#0F766E','#7C3AED','#1D4ED8'], sizes:['S','M','L','XL'], images:['assets/medicare_lab_coat_1786614177321.png'], is_new:true, is_bestseller:false, stock:28 },
-    { id:'MC-103', name:'Executive Fluid-Shield Lab Coat', name_ar:'معطف مختبر مقاوم للسوائل', specialty:'pharmacy', price:13400, original_price:16700, rating:4.9, reviews_count:211, material:'fluid-shield', brand:'medicare', badge:'hot', colors:['#F8F8F8','#1E3A5F'], sizes:['S','M','L','XL','XXL'], images:['assets/medicare_lab_coat_1786614177321.png'], is_new:false, is_bestseller:true, stock:58 },
-    { id:'MC-108', name:'Titanium Master Diagnostic Stethoscope', name_ar:'سماعة تيتانيوم الدقيقة', specialty:'medicine', price:19800, original_price:24000, rating:5.0, reviews_count:317, material:'antimicrobial', brand:'medicare', badge:'hot', colors:['#0E4D45','#1E3A5F','#6B7280'], sizes:['ONE'], images:['assets/medicare_stethoscope_1786614166370.png'], is_new:false, is_bestseller:true, stock:9 },
-    { id:'MC-110', name:'Clinical Cushion Antibacterial Clogs', name_ar:'قبقاب طبي بمقدمة مغلقة', specialty:'nursing', price:9000, original_price:11300, rating:4.5, reviews_count:128, material:'antimicrobial', brand:'medicare', badge:'sale', colors:['#0E4D45','#F8F8F8','#1E3A5F'], sizes:['37','38','39','40','41','42','43','44','45'], images:['assets/medicare_footwear_1786615096505.png'], is_new:false, is_bestseller:true, stock:15 },
-    { id:'MC-112', name:'1st Year Pharmacy Starter Kit', name_ar:'حقيبة الصيدلة — السنة الأولى', specialty:'pharmacy', price:17400, original_price:23400, rating:4.9, reviews_count:183, material:'antimicrobial', brand:'medicare', badge:'bundle', colors:['#0E4D45'], sizes:['ONE'], images:['assets/medicare_starter_kit_1786615195273.png'], is_new:false, is_bestseller:true, stock:5 }
-  ];
+  /* ---- LOCAL FALLBACK (reads from single source of truth product-catalog.js) ---- */
+  function getFallbackProducts() {
+    if (typeof window !== 'undefined' && window.PRODUCT_CATALOG) return window.PRODUCT_CATALOG;
+    if (typeof require !== 'undefined') {
+      try { return require('./product-catalog.js').PRODUCT_CATALOG; } catch (e) {}
+    }
+    return [];
+  }
 
   /* ---- HELPER: safe Supabase query ---- */
   async function sbQuery(table, queryFn) {
@@ -62,20 +67,40 @@
       });
       if (data && data.length > 0) return data;
       // Fallback
-      let items = [...FALLBACK_PRODUCTS];
+      let items = [...getFallbackProducts()];
       if (options.specialty && options.specialty !== 'all') items = items.filter(p => p.specialty === options.specialty);
       if (options.limit) items = items.slice(0, options.limit);
       return items;
     },
 
     async getProductById(id) {
-      const data = await sbQuery('products', q => q.select('*').eq('id', id).single());
-      if (data) return data;
-      return FALLBACK_PRODUCTS.find(p => p.id === id) || null;
+      // ── 1. Try Supabase (avoid .single() to prevent PGRST116 "row not found" errors)
+      if (_isLive && supabase) {
+        try {
+          const { data, error } = await supabase.from('products').select('*').eq('id', id).limit(1);
+          if (!error && data && data.length > 0) return data[0];
+          // If not found by exact id match, try string coercion (id might be number in DB)
+          if (!error && (!data || data.length === 0)) {
+            const { data: data2, error: e2 } = await supabase.from('products').select('*').eq('id', String(id)).limit(1);
+            if (!e2 && data2 && data2.length > 0) return data2[0];
+          }
+        } catch (e) {
+          console.warn('[MedicareDB] getProductById Supabase error:', e);
+        }
+      }
+      // ── 2. Check localStorage custom products (products added from Admin when Supabase was offline)
+      try {
+        const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+        const found = customProds.find(p => String(p.id) === String(id));
+        if (found) return found;
+      } catch (e) {}
+      // ── 3. Fall back to static local catalog
+      return getFallbackProducts().find(p => String(p.id) === String(id)) || null;
     },
 
     /**
      * saveProduct — INSERT a new product or UPDATE an existing one.
+     * Includes automatic schema mismatch auto-recovery (strips missing columns and retries).
      * @param {Object} product  — full product object (must include `id`)
      * @param {boolean} isEdit  — true → UPDATE, false → INSERT
      * @returns {{ success: boolean, error: string|null }}
@@ -86,20 +111,43 @@
         return { success: false, error: 'Supabase not connected' };
       }
       try {
-        let result;
-        if (isEdit) {
-          // UPDATE — match by primary key `id`
-          const { id, ...fields } = product;
-          result = await supabase.from('products').update(fields).eq('id', id);
-        } else {
-          // INSERT — upsert to handle duplicate SKUs gracefully
-          result = await supabase.from('products').upsert([product], { onConflict: 'id' });
+        // Map and sanitize fields for PostgreSQL table compatibility
+        const currentFields = { ...product };
+        if (!currentFields.id && currentFields.sku) {
+          currentFields.id = currentFields.sku;
         }
-        if (result.error) {
-          console.error('[MedicareDB] saveProduct error:', result.error.message);
-          return { success: false, error: result.error.message };
+        // Remove client-only alias fields that aren't database columns
+        delete currentFields.sku;
+
+        let attempts = 0;
+        while (attempts < 12) {
+          attempts++;
+          let result;
+          if (isEdit) {
+            const { id, ...updateFields } = currentFields;
+            result = await supabase.from('products').update(updateFields).eq('id', id);
+          } else {
+            result = await supabase.from('products').upsert([currentFields], { onConflict: 'id' });
+          }
+
+          if (!result.error) {
+            return { success: true, error: null };
+          }
+
+          const errMsg = result.error.message || '';
+          // Auto-recovery: if a column doesn't exist in the database table schema cache
+          const match = errMsg.match(/Could not find the '([^']+)' column/i);
+          if (match && match[1] && currentFields.hasOwnProperty(match[1])) {
+            delete currentFields[match[1]];
+            continue; // Retry with remaining fields
+          }
+
+          // If another error occurred
+          console.error('[MedicareDB] saveProduct error:', errMsg);
+          return { success: false, error: errMsg };
         }
-        return { success: true, error: null };
+
+        return { success: false, error: 'Max retry attempts reached' };
       } catch (e) {
         console.error('[MedicareDB] saveProduct exception:', e);
         return { success: false, error: e.message };
@@ -128,11 +176,158 @@
       }
     },
 
-    async updateStock(productId, newStock) {
-      if (_isLive && supabase) {
-        await sbQuery('products', q => q.update({ stock: newStock }).eq('id', productId));
+    /**
+     * uploadProductImage — uploads an image file to Supabase Storage with automatic compression fallback.
+     * @param {File} file  — the image File object from <input type="file">
+     * @returns {{ url: string|null, error: string|null }}
+     */
+    async uploadProductImage(file) {
+      const compressFallback = (imgFile) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              let w = img.width;
+              let h = img.height;
+              const maxDim = 800;
+              if (w > h && w > maxDim) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else if (h > maxDim) {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              resolve({ url: canvas.toDataURL('image/jpeg', 0.8), error: null });
+            };
+            img.onerror = () => resolve({ url: e.target.result, error: null });
+            img.src = e.target.result;
+          };
+          reader.onerror = () => resolve({ url: null, error: 'FileReader failed' });
+          reader.readAsDataURL(imgFile);
+        });
+      };
+
+      if (!_isLive || !supabase) {
+        return compressFallback(file);
       }
-      return true;
+
+      try {
+        const ext = file.name.split('.').pop() || 'jpg';
+        const filename = `product_${Date.now()}_${Math.random().toString(36).substring(2,8)}.${ext}`;
+        const { data, error } = await supabase.storage
+          .from('products')
+          .upload(filename, file, { cacheControl: '3600', upsert: false });
+
+        if (error) {
+          console.warn('[MedicareDB] uploadProductImage storage bucket note:', error.message);
+          return compressFallback(file);
+        }
+        const { data: urlData } = supabase.storage.from('products').getPublicUrl(data.path);
+        return { url: urlData.publicUrl, error: null };
+      } catch (e) {
+        console.warn('[MedicareDB] uploadProductImage exception:', e);
+        return compressFallback(file);
+      }
+    },
+
+    async updateStock(productId, newStock, options = {}) {
+      const cleanStock = Math.max(0, parseInt(newStock, 10) || 0);
+
+      // 1. Sync in-memory catalog
+      if (typeof window !== 'undefined') {
+        if (window.PRODUCT_CATALOG) {
+          const p = window.PRODUCT_CATALOG.find(it => it.id === productId);
+          if (p) p.stock = cleanStock;
+        }
+        if (window.PRODUCT_CATALOG_MAP && window.PRODUCT_CATALOG_MAP[productId]) {
+          window.PRODUCT_CATALOG_MAP[productId].stock = cleanStock;
+        }
+      }
+
+      // 2. Persist in localStorage stock overrides
+      try {
+        const overrides = JSON.parse(localStorage.getItem('medicare_stock_overrides') || '{}');
+        overrides[productId] = cleanStock;
+        localStorage.setItem('medicare_stock_overrides', JSON.stringify(overrides));
+      } catch (e) {
+        console.warn('[MedicareDB] Failed to save stock override:', e);
+      }
+
+      // 3. Persist in custom products if custom
+      try {
+        const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+        const cp = customProds.find(p => p.id === productId);
+        if (cp) {
+          cp.stock = cleanStock;
+          localStorage.setItem('medicare_custom_products', JSON.stringify(customProds));
+        }
+      } catch (e) {}
+
+      // 4. Sync with Supabase
+      if (_isLive && supabase) {
+        try {
+          await supabase.from('products').update({ stock: cleanStock }).eq('id', productId);
+        } catch (e) {
+          console.warn('[MedicareDB] Supabase stock update error:', e);
+        }
+      }
+
+      // 5. Log stock movement if requested
+      if (options.logMovement && options.type) {
+        this.logStockMovement({
+          productId: productId,
+          productName: options.productName || productId,
+          type: options.type, // 'IN', 'OUT', 'RETURN', 'ADJUST'
+          qty: options.qty || 0,
+          stockBefore: options.stockBefore ?? cleanStock,
+          stockAfter: cleanStock,
+          reason: options.reason || 'Manual Adjustment',
+          staff: options.staff || 'System / Store Admin',
+          orderNumber: options.orderNumber || null
+        });
+      }
+
+      window.dispatchEvent(new CustomEvent('medicare_stock_updated', { detail: { productId, stock: cleanStock } }));
+      return cleanStock;
+    },
+
+    logStockMovement(entry) {
+      try {
+        const logs = JSON.parse(localStorage.getItem('medicare_stock_logs') || '[]');
+        const newEntry = {
+          id: 'STK-' + Date.now() + '-' + Math.floor(100 + Math.random() * 900),
+          timestamp: new Date().toISOString(),
+          productId: entry.productId,
+          productName: entry.productName || entry.productId,
+          type: entry.type || 'ADJUST', // 'IN', 'OUT', 'RETURN', 'ADJUST'
+          qty: Math.abs(Number(entry.qty) || 0),
+          stockBefore: Number(entry.stockBefore) || 0,
+          stockAfter: Number(entry.stockAfter) || 0,
+          reason: entry.reason || 'Inventory Adjustment',
+          staff: entry.staff || 'Store Staff',
+          orderNumber: entry.orderNumber || null
+        };
+        logs.unshift(newEntry);
+        // Keep last 150 operations
+        localStorage.setItem('medicare_stock_logs', JSON.stringify(logs.slice(0, 150)));
+        window.dispatchEvent(new CustomEvent('medicare_stock_logs_updated'));
+      } catch (e) {
+        console.warn('[MedicareDB] Failed to log stock movement:', e);
+      }
+    },
+
+    getStockLogs() {
+      try {
+        return JSON.parse(localStorage.getItem('medicare_stock_logs') || '[]');
+      } catch (e) {
+        return [];
+      }
     },
 
     /* ---- CATEGORIES ---- */
@@ -144,15 +339,11 @@
     /* ---- WILAYAS & COMMUNES ---- */
     async getWilayas() {
       const data = await sbQuery('wilayas', q => q.select('code, name, zone, delivery_fee_home, delivery_fee_stopdesk').order('code'));
-      if (data && data.length > 0) return data;
-      // Inline fallback for key wilayas
-      return [
-        { code:'09', name:'09 - Blida', zone:'capital', delivery_fee_home:400, delivery_fee_stopdesk:250 },
-        { code:'16', name:'16 - Alger (العاصمة)', zone:'capital', delivery_fee_home:400, delivery_fee_stopdesk:250 },
-        { code:'25', name:'25 - Constantine', zone:'north', delivery_fee_home:600, delivery_fee_stopdesk:350 },
-        { code:'31', name:'31 - Oran', zone:'north', delivery_fee_home:600, delivery_fee_stopdesk:350 },
-        { code:'35', name:'35 - Boumerdes', zone:'capital', delivery_fee_home:400, delivery_fee_stopdesk:250 }
-      ];
+      if (data && data.length >= 58) return data;
+      if (typeof WILAYAS_DATA !== 'undefined' && Array.isArray(WILAYAS_DATA) && WILAYAS_DATA.length >= 58) {
+        return WILAYAS_DATA;
+      }
+      return data || [];
     },
 
     async getCommunes(wilayaCode) {
@@ -174,20 +365,53 @@
         updated_at: new Date().toISOString()
       };
 
-      // Write to Supabase
+      // Write to Supabase — only columns that exist in the orders table schema
       if (_isLive && supabase) {
         try {
-          const { error } = await supabase.from('orders').insert([newOrder]);
+          const SUPABASE_ORDER_COLUMNS = [
+            'id', 'order_number', 'customer_name', 'phone', 'wilaya', 'commune',
+            'address', 'delivery_type', 'items', 'subtotal', 'delivery_fee',
+            'total', 'status', 'coupon_code', 'courier_company', 'courier_name',
+            'created_at', 'updated_at'
+          ];
+          const sbPayload = {};
+          SUPABASE_ORDER_COLUMNS.forEach(col => {
+            if (newOrder[col] !== undefined) sbPayload[col] = newOrder[col];
+          });
+          const { error } = await supabase.from('orders').insert([sbPayload]);
           if (error) console.warn('[MedicareDB] createOrder error:', error.message);
         } catch (e) { console.warn('[MedicareDB] createOrder exception:', e); }
       }
 
       // Always persist in localStorage as fallback & instant local availability
-      const localOrders = JSON.parse(localStorage.getItem('medicare_orders_db') || '[]');
-      // Filter out duplicate if already present
-      const filtered = localOrders.filter(o => o.order_number !== orderNumber && o.id !== orderNumber);
-      filtered.unshift(newOrder);
-      localStorage.setItem('medicare_orders_db', JSON.stringify(filtered));
+      const MAX_LOCAL_ORDERS = 50;
+      try {
+        const localOrders = JSON.parse(localStorage.getItem('medicare_orders_db') || '[]');
+        const filtered = localOrders.filter(o => o.order_number !== orderNumber && o.id !== orderNumber);
+        // Strip base64 image data from items to save space
+        const leanOrder = { ...newOrder };
+        if (leanOrder.items && Array.isArray(leanOrder.items)) {
+          leanOrder.items = leanOrder.items.map(item => {
+            const lean = { ...item };
+            if (lean.image && typeof lean.image === 'string' && lean.image.startsWith('data:')) {
+              lean.image = null;
+            }
+            if (lean.img && typeof lean.img === 'string' && lean.img.startsWith('data:')) {
+              lean.img = null;
+            }
+            return lean;
+          });
+        }
+        filtered.unshift(leanOrder);
+        // Cap to most recent N orders
+        const trimmed = filtered.slice(0, MAX_LOCAL_ORDERS);
+        localStorage.setItem('medicare_orders_db', JSON.stringify(trimmed));
+      } catch (e) {
+        console.warn('[MedicareDB] localStorage orders save failed:', e);
+        if (typeof window !== 'undefined' && typeof window.showToast === 'function') {
+          window.showToast('⚠️ Order saved remotely but local history unavailable.');
+        }
+      }
       return newOrder;
     },
 
@@ -262,16 +486,6 @@
         }
       });
 
-      // 3. Seed demo orders if completely empty
-      if (ordersMap.size === 0) {
-        const defaultDemos = [
-          { id:'MC-2026-9418', order_number:'MC-2026-9418', customer_name:'Dr. Ahmed Benali', phone:'0550 00 00 00', wilaya:'16 - Alger (El Biar)', commune:'El Biar', delivery_type:'home', total:31000, subtotal:30600, delivery_fee:400, status:'Shipped', created_at: new Date().toISOString(), items:[{ name: 'Obsidian Flex Scrub Set', qty: 2, price: 10700 }, { name: 'Titanium Master Stethoscope', qty: 1, price: 19800 }] },
-          { id:'MC-2026-9417', order_number:'MC-2026-9417', customer_name:'Amina M.', phone:'0661 22 33 44', wilaya:'31 - Oran', commune:'Es Senia', delivery_type:'stopdesk', total:17400, subtotal:17000, delivery_fee:400, status:'Preparing', created_at: new Date().toISOString(), items:[{ name: '1st Year Pharmacy Starter Kit', qty: 1, price: 17400 }] },
-          { id:'MC-2026-9416', order_number:'MC-2026-9416', customer_name:'Dr. Yacine B.', phone:'0770 11 22 33', wilaya:'25 - Constantine', commune:'El Khroub', delivery_type:'home', total:9000, subtotal:8400, delivery_fee:600, status:'Delivered', created_at: new Date().toISOString(), items:[{ name: 'Obsidian Clinical Cushion Clogs', qty: 1, price: 9000 }] }
-        ];
-        return defaultDemos;
-      }
-
       return Array.from(ordersMap.values()).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     },
 
@@ -308,14 +522,46 @@
     /* ---- REVIEWS ---- */
     async submitReview(reviewObj) {
       if (_isLive && supabase) {
-        await sbQuery('reviews', q =>
-          q.insert([{ ...reviewObj, is_approved: true, created_at: new Date().toISOString() }])
-        );
+        try {
+          await sbQuery('reviews', q =>
+            q.insert([{ ...reviewObj, is_approved: true, created_at: new Date().toISOString() }])
+          );
+        } catch (e) {
+          console.warn('[MedicareDB] submitReview error:', e);
+        }
       }
       const localReviews = JSON.parse(localStorage.getItem('medicare_reviews_db') || '[]');
-      localReviews.unshift({ id: 'REV-' + Date.now(), ...reviewObj, is_approved: true });
+      localReviews.unshift({ id: 'REV-' + Date.now(), ...reviewObj, is_approved: true, created_at: new Date().toISOString() });
       localStorage.setItem('medicare_reviews_db', JSON.stringify(localReviews));
       return true;
+    },
+
+    async getReviews(productIdOrOptions) {
+      // Accept either a raw productId string or an options object { productId, limit }
+      let productId = null;
+      let limit = null;
+      if (productIdOrOptions && typeof productIdOrOptions === 'object') {
+        productId = productIdOrOptions.productId || null;
+        limit = productIdOrOptions.limit || null;
+      } else if (productIdOrOptions) {
+        productId = String(productIdOrOptions);
+      }
+
+      if (_isLive && supabase) {
+        try {
+          let q = supabase.from('reviews').select('*').eq('is_approved', true);
+          if (productId) q = q.eq('product_id', productId);
+          q = q.order('created_at', { ascending: false });
+          if (limit) q = q.limit(limit);
+          const { data, error } = await q;
+          if (!error && Array.isArray(data) && data.length > 0) return data;
+        } catch (e) {
+          console.warn('[MedicareDB] getReviews error:', e);
+        }
+      }
+      const localReviews = JSON.parse(localStorage.getItem('medicare_reviews_db') || '[]');
+      const filtered = productId ? localReviews.filter(r => r.product_id === productId) : localReviews;
+      return limit ? filtered.slice(0, limit) : filtered;
     },
 
     /* ---- COUPONS ---- */
@@ -424,12 +670,12 @@
       }
 
       // 3. Demo fallback if user enters test phone/email
-      if (!matchedCustomer && (input === '0550000000' || input === 'doctor@medicare.dz' || input === 'demo')) {
+      if (!matchedCustomer && (input === '0662497253' || input === '0550000000' || input === 'medicare3320@gmail.com' || input === 'doctor@medicare.dz' || input === 'demo')) {
         matchedCustomer = {
           id: 'CUST-DEMO-101',
           name: 'Dr. Ahmed Benali',
-          phone: '0550000000',
-          email: 'doctor@medicare.dz',
+          phone: '0662497253',
+          email: 'medicare3320@gmail.com',
           medical_role: 'Resident • General Surgery',
           addresses: [
             { id: 'ADDR-1', wilaya: '16 - Alger (العاصمة)', commune: 'El Biar', address: '14 Rue Didouche Mourad' }
@@ -491,6 +737,31 @@
         } catch (e) {}
       }
       return true;
+    },
+
+    async subscribeNewsletter(email) {
+      if (!email || !email.includes('@')) return { success: false, error: 'Invalid email address' };
+      email = email.trim().toLowerCase();
+
+      // Save to localStorage
+      const localSubs = JSON.parse(localStorage.getItem('medicare_subscribers') || '[]');
+      if (!localSubs.includes(email)) {
+        localSubs.push(email);
+        localStorage.setItem('medicare_subscribers', JSON.stringify(localSubs));
+      }
+
+      // Save to Supabase if live
+      if (_isLive && supabase) {
+        try {
+          const { data, error } = await supabase.from('subscribers').insert([{ email, subscribed_at: new Date().toISOString() }]);
+          if (error && error.code !== '23505') { // ignore duplicate key error
+            console.warn('[MedicareDB] Supabase newsletter insert error:', error);
+          }
+        } catch (e) {
+          console.warn('[MedicareDB] Supabase newsletter error:', e);
+        }
+      }
+      return { success: true };
     },
 
     syncWishlistOnAuth(customer) {
@@ -556,7 +827,11 @@
         created_at: new Date().toISOString()
       };
       if (_isLive && supabase) {
-        await sbQuery('audit_logs', q => q.insert([entry]));
+        try {
+          await supabase.from('audit_logs').insert([entry]);
+        } catch (e) {
+          // Silent catch for RLS restrictions
+        }
       }
       // Always keep in localStorage for admin UI
       const logs = JSON.parse(localStorage.getItem('medicare_audit_db') || '[]');

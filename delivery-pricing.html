@@ -117,10 +117,36 @@
 
   <div id="dp-toast" class="dp-toast">✓ Done!</div>
 
+  <!-- =====================================================================
+       MOBILE ONLY: Persistent Bottom Navigation Bar
+       ===================================================================== -->
+  <nav id="mob-bottom-nav" class="mc-mob-bottom-nav" aria-label="Main navigation">
+    <a href="index.html" class="mc-mob-nav-item" data-tab="home">
+      <span class="mc-mob-nav-icon">🏠</span>
+      <span class="mc-mob-nav-label">Home</span>
+    </a>
+    <a href="category.html" class="mc-mob-nav-item" data-tab="shop">
+      <span class="mc-mob-nav-icon">🛍️</span>
+      <span class="mc-mob-nav-label">Shop</span>
+    </a>
+    <button class="mc-mob-nav-item" id="mob-nav-cart" data-tab="cart" aria-label="Shopping cart">
+      <span class="mc-mob-nav-icon" style="position:relative; display:inline-block;">
+        🛒<span id="mob-cart-badge" class="mc-mob-cart-badge" aria-label="items in cart">0</span>
+      </span>
+      <span class="mc-mob-nav-label">Cart</span>
+    </button>
+    <a href="account.html" class="mc-mob-nav-item" data-tab="account">
+      <span class="mc-mob-nav-icon">👤</span>
+      <span class="mc-mob-nav-label">Account</span>
+    </a>
+  </nav>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
   <script src="src/supabase-client.js"></script>
+  <script src="src/cart.js"></script>
+  <script src="src/account-header.js"></script>
   <script src="src/delivery-pricing.js"></script>
 </body>
 </html>

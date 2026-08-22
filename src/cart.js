@@ -21,32 +21,43 @@
     },
 
     saveCart(cartItems) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
-      this.notifyListeners();
-      this.syncWithSupabase(cartItems);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
+      } catch (e) {
+        console.warn('[MedicareCart] localStorage save warning:', e);
+      }
+      try {
+        this.notifyListeners();
+      } catch (e) {}
+      try {
+        this.syncWithSupabase(cartItems);
+      } catch (e) {}
     },
 
     addItem(item) {
+      if (!item) return this.getCart();
       // Standardized Cart Item Shape: { productId, id, name, nameAr, price, qty, size, color, image }
       const cart = this.getCart();
-      const pId = item.productId || item.id;
+      const pId = item.productId || item.id || null;
+      if (!pId) return this.getCart();
       const size = item.size || 'M';
       const color = item.color || 'Obsidian Teal';
-      const qty = item.qty || 1;
+      const qty = Math.max(1, Number(item.qty) || 1);
+      const price = Number(item.price) || 0;
 
       const existingIndex = cart.findIndex(i => 
         (i.productId === pId || i.id === pId) && i.size === size && i.color === color
       );
 
       if (existingIndex > -1) {
-        cart[existingIndex].qty += qty;
+        cart[existingIndex].qty = (Number(cart[existingIndex].qty) || 0) + qty;
       } else {
         cart.push({
           productId: pId,
           id: pId,
-          name: item.name,
-          nameAr: item.nameAr || item.name_ar || item.name,
-          price: Number(item.price),
+          name: item.name || 'Obsidian Flex Scrub Set',
+          nameAr: item.nameAr || item.name_ar || item.name || 'طقم سكراب أوبسيديان',
+          price: price,
           qty: qty,
           size: size,
           color: color,
@@ -96,19 +107,11 @@
     },
 
     async syncWithSupabase(cartItems) {
-      const customerSession = JSON.parse(localStorage.getItem('medicare_customer_session') || 'null');
-      if (customerSession && customerSession.id && window.supabase) {
-        try {
-          const config = window.MEDICARE_CONFIG || {};
-          const sb = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
-          await sb
-            .from('customers')
-            .update({ addresses: { cart_state: cartItems } })
-            .eq('id', customerSession.id);
-        } catch (e) {
-          console.warn('[MedicareCart] Sync with Supabase failed:', e);
-        }
-      }
+      // Cart state is stored in localStorage only.
+      // We intentionally skip Supabase sync here because:
+      // 1. Customer IDs generated client-side (CUST-xxx) are not valid UUIDs → causes 400.
+      // 2. Creating a new supabase client here causes "Multiple GoTrueClient instances" warnings.
+      // The cart is always available via localStorage('medicare_cart') on all pages.
     }
   };
 
@@ -118,4 +121,79 @@
       window.MedicareCart.notifyListeners();
     }
   });
+
+  /* ------------------------------------------------------------------
+     GLOBAL CART DRAWER OPEN / CLOSE CONTROLLER
+     ------------------------------------------------------------------ */
+  window.openGlobalCartDrawer = function() {
+    const cartOverlay =
+      document.getElementById('cart-drawer-overlay') ||
+      document.getElementById('pdp-cart-overlay') ||
+      document.getElementById('cat-cart-overlay') ||
+      document.getElementById('wsh-cart-overlay') ||
+      document.getElementById('trk-cart-overlay') ||
+      document.getElementById('acc-cart-overlay');
+
+    if (cartOverlay) {
+      if (typeof window.renderCartDrawer === 'function') {
+        try { window.renderCartDrawer(); } catch (e) {}
+      }
+      if (typeof window.renderCart === 'function') {
+        try { window.renderCart(); } catch (e) {}
+      }
+      cartOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else if (!window.location.pathname.endsWith('checkout.html')) {
+      window.location.href = 'checkout.html';
+    }
+  };
+
+  window.closeGlobalCartDrawer = function() {
+    document.querySelectorAll('.mc-cart-drawer-overlay').forEach(el => el.classList.remove('open'));
+    document.body.style.overflow = '';
+  };
+
+  // Global backdrop and close button listener
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('mc-cart-drawer-overlay')) {
+      window.closeGlobalCartDrawer();
+    }
+    if (e.target && (e.target.classList?.contains('mc-cart-close') || e.target.id?.includes('cart-close'))) {
+      window.closeGlobalCartDrawer();
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     GLOBAL MOBILE BOTTOM NAV SYNC & HANDLERS
+     ------------------------------------------------------------------ */
+  function updateGlobalMobCartBadge() {
+    const mobCartBadge = document.getElementById('mob-cart-badge');
+    if (mobCartBadge && window.MedicareCart) {
+      const count = window.MedicareCart.getTotalCount();
+      mobCartBadge.textContent = count;
+      mobCartBadge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+  }
+
+  function initGlobalMobBottomNav() {
+    updateGlobalMobCartBadge();
+
+    const mobNavCartBtn = document.getElementById('mob-nav-cart');
+    if (mobNavCartBtn && !mobNavCartBtn.dataset.bound) {
+      mobNavCartBtn.dataset.bound = 'true';
+      mobNavCartBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.openGlobalCartDrawer();
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGlobalMobBottomNav);
+  } else {
+    initGlobalMobBottomNav();
+  }
+
+  window.addEventListener('medicare_cart_updated', updateGlobalMobCartBadge);
 })();
+

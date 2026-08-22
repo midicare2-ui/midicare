@@ -103,13 +103,18 @@
 <body class="admin-body">
 
   <!-- =====================================================================
-       SIDEBAR NAVIGATION
+       SIDEBAR NAVIGATION (Desktop Sticky & Mobile Slide-Out Drawer)
        ===================================================================== -->
-  <aside class="adm-sidebar">
-    <a href="index.html" class="adm-sidebar-brand" title="View Storefront">
-      <div class="adm-brand-name">MEDICARE</div>
-      <span class="adm-brand-badge">Admin</span>
-    </a>
+  <aside class="adm-sidebar" id="adm-sidebar" aria-label="Admin Navigation Drawer">
+    <div class="adm-sidebar-brand-wrapper">
+      <a href="index.html" class="adm-sidebar-brand" title="View Storefront">
+        <div class="adm-brand-name">MEDICARE</div>
+        <span class="adm-brand-badge">Admin</span>
+      </a>
+      <button class="adm-drawer-close-btn" id="adm-drawer-close-btn" onclick="closeAdminDrawer()" aria-label="Close Navigation Menu" title="Close Menu">
+        ✕
+      </button>
+    </div>
 
     <div class="adm-nav-group">
       <div class="adm-nav-label">MAIN CONTROL</div>
@@ -120,17 +125,17 @@
 
       <button class="adm-nav-item" onclick="switchModule(this, 'mod-orders')">
         <span>📦 Orders</span>
-        <span class="adm-nav-badge" style="background:#EF4444;">7</span>
+        <span class="adm-nav-badge" id="nav-badge-orders" style="background:#EF4444; display:none;">0</span>
       </button>
 
       <button class="adm-nav-item" onclick="switchModule(this, 'mod-products')">
         <span>👕 Products</span>
-        <span class="adm-nav-badge">48</span>
+        <span class="adm-nav-badge" id="nav-badge-products" style="display:none;">0</span>
       </button>
 
       <button class="adm-nav-item" onclick="switchModule(this, 'mod-inventory')">
         <span>🏬 Inventory & Variants</span>
-        <span class="adm-nav-badge" style="background:#F59E0B;">4</span>
+        <span class="adm-nav-badge" id="nav-badge-inventory" style="background:#F59E0B; display:none;">0</span>
       </button>
 
       <div class="adm-nav-label">STORE MANAGEMENT</div>
@@ -144,19 +149,23 @@
       </button>
 
       <button class="adm-nav-item" onclick="switchModule(this, 'mod-coupons')">
-        <span>🎁 Coupons & Bundles</span>
+        <span>🎟️ Discount Coupons</span>
+      </button>
+
+      <button class="adm-nav-item" onclick="switchModule(this, 'mod-bundles')">
+        <span>🎁 Bundles & Offers</span>
       </button>
 
       <button class="adm-nav-item" onclick="switchModule(this, 'mod-reviews')">
         <span>✍️ Reviews Moderation</span>
-        <span class="adm-nav-badge" style="background:#10B981;">142</span>
+        <span class="adm-nav-badge" id="nav-badge-reviews" style="background:#10B981; display:none;">0</span>
       </button>
 
       <div class="adm-nav-label">SECURITY & ACCESS</div>
 
       <button class="adm-nav-item" id="nav-item-staff" onclick="switchModule(this, 'mod-staff')">
         <span>🔐 Staff & Permissions</span>
-        <span class="adm-nav-badge" style="background:var(--color-primary-600);">4</span>
+        <span class="adm-nav-badge" id="nav-badge-staff" style="background:var(--color-primary-600); display:none;">0</span>
       </button>
 
       <button class="adm-nav-item" id="nav-item-audit" onclick="switchModule(this, 'mod-audit')">
@@ -180,7 +189,7 @@
 
     <div class="adm-sidebar-footer">
       <div class="adm-role-box">
-        <span>Active User: <strong id="sidebar-role-label">Dr. Karim (Owner)</strong></span>
+        <span>Active: <strong id="sidebar-role-label">Dr. Karim (Owner)</strong></span>
         <button class="adm-btn-icon" onclick="toggleAdminTheme()" title="Toggle Dark Mode">🌙</button>
       </div>
       <a href="index.html" class="mc-btn mc-btn-secondary mc-btn-sm" style="width:100%; text-align:center;">
@@ -192,21 +201,38 @@
     </div>
   </aside>
 
+  <!-- Mobile Drawer Backdrop Overlay -->
+  <div id="adm-sidebar-backdrop" class="adm-sidebar-backdrop" onclick="closeAdminDrawer()" aria-hidden="true"></div>
+
   <!-- =====================================================================
        MAIN CONTENT WORKSPACE
        ===================================================================== -->
   <main class="adm-main">
 
-    <!-- Top Header -->
+    <!-- Top Header (Sticky on Desktop and Mobile) -->
     <header class="adm-header">
-      <h1 class="adm-header-title" id="adm-header-title">📊 Executive Dashboard Overview</h1>
+      <div class="adm-header-left">
+        <button class="adm-hamburger-btn" id="adm-hamburger-btn" onclick="toggleAdminDrawer()" aria-label="Open Navigation Menu" title="Open Navigation Menu">
+          <span class="adm-hamburger-icon">☰</span>
+        </button>
+      </div>
+
+      <div class="adm-header-title-wrap">
+        <h1 class="adm-header-title" id="adm-header-title">📊 Executive Dashboard Overview</h1>
+      </div>
 
       <div class="adm-header-actions">
-        <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="openAddProductModal()">
-          + Add New Product
+        <button class="mc-btn mc-btn-primary mc-btn-sm adm-header-add-btn" onclick="openAddProductModal()" title="Add Product">
+          <span>+ Add Product</span>
+        </button>
+        <button class="adm-btn-icon adm-theme-toggle-btn" onclick="toggleAdminTheme()" title="Toggle Dark Mode">
+          🌙
         </button>
         <button id="lang-toggle-btn" class="adm-btn-icon" title="Toggle RTL Arabic">
           🌐
+        </button>
+        <button class="adm-btn-icon adm-logout-btn" onclick="handleAdminLogout()" title="Logout of Admin Portal" aria-label="Logout">
+          🚪
         </button>
       </div>
     </header>
@@ -223,8 +249,8 @@
             <span class="adm-kpi-label">TODAY'S ORDERS</span>
             <div class="adm-kpi-icon" style="background:#E0F2FE; color:#0284C7;">📦</div>
           </div>
-          <div class="adm-kpi-val">24</div>
-          <div class="adm-kpi-trend adm-trend-up">↑ +12.5% vs yesterday</div>
+          <div class="adm-kpi-val" id="kpi-today-orders-val">0</div>
+          <div class="adm-kpi-trend" id="kpi-today-orders-trend">Calculated in real-time</div>
         </div>
 
         <div class="adm-kpi-card">
@@ -232,8 +258,8 @@
             <span class="adm-kpi-label">TODAY'S REVENUE (COD)</span>
             <div class="adm-kpi-icon" style="background:#DCFCE7; color:#15803D;">💵</div>
           </div>
-          <div class="adm-kpi-val">485,000 DZD</div>
-          <div class="adm-kpi-trend adm-trend-up">↑ +18.3% this week</div>
+          <div class="adm-kpi-val" id="kpi-today-revenue-val">0 DZD</div>
+          <div class="adm-kpi-trend" id="kpi-today-revenue-trend">Total daily revenue</div>
         </div>
 
         <div class="adm-kpi-card">
@@ -241,8 +267,8 @@
             <span class="adm-kpi-label">LOW STOCK ALERTS</span>
             <div class="adm-kpi-icon" style="background:#FEF3C7; color:#B45309;">⚠️</div>
           </div>
-          <div class="adm-kpi-val">4 Items</div>
-          <div class="adm-kpi-trend adm-trend-down">Requires reorder</div>
+          <div class="adm-kpi-val" id="kpi-low-stock-val">0 Items</div>
+          <div class="adm-kpi-trend" id="kpi-low-stock-trend">≤ 5 units in inventory</div>
         </div>
 
         <div class="adm-kpi-card">
@@ -250,8 +276,8 @@
             <span class="adm-kpi-label">PENDING DISPATCH</span>
             <div class="adm-kpi-icon" style="background:#F3E8FF; color:#7E22CE;">🚚</div>
           </div>
-          <div class="adm-kpi-val">7 Orders</div>
-          <div class="adm-kpi-trend adm-trend-up">ZR Express / Yalidine</div>
+          <div class="adm-kpi-val" id="kpi-pending-dispatch-val">0 Orders</div>
+          <div class="adm-kpi-trend" id="kpi-pending-dispatch-trend">Awaiting delivery fulfillment</div>
         </div>
       </div>
 
@@ -259,51 +285,25 @@
       <div class="adm-split-grid">
         <!-- Sales Chart Box -->
         <div class="adm-table-card" style="padding:1.25rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
             <h3 style="font-family:var(--font-family-display); margin:0; font-size:1.05rem;">Sales Performance (DZD)</h3>
             <div style="display:flex; gap:0.5rem;">
-              <button class="mc-btn mc-btn-secondary mc-btn-sm active" onclick="updateChartPeriod('7d')">7 Days</button>
-              <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="updateChartPeriod('30d')">30 Days</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm active" id="btn-chart-7d" onclick="updateChartPeriod('7d')">7 Days</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="btn-chart-30d" onclick="updateChartPeriod('30d')">30 Days</button>
             </div>
           </div>
 
           <!-- Bar Chart Visualizer -->
-          <div class="adm-chart-placeholder" id="chart-bars-box">
-            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:55%"></div><span style="font-size:10px;">Sat</span></div>
-            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:70%"></div><span style="font-size:10px;">Sun</span></div>
-            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:45%"></div><span style="font-size:10px;">Mon</span></div>
-            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:85%"></div><span style="font-size:10px;">Tue</span></div>
-            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:60%"></div><span style="font-size:10px;">Wed</span></div>
-            <div class="adm-chart-bar-group"><div class="adm-chart-bar highlight" style="height:95%"></div><span style="font-size:10px; font-weight:bold;">Thu</span></div>
-            <div class="adm-chart-bar-group"><div class="adm-chart-bar" style="height:75%"></div><span style="font-size:10px;">Fri</span></div>
+          <div class="adm-chart-placeholder" id="chart-bars-box" style="min-height:160px;">
+            <!-- Populated dynamically by JS -->
           </div>
         </div>
 
         <!-- Top Sellers Box -->
         <div class="adm-table-card" style="padding:1.25rem;">
           <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0; font-size:1.05rem;">🔥 Top Selling Products</h3>
-          <div style="display:flex; flex-direction:column; gap:0.75rem;">
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-              <img src="assets/medicare_scrubs_hero_1786614154492.png" style="width:40px; height:40px; border-radius:6px; object-fit:cover;">
-              <div style="flex:1;">
-                <div style="font-weight:700; font-size:12.5px;">Obsidian Flex Scrub Set</div>
-                <div style="font-size:11px; color:#64748B;">142 sold • 1,519,400 DZD</div>
-              </div>
-            </div>
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-              <img src="assets/medicare_stethoscope_1786614166370.png" style="width:40px; height:40px; border-radius:6px; object-fit:cover;">
-              <div style="flex:1;">
-                <div style="font-weight:700; font-size:12.5px;">Titanium Stethoscope</div>
-                <div style="font-size:11px; color:#64748B;">98 sold • 1,940,400 DZD</div>
-              </div>
-            </div>
-            <div style="display:flex; align-items:center; gap:0.75rem;">
-              <img src="assets/medicare_lab_coat_1786614177321.png" style="width:40px; height:40px; border-radius:6px; object-fit:cover;">
-              <div style="flex:1;">
-                <div style="font-weight:700; font-size:12.5px;">Executive Lab Coat</div>
-                <div style="font-size:11px; color:#64748B;">76 sold • 1,018,400 DZD</div>
-              </div>
-            </div>
+          <div id="dashboard-top-sellers" style="display:flex; flex-direction:column; gap:0.75rem;">
+            <!-- Populated dynamically by JS -->
           </div>
         </div>
       </div>
@@ -330,36 +330,7 @@
               </tr>
             </thead>
             <tbody id="admin-dashboard-orders-body">
-              <tr>
-                <td><strong>#MC-9418</strong></td>
-                <td>Dr. Ahmed Benali</td>
-                <td>16 - Alger (El Biar)</td>
-                <td>Today, 10:15</td>
-                <td><strong>31,000 DZD</strong></td>
-                <td>Home Delivery</td>
-                <td><span class="adm-badge adm-badge-info">Shipped</span></td>
-                <td><button class="adm-btn-icon" onclick="openOrderDetailModal('MC-9418')">👁️</button></td>
-              </tr>
-              <tr>
-                <td><strong>#MC-9417</strong></td>
-                <td>Amina M.</td>
-                <td>31 - Oran</td>
-                <td>Today, 09:40</td>
-                <td><strong>17,400 DZD</strong></td>
-                <td>Stop-Desk</td>
-                <td><span class="adm-badge adm-badge-warning">Preparing</span></td>
-                <td><button class="adm-btn-icon" onclick="openOrderDetailModal('MC-9417')">👁️</button></td>
-              </tr>
-              <tr>
-                <td><strong>#MC-9416</strong></td>
-                <td>Dr. Yacine B.</td>
-                <td>25 - Constantine</td>
-                <td>Yesterday</td>
-                <td><strong>9,000 DZD</strong></td>
-                <td>Home Delivery</td>
-                <td><span class="adm-badge adm-badge-success">Delivered</span></td>
-                <td><button class="adm-btn-icon" onclick="openOrderDetailModal('MC-9416')">👁️</button></td>
-              </tr>
+              <!-- Populated dynamically by JS -->
             </tbody>
           </table>
         </div>
@@ -424,7 +395,7 @@
       <div class="adm-table-card">
         <div class="adm-table-toolbar">
           <h3 style="font-family:var(--font-family-display); margin:0;">Stock Levels per Variant (Size × Color)</h3>
-          <button class="mc-btn mc-btn-accent mc-btn-sm" onclick="showToast('✓ Bulk Stock Saved!')">💾 Save Bulk Stock Changes</button>
+          <button class="mc-btn mc-btn-accent mc-btn-sm" onclick="saveBulkStock()">💾 Save Bulk Stock Changes</button>
         </div>
 
         <div class="adm-table-wrap">
@@ -442,29 +413,104 @@
                 <th>Alert Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="inventory-bulk-tbody">
+              <!-- Rendered dynamically by renderBulkStockTable() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RETURN TO WAREHOUSE SECTION -->
+      <div class="adm-table-card" style="padding:1.5rem; margin-top:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem;">
+          <div>
+            <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0; font-size:1.15rem;">
+              📦 Return Stock to Warehouse (إرجاع إلى المستودع)
+            </h3>
+            <p style="margin:0; font-size:13px; color:var(--adm-muted-fg);">
+              Re-stock items returned by customers, cancelled shipments, or supplier batches with real-time stock updating.
+            </p>
+          </div>
+        </div>
+
+        <form id="form-warehouse-return" onsubmit="handleWarehouseReturnSubmit(event); return false;">
+          <div class="chk-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin-bottom:1.25rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Select Product (اختر المنتج) <span class="required">*</span></label>
+              <select id="ret-product-select" class="chk-select" onchange="onReturnProductSelectChange(this.value)" required>
+                <option value="">-- Choose Product --</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <div class="chk-form-group">
+              <label class="chk-label">Return Quantity (الكمية المرتجعة) <span class="required">*</span></label>
+              <input type="number" id="ret-qty-input" class="chk-input" min="1" max="999" value="1" oninput="calculateReturnSummary()" required>
+            </div>
+
+            <div class="chk-form-group">
+              <label class="chk-label">Reason for Return (سبب الإرجاع) <span class="required">*</span></label>
+              <select id="ret-reason-select" class="chk-select" onchange="calculateReturnSummary()">
+                <option value="Customer Return (إرجاع من زبون)">🔄 Customer Return (إرجاع من زبون)</option>
+                <option value="Cancelled Delivery (طلبية ملغاة من التوصيل)">🚚 Cancelled Delivery (طلبية ملغاة من التوصيل)</option>
+                <option value="Supplier Restock (توريد من الموزع)">📥 Supplier Restock (توريد بضاعة جديدة)</option>
+                <option value="Inventory Audit (تسوية جردية)">⚙️ Inventory Audit (تسوية جردية)</option>
+              </select>
+            </div>
+
+            <div class="chk-form-group">
+              <label class="chk-label">Reference Note / Order # (ملاحظة أو رقم الطلب)</label>
+              <input type="text" id="ret-note-input" class="chk-input" placeholder="e.g. Order #MC-2026-9418 or RMA-101">
+            </div>
+          </div>
+
+          <!-- Real-Time Calculation Summary Banner -->
+          <div id="ret-summary-banner" style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:8px; padding:1rem 1.25rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+            <div style="font-size:13px; color:#166534;">
+              <div>📦 <strong>Product:</strong> <span id="ret-calc-prod-name">Please select a product above</span></div>
+              <div style="margin-top:4px;">
+                📊 <strong>Stock Before:</strong> <span id="ret-calc-before" style="font-weight:700;">0 units</span> 
+                → ➕ <strong>Returned:</strong> <span id="ret-calc-qty" style="font-weight:700; color:#15803D;">+1</span> 
+                → 📈 <strong>Stock After:</strong> <span id="ret-calc-after" style="font-weight:800; color:#047857; font-size:14px;">1 unit</span>
+              </div>
+            </div>
+            <button type="submit" class="mc-btn mc-btn-accent" style="font-weight:800; padding:0.65rem 1.5rem; background:#0F766E; border-color:#0F766E;">
+              ✅ Confirm Return to Warehouse (تأكيد الإرجاع للمستودع)
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- WAREHOUSE OPERATIONS & STOCK AUDIT LOG -->
+      <div class="adm-table-card" style="padding:1.5rem; margin-top:1.5rem;">
+        <div class="adm-table-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;">
+          <div>
+            <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0; font-size:1.15rem;">
+              📜 Warehouse Stock Operations Log (سجل حركات وعمليات المستودع)
+            </h3>
+            <span style="font-size:12.5px; color:var(--adm-muted-fg);">Live audit tracking of all IN, OUT, and RETURN stock movements</span>
+          </div>
+          <div class="adm-search-box" style="max-width:260px;">
+            <span class="adm-search-icon">🔍</span>
+            <input type="text" id="stk-log-search" class="adm-search-input" placeholder="Search product, order #, staff..." oninput="filterWarehouseLogs(this.value)">
+          </div>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
               <tr>
-                <td><strong>Obsidian Flex Scrub Set</strong></td>
-                <td>Obsidian Teal</td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="2"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="5"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="4"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="1"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="0"></td>
-                <td><strong>12</strong></td>
-                <td><span class="adm-badge adm-badge-warning">Low Stock</span></td>
+                <th>Timestamp (التاريخ)</th>
+                <th>Product & SKU</th>
+                <th>Operation Type</th>
+                <th>Qty Change</th>
+                <th>Before → After</th>
+                <th>Reason / Reference</th>
+                <th>Staff Responsible</th>
               </tr>
-              <tr>
-                <td><strong>Executive Fluid-Shield Lab Coat</strong></td>
-                <td>Clinical White</td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="10"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="15"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="20"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="8"></td>
-                <td><input type="number" class="chk-input" style="width:50px; height:32px; text-align:center;" value="5"></td>
-                <td><strong>58</strong></td>
-                <td><span class="adm-badge adm-badge-success">Optimal</span></td>
-              </tr>
+            </thead>
+            <tbody id="warehouse-logs-tbody">
+              <!-- Rendered dynamically by renderWarehouseLogsTable() -->
             </tbody>
           </table>
         </div>
@@ -477,12 +523,24 @@
          ----------------------------------------------------------------- -->
     <div id="mod-orders" class="adm-module-panel">
       <div class="adm-table-card">
-        <div class="adm-table-toolbar">
+        <div class="adm-table-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
           <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-            <button class="mc-btn mc-btn-secondary mc-btn-sm active" onclick="filterOrderTab(this, 'all')">All (24)</button>
-            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="filterOrderTab(this, 'pending')">Pending (7)</button>
-            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="filterOrderTab(this, 'shipped')">Shipped (8)</button>
-            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="filterOrderTab(this, 'delivered')">Delivered (9)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm active" id="btn-filter-order-all" onclick="filterOrderTab(this, 'all')">All (0)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" id="btn-filter-order-pending" onclick="filterOrderTab(this, 'pending')">Pending (0)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" id="btn-filter-order-preparing" onclick="filterOrderTab(this, 'preparing')">Preparing (0)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" id="btn-filter-order-shipped" onclick="filterOrderTab(this, 'shipped')">Shipped (0)</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" id="btn-filter-order-delivered" onclick="filterOrderTab(this, 'delivered')">Delivered (0)</button>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+            <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="generateAndPreviewAllLabels()" title="Generate barcodes and preview all shipping labels before printing" style="background:#0E4D45; border-color:#0E4D45; font-weight:700;">
+              ⚡ 1. إنشاء ومعاينة الباركود (Generate &amp; Preview)
+            </button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="printAllLabels()" title="Batch print shipping labels for all confirmed orders" style="font-weight:700;">
+              🖨️ 2. طباعة الوصلات (Print Labels)
+            </button>
+            <button class="mc-btn mc-btn-ghost mc-btn-sm" onclick="printAllInvoices()" title="Batch print invoices for all confirmed orders">
+              🧾 طباعة الفواتير (Invoices)
+            </button>
           </div>
         </div>
 
@@ -513,8 +571,12 @@
          ----------------------------------------------------------------- -->
     <div id="mod-customers" class="adm-module-panel">
       <div class="adm-table-card">
-        <div class="adm-table-toolbar">
+        <div class="adm-table-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
           <h3 style="font-family:var(--font-family-display); margin:0;">Medical Customer Directory</h3>
+          <div class="adm-search-box" style="max-width:260px;">
+            <span class="adm-search-icon">🔍</span>
+            <input type="text" id="cust-search-input" class="adm-search-input" placeholder="Search customer, phone..." oninput="filterCustomerDirectory(this.value)">
+          </div>
         </div>
 
         <div class="adm-table-wrap">
@@ -527,28 +589,11 @@
                 <th>Wilaya</th>
                 <th>Total Orders</th>
                 <th>Lifetime Spend</th>
-                <th>Actions</th>
+                <th>Last Active</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>Dr. Ahmed Benali</strong></td>
-                <td>Resident • General Surgery</td>
-                <td>0550 00 00 00</td>
-                <td>16 - Alger</td>
-                <td>3 orders</td>
-                <td><strong>68,400 DZD</strong></td>
-                <td><button class="mc-btn mc-btn-ghost mc-btn-sm">View Profile</button></td>
-              </tr>
-              <tr>
-                <td><strong>Amina M.</strong></td>
-                <td>Pharmacy Student</td>
-                <td>0661 22 33 44</td>
-                <td>31 - Oran</td>
-                <td>2 orders</td>
-                <td><strong>30,800 DZD</strong></td>
-                <td><button class="mc-btn mc-btn-ghost mc-btn-sm">View Profile</button></td>
-              </tr>
+            <tbody id="admin-customers-table-body">
+              <!-- Populated dynamically by JS -->
             </tbody>
           </table>
         </div>
@@ -563,13 +608,8 @@
       <div class="adm-split-grid">
         <div class="adm-table-card" style="padding:1.25rem;">
           <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0;">Categories Tree</h3>
-          <ul>
-            <li>👕 Medical Scrubs (18 products)</li>
-            <li>🥼 Lab Coats (12 products)</li>
-            <li>👟 Medical Footwear (8 products)</li>
-            <li>🩺 Diagnostic Tools (10 products)</li>
-            <li>🎒 Medical Bags (6 products)</li>
-            <li>📦 Student Starter Kits (4 bundles)</li>
+          <ul id="admin-categories-tree-list" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.6rem;">
+            <!-- Populated dynamically by JS -->
           </ul>
         </div>
 
@@ -592,8 +632,8 @@
     <div id="mod-coupons" class="adm-module-panel">
       <div class="adm-table-card">
         <div class="adm-table-toolbar">
-          <h3 style="font-family:var(--font-family-display); margin:0;">Active Discount Codes</h3>
-          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="showToast('New coupon modal created!')">+ Create Coupon</button>
+          <h3 style="font-family:var(--font-family-display); margin:0;">Active Discount Codes & Coupons</h3>
+          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="openCouponModal()">+ Create Coupon</button>
         </div>
 
         <div class="adm-table-wrap">
@@ -601,32 +641,58 @@
             <thead>
               <tr>
                 <th>Code</th>
-                <th>Discount Type</th>
+                <th>Discount</th>
                 <th>Usage Limit</th>
                 <th>Used</th>
+                <th>Expiry Date</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>STUDENT10</strong></td>
-                <td>10% OFF</td>
-                <td>500 uses</td>
-                <td>142 uses</td>
-                <td><span class="adm-badge adm-badge-success">Active</span></td>
-              </tr>
-              <tr>
-                <td><strong>MEDICARE2026</strong></td>
-                <td>2,000 DZD OFF</td>
-                <td>200 uses</td>
-                <td>89 uses</td>
-                <td><span class="adm-badge adm-badge-success">Active</span></td>
-              </tr>
+            <tbody id="admin-coupons-table-body">
+              <!-- Dynamically populated from localStorage medicare_coupons -->
             </tbody>
           </table>
         </div>
       </div>
     </div>
+
+
+    <!-- -----------------------------------------------------------------
+         MODULE 7.5: FREQUENTLY BOUGHT TOGETHER BUNDLES & OFFERS
+         ----------------------------------------------------------------- -->
+    <div id="mod-bundles" class="adm-module-panel">
+      <div class="adm-table-card">
+        <div class="adm-table-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+          <div>
+            <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0;">🎁 Frequently Bought Together Bundles</h3>
+            <p style="margin:0; font-size:13px; color:var(--adm-muted-fg);">Curated cross-sell bundles shown on product detail pages with custom bundle discounts.</p>
+          </div>
+          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="openBundleModal()">+ Create Bundle</button>
+        </div>
+
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>Bundle Name</th>
+                <th>Anchor Product</th>
+                <th>Bundled Products</th>
+                <th>Total Value</th>
+                <th>Bundle Price</th>
+                <th>Savings</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-bundles-table-body">
+              <!-- Dynamically populated from localStorage medicare_bundles -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
 
 
     <!-- -----------------------------------------------------------------
@@ -649,14 +715,8 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><strong>Dr. Reda K.</strong> (Resident)</td>
-                <td>★★★★★ 5.0</td>
-                <td>Exceptional scrub set for 24h ER shifts...</td>
-                <td><span class="adm-badge adm-badge-success">Approved</span></td>
-                <td><button class="mc-btn mc-btn-ghost mc-btn-sm" onclick="showToast('Reply saved!')">Reply</button></td>
-              </tr>
+            <tbody id="admin-reviews-table-body">
+              <!-- Rendered dynamically by renderAdminReviews() -->
             </tbody>
           </table>
         </div>
@@ -746,23 +806,760 @@
 
 
     <!-- -----------------------------------------------------------------
-         MODULE 9: HOMEPAGE CMS
+         MODULE 9: STOREFRONT CMS & ANNOUNCEMENT BAR MANAGER
          ----------------------------------------------------------------- -->
     <div id="mod-homepage" class="adm-module-panel">
-      <div class="adm-table-card" style="padding:1.5rem;">
-        <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0;">Edit Hero Carousel Banners (No Code Required)</h3>
-        
-        <div class="chk-form-group" style="margin-bottom:1rem;">
-          <label class="chk-label">Banner 1 Title:</label>
-          <input type="text" class="chk-input" value="Obsidian Flex Antimicrobial Scrubs">
+      
+      <!-- Top Announcement Bar Manager Card -->
+      <div class="adm-table-card" style="padding:1.75rem; margin-bottom:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0; font-size:1.2rem; color:var(--adm-foreground);">
+              📢 Top Announcement Bar Manager (شريط الإعلانات العلوي)
+            </h3>
+            <p style="margin:0; font-size:13px; color:var(--adm-muted-fg);">
+              Customize the announcement bar displayed at the very top of all storefront pages (Index, Category, Product Detail, etc.).
+            </p>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <label style="display:inline-flex; align-items:center; gap:0.5rem; font-size:13px; font-weight:700; cursor:pointer; color:var(--adm-foreground);">
+              <input type="checkbox" id="adm-ann-enabled" checked onchange="updateAnnouncementLivePreview()" style="width:18px; height:18px; accent-color:var(--color-primary-600); cursor:pointer;">
+              <span>Enable Announcement Bar (تفعيل الشريط)</span>
+            </label>
+          </div>
         </div>
 
-        <div class="chk-form-group" style="margin-bottom:1rem;">
-          <label class="chk-label">Banner 1 Subtitle:</label>
-          <input type="text" class="chk-input" value="Engineered for 24-hour shift endurance — 4-way stretch flex fabric with liquid barrier.">
+        <!-- Live Preview Box -->
+        <div style="margin-bottom:1.5rem; background:var(--adm-accent); border:1px solid var(--adm-border); border-radius:var(--radius-lg); padding:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+            <span style="font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--adm-muted-fg);">
+              👁️ Real-Time Live Preview (معاينة حية)
+            </span>
+            <div style="display:flex; gap:0.35rem;">
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm active" id="btn-prev-en" onclick="setPreviewLang('en')" style="font-size:11px; padding:0.2rem 0.5rem;">English</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="btn-prev-ar" onclick="setPreviewLang('ar')" style="font-size:11px; padding:0.2rem 0.5rem;">العربية</button>
+            </div>
+          </div>
+          
+          <!-- The Simulated Announcement Bar -->
+          <div id="adm-ann-preview-bar" style="background-color:#0A3A34; color:#F0FDF4; font-family:'Plus Jakarta Sans', system-ui, sans-serif; font-size:11.5px; font-weight:700; padding:0.5rem 1rem; border-radius:6px; display:flex; align-items:center; justify-content:center; gap:1.5rem; flex-wrap:wrap; transition:all 0.2s;">
+            <!-- Rendered dynamically by JS -->
+          </div>
         </div>
 
-        <button class="mc-btn mc-btn-accent" onclick="showToast('✓ Homepage Content Saved!')">💾 Save Banner Changes</button>
+        <!-- Visual Style & Color Controls -->
+        <div class="chk-form-grid two-col" style="margin-bottom:1.5rem; background:var(--adm-card-bg); padding:1rem; border-radius:8px; border:1px solid var(--adm-border);">
+          <div class="chk-form-group">
+            <label class="chk-label">Background Color (لون الخلفية):</label>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="color" id="adm-ann-bg-color" value="#0A3A34" oninput="onColorChange()" style="width:44px; height:40px; border:none; border-radius:6px; cursor:pointer; background:none;">
+              <input type="text" id="adm-ann-bg-hex" class="chk-input" value="#0A3A34" oninput="onHexChange('bg', this.value)" style="width:110px; font-family:monospace; font-weight:700;">
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                <button type="button" onclick="setQuickColor('bg','#0A3A34')" title="Obsidian Teal" style="width:24px; height:24px; border-radius:4px; background:#0A3A34; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setQuickColor('bg','#0E4D45')" title="Emerald Teal" style="width:24px; height:24px; border-radius:4px; background:#0E4D45; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setQuickColor('bg','#0F172A')" title="Slate Dark" style="width:24px; height:24px; border-radius:4px; background:#0F172A; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setQuickColor('bg','#881337')" title="Ruby Crimson" style="width:24px; height:24px; border-radius:4px; background:#881337; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setQuickColor('bg','#1E3A5F')" title="Navy Blue" style="width:24px; height:24px; border-radius:4px; background:#1E3A5F; border:1px solid #fff; cursor:pointer;"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="chk-form-group">
+            <label class="chk-label">Text & Icon Color (لون النص والأيقونات):</label>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="color" id="adm-ann-text-color" value="#F0FDF4" oninput="onColorChange()" style="width:44px; height:40px; border:none; border-radius:6px; cursor:pointer; background:none;">
+              <input type="text" id="adm-ann-text-hex" class="chk-input" value="#F0FDF4" oninput="onHexChange('text', this.value)" style="width:110px; font-family:monospace; font-weight:700;">
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                <button type="button" onclick="setQuickColor('text','#F0FDF4')" title="Mint White" style="width:24px; height:24px; border-radius:4px; background:#F0FDF4; border:1px solid #94A3B8; cursor:pointer;"></button>
+                <button type="button" onclick="setQuickColor('text','#FEF08A')" title="Gold Yellow" style="width:24px; height:24px; border-radius:4px; background:#FEF08A; border:1px solid #94A3B8; cursor:pointer;"></button>
+                <button type="button" onclick="setQuickColor('text','#FFFFFF')" title="Pure White" style="width:24px; height:24px; border-radius:4px; background:#FFFFFF; border:1px solid #94A3B8; cursor:pointer;"></button>
+                <button type="button" onclick="setQuickColor('text','#93C5FD')" title="Ice Blue" style="width:24px; height:24px; border-radius:4px; background:#93C5FD; border:1px solid #94A3B8; cursor:pointer;"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Announcement Items List -->
+        <h4 style="font-family:var(--font-family-display); font-size:14px; margin:0 0 0.75rem 0; color:var(--adm-foreground);">
+          📝 Announcement Messages (رسائل الشريط — قابلة للتعديل والإضافة)
+        </h4>
+
+        <div id="adm-ann-items-container" style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.25rem;">
+          <!-- Rendered dynamically by JS -->
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; padding-top:0.75rem; border-top:1px solid var(--adm-border);">
+          <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="addAnnouncementItemRow()">
+            + Add Another Message (إضافة رسالة إعلانية أخرى)
+          </button>
+
+          <button type="button" class="mc-btn mc-btn-accent mc-btn-md" style="font-weight:800; padding:0.6rem 1.5rem;" onclick="saveAnnouncementSettings()">
+            💾 Save & Publish Announcement Bar (حفظ ونشر فوراً)
+          </button>
+        </div>
+      </div>
+
+
+      <!-- Hero Carousel Banners CMS Card -->
+      <div class="adm-table-card" style="padding:1.75rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0; font-size:1.2rem; color:var(--adm-foreground);">
+              🖼️ Hero Carousel Banners & Colors (سلايدر الصفحة الرئيسية وألوان الشرائح)
+            </h3>
+            <p style="margin:0; font-size:13px; color:var(--adm-muted-fg);">
+              Customize slide headlines, descriptions, and full color palettes (Background gradient, Text, and Accent/Button colors) displayed on the homepage.
+            </p>
+          </div>
+        </div>
+
+        <!-- ==================== SLIDE 1 ==================== -->
+        <div style="background:var(--adm-card-bg, #ffffff); border:1px solid var(--adm-border); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; box-shadow:var(--adm-shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--adm-border); padding-bottom:0.75rem;">
+            <h4 style="margin:0; font-size:14px; font-weight:800; color:var(--adm-foreground);">
+              🎨 Slide 1: Primary Spotlight (الشريحة الأولى)
+            </h4>
+            <span style="font-size:11px; font-weight:700; background:var(--adm-accent); padding:3px 8px; border-radius:9999px; color:var(--adm-accent-fg);">Main Spotlight</span>
+          </div>
+
+          <!-- Slide 1 Live Preview -->
+          <div style="margin-bottom:1.25rem;">
+            <div style="font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--adm-muted-fg); margin-bottom:0.5rem;">
+              👁️ Real-Time Preview (معاينة حية للشريحة):
+            </div>
+            <div id="hero-prev-1" style="background:linear-gradient(135deg, #0A3A34 0%, #062824 100%); color:#FFFFFF; padding:1.5rem 1.75rem; border-radius:10px; position:relative; overflow:hidden; transition:all 0.25s ease;">
+              <div id="hero-prev-1-tag" style="display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:9999px; background:rgba(20,184,166,0.25); border:1px solid rgba(45,212,191,0.4); margin-bottom:0.6rem; color:#CCFBF1;">
+                ✨ New 2026 Collection
+              </div>
+              <h2 id="hero-prev-1-title" style="margin:0 0 0.5rem 0; font-size:1.35rem; font-weight:800; line-height:1.2; font-family:'Plus Jakarta Sans', system-ui, sans-serif;">
+                Obsidian Flex Antimicrobial Scrubs
+              </h2>
+              <p id="hero-prev-1-desc" style="margin:0 0 1rem 0; font-size:12.5px; opacity:0.9; max-width:550px; line-height:1.4;">
+                Engineered for 24-hour shift endurance — 4-way stretch flex fabric with liquid-shield barrier.
+              </p>
+              <div style="display:flex; gap:0.5rem;">
+                <span id="hero-prev-1-btn" style="background:#14B8A6; color:#042F2E; padding:0.4rem 1rem; border-radius:6px; font-size:12px; font-weight:800; display:inline-block;">Shop Scrubs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 1 Texts -->
+          <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Banner Title (English):</label>
+              <input type="text" id="banner1-title" class="chk-input" value="Obsidian Flex Antimicrobial Scrubs" oninput="updateHeroLivePreview(1)">
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Banner Title (العربية):</label>
+              <input type="text" id="banner1-title-ar" class="chk-input" value="أطقم سكراب أوبسيديان فليكس الطبية" oninput="updateHeroLivePreview(1)">
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Badge Tag (English):</label>
+              <input type="text" id="banner1-tag" class="chk-input" value="✨ New 2026 Collection" oninput="updateHeroLivePreview(1)">
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Badge Tag (العربية):</label>
+              <input type="text" id="banner1-tag-ar" class="chk-input" value="✨ مجموعة 2026 الجديدة" oninput="updateHeroLivePreview(1)">
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Subtitle / Description (English):</label>
+              <input type="text" id="banner1-desc" class="chk-input" value="Engineered for 24-hour shift endurance — 4-way stretch flex fabric with liquid-shield barrier." oninput="updateHeroLivePreview(1)">
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Subtitle / Description (العربية):</label>
+              <input type="text" id="banner1-desc-ar" class="chk-input" value="مصمم لتحمّل نوبات 24 ساعة — قماش مرن 4 اتجاهات مع طبقة عازلة للسوائل." oninput="updateHeroLivePreview(1)">
+            </div>
+          </div>
+
+          <!-- Slide 1 Color Controls -->
+          <div style="background:var(--adm-accent); border:1px solid var(--adm-border); border-radius:8px; padding:1rem;">
+            <div style="font-size:12.5px; font-weight:800; color:var(--adm-foreground); margin-bottom:0.75rem;">
+              🎨 Slide 1 Color Customization (تخصيص ألوان الشريحة 1):
+            </div>
+            
+            <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Gradient Start (بداية التدرج):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner1-bg-start" value="#0A3A34" oninput="onHeroColorInput(1)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner1-bg-start-hex" class="chk-input" value="#0A3A34" oninput="onHeroHexInput(1, 'start', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Gradient End (نهاية التدرج):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner1-bg-end" value="#062824" oninput="onHeroColorInput(1)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner1-bg-end-hex" class="chk-input" value="#062824" oninput="onHeroHexInput(1, 'end', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+            </div>
+
+            <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Text & Title Color (لون النصوص والعناوين):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner1-text-color" value="#FFFFFF" oninput="onHeroColorInput(1)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner1-text-hex" class="chk-input" value="#FFFFFF" oninput="onHeroHexInput(1, 'text', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Button & Accent Color (لون الزر والتفاصيل):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner1-btn-color" value="#14B8A6" oninput="onHeroColorInput(1)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner1-btn-hex" class="chk-input" value="#14B8A6" oninput="onHeroHexInput(1, 'btn', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Theme Presets -->
+            <div>
+              <label class="chk-label" style="margin-bottom:0.35rem; display:block;">Quick Theme Presets (أنماط لونية جاهزة سريعة):</label>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(1, '#0A3A34', '#062824', '#FFFFFF', '#14B8A6')" style="font-size:11px; padding:0.25rem 0.5rem;">🌿 Obsidian Teal</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(1, '#0F172A', '#1E293B', '#FFFFFF', '#38BDF8')" style="font-size:11px; padding:0.25rem 0.5rem;">🌌 Slate Navy</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(1, '#1E3A5F', '#0B1E36', '#FFFFFF', '#60A5FA')" style="font-size:11px; padding:0.25rem 0.5rem;">🌊 Royal Clinical</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(1, '#881337', '#4C0519', '#FFFFFF', '#FB7185')" style="font-size:11px; padding:0.25rem 0.5rem;">🍷 Crimson Surgical</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(1, '#3B0764', '#1E0436', '#FFFFFF', '#C084FC')" style="font-size:11px; padding:0.25rem 0.5rem;">💜 Deep Violet</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ==================== SLIDE 2 ==================== -->
+        <div style="background:var(--adm-card-bg, #ffffff); border:1px solid var(--adm-border); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; box-shadow:var(--adm-shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--adm-border); padding-bottom:0.75rem;">
+            <h4 style="margin:0; font-size:14px; font-weight:800; color:var(--adm-foreground);">
+              🎨 Slide 2: Student Discount Spotlight (الشريحة الثانية)
+            </h4>
+            <span style="font-size:11px; font-weight:700; background:var(--adm-accent); padding:3px 8px; border-radius:9999px; color:var(--adm-accent-fg);">Student Bundles</span>
+          </div>
+
+          <!-- Slide 2 Live Preview -->
+          <div style="margin-bottom:1.25rem;">
+            <div style="font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--adm-muted-fg); margin-bottom:0.5rem;">
+              👁️ Real-Time Preview (معاينة حية للشريحة):
+            </div>
+            <div id="hero-prev-2" style="background:linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%); color:#FFFFFF; padding:1.5rem 1.75rem; border-radius:10px; position:relative; overflow:hidden; transition:all 0.25s ease;">
+              <div id="hero-prev-2-tag" style="display:inline-block; font-size:11px; font-weight:700; padding:3px 10px; border-radius:9999px; background:rgba(245,158,11,0.25); border:1px solid rgba(245,158,11,0.4); margin-bottom:0.6rem; color:#FEF08A;">
+                🎓 Student Discount Active
+              </div>
+              <h2 id="hero-prev-2-title" style="margin:0 0 0.5rem 0; font-size:1.35rem; font-weight:800; line-height:1.2; font-family:'Plus Jakarta Sans', system-ui, sans-serif;">
+                2026 Medical Student Starter Kits
+              </h2>
+              <p id="hero-prev-2-desc" style="margin:0 0 1rem 0; font-size:12.5px; opacity:0.9; max-width:550px; line-height:1.4;">
+                Complete gear & apparel bundles for Medicine, Pharmacy, Dentistry, and Nursing students. Save up to 25%.
+              </p>
+              <div style="display:flex; gap:0.5rem;">
+                <span id="hero-prev-2-btn" style="background:#F59E0B; color:#1C1917; padding:0.4rem 1rem; border-radius:6px; font-size:12px; font-weight:800; display:inline-block;">View Student Bundles</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 2 Texts -->
+          <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Banner Title (English):</label>
+              <input type="text" id="banner2-title" class="chk-input" value="2026 Medical Student Starter Kits" oninput="updateHeroLivePreview(2)">
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Banner Title (العربية):</label>
+              <input type="text" id="banner2-title-ar" class="chk-input" value="باقات وحقائب طلاب الطب والصيدلة 2026" oninput="updateHeroLivePreview(2)">
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Badge Tag (English):</label>
+              <input type="text" id="banner2-tag" class="chk-input" value="🎓 Student Discount Active" oninput="updateHeroLivePreview(2)">
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Badge Tag (العربية):</label>
+              <input type="text" id="banner2-tag-ar" class="chk-input" value="🎓 خصم الطلاب متاح" oninput="updateHeroLivePreview(2)">
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Subtitle / Description (English):</label>
+              <input type="text" id="banner2-desc" class="chk-input" value="Complete gear & apparel bundles for Medicine, Pharmacy, Dentistry, and Nursing students. Save up to 25%." oninput="updateHeroLivePreview(2)">
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Subtitle / Description (العربية):</label>
+              <input type="text" id="banner2-desc-ar" class="chk-input" value="حقائب متكاملة للملابس والمعدات لطلاب الطب والصيدلة وطب الأسنان والتمريض. وفّر حتى 25%." oninput="updateHeroLivePreview(2)">
+            </div>
+          </div>
+
+          <!-- Slide 2 Color Controls -->
+          <div style="background:var(--adm-accent); border:1px solid var(--adm-border); border-radius:8px; padding:1rem;">
+            <div style="font-size:12.5px; font-weight:800; color:var(--adm-foreground); margin-bottom:0.75rem;">
+              🎨 Slide 2 Color Customization (تخصيص ألوان الشريحة 2):
+            </div>
+            
+            <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Gradient Start (بداية التدرج):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner2-bg-start" value="#0F172A" oninput="onHeroColorInput(2)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner2-bg-start-hex" class="chk-input" value="#0F172A" oninput="onHeroHexInput(2, 'start', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Gradient End (نهاية التدرج):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner2-bg-end" value="#1E3A5F" oninput="onHeroColorInput(2)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner2-bg-end-hex" class="chk-input" value="#1E3A5F" oninput="onHeroHexInput(2, 'end', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+            </div>
+
+            <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Text & Title Color (لون النصوص والعناوين):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner2-text-color" value="#FFFFFF" oninput="onHeroColorInput(2)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner2-text-hex" class="chk-input" value="#FFFFFF" oninput="onHeroHexInput(2, 'text', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Button & Accent Color (لون الزر والتفاصيل):</label>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <input type="color" id="banner2-btn-color" value="#F59E0B" oninput="onHeroColorInput(2)" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                  <input type="text" id="banner2-btn-hex" class="chk-input" value="#F59E0B" oninput="onHeroHexInput(2, 'btn', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Theme Presets -->
+            <div>
+              <label class="chk-label" style="margin-bottom:0.35rem; display:block;">Quick Theme Presets (أنماط لونية جاهزة سريعة):</label>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(2, '#0F172A', '#1E3A5F', '#FFFFFF', '#F59E0B')" style="font-size:11px; padding:0.25rem 0.5rem;">🎓 Student Gold & Navy</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(2, '#042F2E', '#0F766E', '#FFFFFF', '#34D399')" style="font-size:11px; padding:0.25rem 0.5rem;">🌲 Emerald Mint</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(2, '#1E1B4B', '#4338CA', '#FFFFFF', '#A5B4FC')" style="font-size:11px; padding:0.25rem 0.5rem;">🌌 Indigo Glow</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(2, '#451A03', '#9A3412', '#FFFFFF', '#FDBA74')" style="font-size:11px; padding:0.25rem 0.5rem;">🍂 Warm Amber</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setHeroQuickColor(2, '#18181B', '#3F3F46', '#FFFFFF', '#E4E4E7')" style="font-size:11px; padding:0.25rem 0.5rem;">🖤 Monochrome Dark</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; padding-top:0.75rem; border-top:1px solid var(--adm-border);">
+          <button type="button" class="mc-btn mc-btn-accent mc-btn-md" style="font-weight:800; padding:0.6rem 1.75rem;" onclick="saveHeroBanners()">
+            💾 Save & Publish Hero Banners (حفظ ونشر السلايدر فوراً)
+          </button>
+        </div>
+      </div>
+
+      <!-- Trust & Assurance Badges Bar CMS Card -->
+      <div class="adm-table-card" style="padding:1.75rem; margin-top:1.5rem;" id="adm-trust-badges-card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0; font-size:1.2rem; color:var(--adm-foreground);">
+              🛡️ Trust & Assurance Badges Bar (شريط الضمانات والمزايا — 58 ولاية، الدفع عند الاستلام، الجودة)
+            </h3>
+            <p style="margin:0; font-size:13px; color:var(--adm-muted-fg);">
+              Customize the icons, titles, descriptions (English & Arabic), background colors, and visibility of the trust feature cards displayed on the storefront.
+            </p>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <label style="display:inline-flex; align-items:center; gap:0.5rem; font-size:13px; font-weight:700; cursor:pointer; color:var(--adm-foreground);">
+              <input type="checkbox" id="adm-trust-enabled" checked onchange="updateTrustLivePreview()" style="width:18px; height:18px; accent-color:var(--color-primary-600); cursor:pointer;">
+              <span>Enable Trust Bar (تفعيل الشريط)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Live Preview Box -->
+        <div style="margin-bottom:1.5rem; background:var(--adm-accent); border:1px solid var(--adm-border); border-radius:var(--radius-lg); padding:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+            <span style="font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--adm-muted-fg);">
+              👁️ Real-Time Live Preview (معاينة حية لشريط الضمانات)
+            </span>
+            <div style="display:flex; gap:0.35rem;">
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm active" id="btn-trust-prev-en" onclick="setTrustPreviewLang('en')" style="font-size:11px; padding:0.2rem 0.5rem;">English</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="btn-trust-prev-ar" onclick="setTrustPreviewLang('ar')" style="font-size:11px; padding:0.2rem 0.5rem;">العربية</button>
+            </div>
+          </div>
+          
+          <!-- The Simulated Trust Bar -->
+          <div id="adm-trust-preview-bar" style="background:#062E29; color:#FFFFFF; border-radius:12px; padding:1.5rem; transition:all 0.25s ease;">
+            <div id="adm-trust-preview-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1.25rem;">
+              <div style="display:flex; align-items:flex-start; gap:0.75rem;">
+                <div style="width:38px; height:38px; border-radius:50%; background:rgba(20, 184, 166, 0.25); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">💵</div>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:#FFFFFF; margin-bottom:2px; font-family:'Plus Jakarta Sans', system-ui, sans-serif;">Cash on Delivery</div>
+                  <div style="font-size:11px; color:#A7F3D0; line-height:1.35; opacity:0.9;">Pay safely upon inspection at your doorstep (الدفع عند الاستلام).</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:0.75rem;">
+                <div style="width:38px; height:38px; border-radius:50%; background:rgba(20, 184, 166, 0.25); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🚚</div>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:#FFFFFF; margin-bottom:2px; font-family:'Plus Jakarta Sans', system-ui, sans-serif;">Delivery to 58 Wilayas</div>
+                  <div style="font-size:11px; color:#A7F3D0; line-height:1.35; opacity:0.9;">Fast express shipping across all regions of Algeria (التوصيل لجميع الـ 58 ولاية).</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:0.75rem;">
+                <div style="width:38px; height:38px; border-radius:50%; background:rgba(20, 184, 166, 0.25); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🔄</div>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:#FFFFFF; margin-bottom:2px; font-family:'Plus Jakarta Sans', system-ui, sans-serif;">14-Day Easy Returns</div>
+                  <div style="font-size:11px; color:#A7F3D0; line-height:1.35; opacity:0.9;">Hassle-free sizing exchanges and returns policy.</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:0.75rem;">
+                <div style="width:38px; height:38px; border-radius:50%; background:rgba(20, 184, 166, 0.25); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🛡️</div>
+                <div>
+                  <div style="font-weight:700; font-size:13px; color:#FFFFFF; margin-bottom:2px; font-family:'Plus Jakarta Sans', system-ui, sans-serif;">100% Medical Grade</div>
+                  <div style="font-size:11px; color:#A7F3D0; line-height:1.35; opacity:0.9;">Antimicrobial & fluid-repellent certified materials.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Style & Color Controls -->
+        <div class="chk-form-grid two-col" style="margin-bottom:1.5rem; background:var(--adm-card-bg); padding:1rem; border-radius:8px; border:1px solid var(--adm-border);">
+          <div class="chk-form-group">
+            <label class="chk-label">Background Color (لون الخلفية):</label>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="color" id="adm-trust-bg-color" value="#062E29" oninput="onTrustColorChange()" style="width:44px; height:40px; border:none; border-radius:6px; cursor:pointer; background:none;">
+              <input type="text" id="adm-trust-bg-hex" class="chk-input" value="#062E29" oninput="onTrustHexChange('bg', this.value)" style="width:110px; font-family:monospace; font-weight:700;">
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                <button type="button" onclick="setTrustQuickColor('bg','#062E29')" title="Obsidian Forest" style="width:24px; height:24px; border-radius:4px; background:#062E29; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setTrustQuickColor('bg','#0A3A34')" title="Emerald Teal" style="width:24px; height:24px; border-radius:4px; background:#0A3A34; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setTrustQuickColor('bg','#0F172A')" title="Slate Dark" style="width:24px; height:24px; border-radius:4px; background:#0F172A; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setTrustQuickColor('bg','#1E3A5F')" title="Navy Blue" style="width:24px; height:24px; border-radius:4px; background:#1E3A5F; border:1px solid #fff; cursor:pointer;"></button>
+                <button type="button" onclick="setTrustQuickColor('bg','#881337')" title="Ruby Crimson" style="width:24px; height:24px; border-radius:4px; background:#881337; border:1px solid #fff; cursor:pointer;"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="chk-form-group">
+            <label class="chk-label">Title Text Color (لون عنوان الميزة):</label>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <input type="color" id="adm-trust-text-color" value="#FFFFFF" oninput="onTrustColorChange()" style="width:44px; height:40px; border:none; border-radius:6px; cursor:pointer; background:none;">
+              <input type="text" id="adm-trust-text-hex" class="chk-input" value="#FFFFFF" oninput="onTrustHexChange('text', this.value)" style="width:110px; font-family:monospace; font-weight:700;">
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                <button type="button" onclick="setTrustQuickColor('text','#FFFFFF')" title="Pure White" style="width:24px; height:24px; border-radius:4px; background:#FFFFFF; border:1px solid #94A3B8; cursor:pointer;"></button>
+                <button type="button" onclick="setTrustQuickColor('text','#F0FDF4')" title="Mint White" style="width:24px; height:24px; border-radius:4px; background:#F0FDF4; border:1px solid #94A3B8; cursor:pointer;"></button>
+                <button type="button" onclick="setTrustQuickColor('text','#FEF08A')" title="Warm Gold" style="width:24px; height:24px; border-radius:4px; background:#FEF08A; border:1px solid #94A3B8; cursor:pointer;"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust Badges Items List -->
+        <h4 style="font-family:var(--font-family-display); font-size:14px; margin:0 0 0.75rem 0; color:var(--adm-foreground);">
+          📝 Trust Items & Features (بطاقات الضمانات — قابلة للتعديل والإضافة والحذف)
+        </h4>
+
+        <div id="adm-trust-items-container" style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.25rem;">
+          <!-- Badge 1 -->
+          <div class="adm-trust-row" style="background:var(--adm-card-bg, #ffffff); border:1px solid var(--adm-border); border-radius:10px; padding:1.25rem; box-shadow:var(--adm-shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid var(--adm-border); padding-bottom:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-weight:800; font-size:13px; color:var(--adm-foreground);">Badge #1</span>
+                <span class="adm-trust-icon-badge" style="font-size:18px;">💵</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:80px 1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Icon:</label>
+                <input type="text" class="chk-input adm-trust-icon" value="💵" oninput="updateTrustLivePreview()" style="text-align:center; font-size:18px;" maxlength="4">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Title (English):</label>
+                <input type="text" class="chk-input adm-trust-title-en" value="Cash on Delivery" oninput="updateTrustLivePreview()" placeholder="e.g. Cash on Delivery">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">العنوان (العربية):</label>
+                <input type="text" class="chk-input adm-trust-title-ar" value="الدفع عند الاستلام" oninput="updateTrustLivePreview()" placeholder="مثال: الدفع عند الاستلام" dir="rtl">
+              </div>
+            </div>
+            <div class="chk-form-grid two-col">
+              <div class="chk-form-group">
+                <label class="chk-label">Description / Subtitle (English):</label>
+                <input type="text" class="chk-input adm-trust-sub-en" value="Pay safely upon inspection at your doorstep (الدفع عند الاستلام)." oninput="updateTrustLivePreview()" placeholder="e.g. Pay safely upon inspection at your doorstep.">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">الوصف / النص الإضافي (العربية):</label>
+                <input type="text" class="chk-input adm-trust-sub-ar" value="ادفع بأمان عند معاينة طلبك على باب منزلك في جميع الولايات." oninput="updateTrustLivePreview()" placeholder="مثال: ادفع بأمان عند معاينة طلبك على باب منزلك." dir="rtl">
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge 2 -->
+          <div class="adm-trust-row" style="background:var(--adm-card-bg, #ffffff); border:1px solid var(--adm-border); border-radius:10px; padding:1.25rem; box-shadow:var(--adm-shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid var(--adm-border); padding-bottom:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-weight:800; font-size:13px; color:var(--adm-foreground);">Badge #2</span>
+                <span class="adm-trust-icon-badge" style="font-size:18px;">🚚</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:80px 1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Icon:</label>
+                <input type="text" class="chk-input adm-trust-icon" value="🚚" oninput="updateTrustLivePreview()" style="text-align:center; font-size:18px;" maxlength="4">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Title (English):</label>
+                <input type="text" class="chk-input adm-trust-title-en" value="Delivery to 58 Wilayas" oninput="updateTrustLivePreview()" placeholder="e.g. Delivery to 58 Wilayas">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">العنوان (العربية):</label>
+                <input type="text" class="chk-input adm-trust-title-ar" value="التوصيل لجميع الـ 58 ولاية" oninput="updateTrustLivePreview()" placeholder="مثال: التوصيل لجميع الـ 58 ولاية" dir="rtl">
+              </div>
+            </div>
+            <div class="chk-form-grid two-col">
+              <div class="chk-form-group">
+                <label class="chk-label">Description / Subtitle (English):</label>
+                <input type="text" class="chk-input adm-trust-sub-en" value="Fast express shipping across all regions of Algeria (التوصيل لجميع الـ 58 ولاية)." oninput="updateTrustLivePreview()" placeholder="e.g. Fast express shipping across all regions.">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">الوصف / النص الإضافي (العربية):</label>
+                <input type="text" class="chk-input adm-trust-sub-ar" value="شحن سريع ومضمون لكافة بلديات ودوائر التراب الوطني." oninput="updateTrustLivePreview()" placeholder="مثال: شحن سريع ومضمون." dir="rtl">
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge 3 -->
+          <div class="adm-trust-row" style="background:var(--adm-card-bg, #ffffff); border:1px solid var(--adm-border); border-radius:10px; padding:1.25rem; box-shadow:var(--adm-shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid var(--adm-border); padding-bottom:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-weight:800; font-size:13px; color:var(--adm-foreground);">Badge #3</span>
+                <span class="adm-trust-icon-badge" style="font-size:18px;">🔄</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:80px 1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Icon:</label>
+                <input type="text" class="chk-input adm-trust-icon" value="🔄" oninput="updateTrustLivePreview()" style="text-align:center; font-size:18px;" maxlength="4">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Title (English):</label>
+                <input type="text" class="chk-input adm-trust-title-en" value="14-Day Easy Returns" oninput="updateTrustLivePreview()" placeholder="e.g. 14-Day Easy Returns">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">العنوان (العربية):</label>
+                <input type="text" class="chk-input adm-trust-title-ar" value="استرجاع واستبدال 14 يوم" oninput="updateTrustLivePreview()" placeholder="مثال: استرجاع واستبدال 14 يوم" dir="rtl">
+              </div>
+            </div>
+            <div class="chk-form-grid two-col">
+              <div class="chk-form-group">
+                <label class="chk-label">Description / Subtitle (English):</label>
+                <input type="text" class="chk-input adm-trust-sub-en" value="Hassle-free sizing exchanges and returns policy." oninput="updateTrustLivePreview()" placeholder="e.g. Hassle-free sizing exchanges.">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">الوصف / النص الإضافي (العربية):</label>
+                <input type="text" class="chk-input adm-trust-sub-ar" value="إمكانية تبديل المقاسات أو استرجاع المنتج بكل سهولة وبدون تعقيد." oninput="updateTrustLivePreview()" placeholder="مثال: إمكانية تبديل المقاسات." dir="rtl">
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge 4 -->
+          <div class="adm-trust-row" style="background:var(--adm-card-bg, #ffffff); border:1px solid var(--adm-border); border-radius:10px; padding:1.25rem; box-shadow:var(--adm-shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid var(--adm-border); padding-bottom:0.5rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <span style="font-weight:800; font-size:13px; color:var(--adm-foreground);">Badge #4</span>
+                <span class="adm-trust-icon-badge" style="font-size:18px;">🛡️</span>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:80px 1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Icon:</label>
+                <input type="text" class="chk-input adm-trust-icon" value="🛡️" oninput="updateTrustLivePreview()" style="text-align:center; font-size:18px;" maxlength="4">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Title (English):</label>
+                <input type="text" class="chk-input adm-trust-title-en" value="100% Medical Grade" oninput="updateTrustLivePreview()" placeholder="e.g. 100% Medical Grade">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">العنوان (العربية):</label>
+                <input type="text" class="chk-input adm-trust-title-ar" value="جودة طبية معتمدة 100%" oninput="updateTrustLivePreview()" placeholder="مثال: جودة طبية معتمدة 100%" dir="rtl">
+              </div>
+            </div>
+            <div class="chk-form-grid two-col">
+              <div class="chk-form-group">
+                <label class="chk-label">Description / Subtitle (English):</label>
+                <input type="text" class="chk-input adm-trust-sub-en" value="Antimicrobial & fluid-repellent certified materials." oninput="updateTrustLivePreview()" placeholder="e.g. Antimicrobial materials.">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">الوصف / النص الإضافي (العربية):</label>
+                <input type="text" class="chk-input adm-trust-sub-ar" value="أقمشة مضادة للميكروبات وعازلة للسوائل مطابقة للمعايير الصحية." oninput="updateTrustLivePreview()" placeholder="مثال: أقمشة مضادة للميكروبات." dir="rtl">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; padding-top:0.75rem; border-top:1px solid var(--adm-border);">
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="addTrustBadgeRow()">
+              + Add Another Trust Badge (إضافة ميزة أخرى)
+            </button>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="resetTrustBadgesToDefault()" style="color:#EF4444;">
+              🔄 Reset to Defaults (استعادة الافتراضي)
+            </button>
+          </div>
+
+          <button type="button" class="mc-btn mc-btn-accent mc-btn-md" style="font-weight:800; padding:0.6rem 1.5rem;" onclick="saveTrustBadgesSettings()">
+            💾 Save & Publish Trust Bar (حفظ ونشر شريط الضمانات فوراً)
+          </button>
+        </div>
+      </div>
+
+      <!-- Community / Newsletter & WhatsApp VIP CMS Card -->
+      <div class="adm-table-card" style="padding:1.75rem; margin-top:1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem;">
+          <div>
+            <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0; font-size:1.2rem; color:var(--adm-foreground);">
+              💬 Medical Community & WhatsApp VIP Section (قسم مجتمع واتساب والنشرة البريدية)
+            </h3>
+            <p style="margin:0; font-size:13px; color:var(--adm-muted-fg);">
+              Customize the titles, descriptions, WhatsApp link, and full color palette (Background gradient, WhatsApp button color, Subscribe button color) for the homepage community box.
+            </p>
+          </div>
+        </div>
+
+        <!-- Live Real-Time Preview -->
+        <div style="margin-bottom:1.25rem;">
+          <div style="font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--adm-muted-fg); margin-bottom:0.5rem;">
+            👁️ Real-Time Preview (معاينة حية للقسم):
+          </div>
+          <div id="comm-preview-box" style="background:linear-gradient(135deg, #064E3B 0%, #022C22 100%); color:#FFFFFF; padding:2rem 1.5rem; border-radius:12px; text-align:center; transition:all 0.25s ease;">
+            <h3 id="comm-prev-title" style="margin:0 0 0.5rem 0; font-size:1.5rem; font-weight:800; font-family:'Plus Jakarta Sans', system-ui, sans-serif;">
+              Join 15,000+ Medical Professionals
+            </h3>
+            <p id="comm-prev-desc" style="margin:0 auto 1.25rem auto; font-size:13px; opacity:0.9; max-width:520px; line-height:1.4;">
+              Subscribe for VIP student discounts, new product launches, and instant WhatsApp order updates.
+            </p>
+            <div style="margin-bottom:1.25rem;">
+              <span id="comm-prev-wa-btn" style="background:#22C55E; color:#FFFFFF; padding:0.6rem 1.4rem; border-radius:9999px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:0.5rem; box-shadow:0 4px 12px rgba(34,197,94,0.35);">
+                💬 Join WhatsApp VIP — انضم للمجموعة
+              </span>
+            </div>
+            <div style="display:flex; justify-content:center; gap:0.5rem; max-width:420px; margin:0 auto; flex-wrap:wrap;">
+              <input type="email" placeholder="Enter your email address..." class="chk-input" style="height:40px; font-size:12.5px; pointer-events:none; background:#fff; color:#333; flex:1; min-width:180px;" readonly>
+              <button type="button" id="comm-prev-sub-btn" class="mc-btn" style="background:#EA580C; color:#fff; font-size:12.5px; padding:0 1.25rem; border-radius:6px; font-weight:700; height:40px;">
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Texts Form -->
+        <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">Section Headline Title (English):</label>
+            <input type="text" id="comm-title-en" class="chk-input" value="Join 15,000+ Medical Professionals" oninput="updateCommunityLivePreview()">
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">العنوان الرئيسي (العربية):</label>
+            <input type="text" id="comm-title-ar" class="chk-input" value="انضم لأكثر من 15,000 متخصص طبي" oninput="updateCommunityLivePreview()">
+          </div>
+        </div>
+
+        <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">Subtitle / Description (English):</label>
+            <input type="text" id="comm-desc-en" class="chk-input" value="Subscribe for VIP student discounts, new product launches, and instant WhatsApp order updates." oninput="updateCommunityLivePreview()">
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">الوصف والرسالة (العربية):</label>
+            <input type="text" id="comm-desc-ar" class="chk-input" value="اشترك للحصول على خصومات VIP للطلاب وإشعارات المنتجات الجديدة وتحديثات الطلبات." oninput="updateCommunityLivePreview()">
+          </div>
+        </div>
+
+        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+          <div class="chk-form-group">
+            <label class="chk-label">WhatsApp Button Text (نص زر الواتساب):</label>
+            <input type="text" id="comm-wa-text" class="chk-input" value="💬 Join WhatsApp VIP — انضم للمجموعة" oninput="updateCommunityLivePreview()">
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">WhatsApp Link or Phone (رابط أو رقم الواتساب):</label>
+            <input type="text" id="comm-wa-link" class="chk-input" value="https://wa.me/213662497253" placeholder="https://wa.me/213662497253">
+          </div>
+        </div>
+
+        <!-- Color Customization Box -->
+        <div style="background:var(--adm-accent); border:1px solid var(--adm-border); border-radius:8px; padding:1.25rem; margin-bottom:1.25rem;">
+          <div style="font-size:12.5px; font-weight:800; color:var(--adm-foreground); margin-bottom:0.75rem;">
+            🎨 Community Box Color Customization (تخصيص ألوان وتدرج الخلفية والأزرار):
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Gradient Start (بداية تدرج الخلفية):</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="color" id="comm-bg-start" value="#064E3B" oninput="onCommunityColorInput()" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                <input type="text" id="comm-bg-start-hex" class="chk-input" value="#064E3B" oninput="onCommunityHexInput('bgStart', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+              </div>
+            </div>
+
+            <div class="chk-form-group">
+              <label class="chk-label">Gradient End (نهاية تدرج الخلفية):</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="color" id="comm-bg-end" value="#022C22" oninput="onCommunityColorInput()" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                <input type="text" id="comm-bg-end-hex" class="chk-input" value="#022C22" oninput="onCommunityHexInput('bgEnd', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+              </div>
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Text & Headline Color (لون العناوين والنصوص):</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="color" id="comm-text-color" value="#FFFFFF" oninput="onCommunityColorInput()" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                <input type="text" id="comm-text-hex" class="chk-input" value="#FFFFFF" oninput="onCommunityHexInput('text', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+              </div>
+            </div>
+
+            <div class="chk-form-group">
+              <label class="chk-label">WhatsApp Button Color (لون زر الواتساب):</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="color" id="comm-wa-btn-color" value="#22C55E" oninput="onCommunityColorInput()" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                <input type="text" id="comm-wa-btn-hex" class="chk-input" value="#22C55E" oninput="onCommunityHexInput('waBtn', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+              </div>
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:0.75rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Subscribe Button Color (لون زر الاشتراك):</label>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="color" id="comm-sub-btn-color" value="#EA580C" oninput="onCommunityColorInput()" style="width:40px; height:38px; border:none; border-radius:6px; cursor:pointer; background:none;">
+                <input type="text" id="comm-sub-btn-hex" class="chk-input" value="#EA580C" oninput="onCommunityHexInput('subBtn', this.value)" style="width:100px; font-family:monospace; font-weight:700;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div>
+            <label class="chk-label" style="margin-bottom:0.35rem; display:block;">Quick Theme Presets (أنماط لونية جاهزة):</label>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setCommunityQuickColor('#064E3B', '#022C22', '#FFFFFF', '#22C55E', '#EA580C')" style="font-size:11px; padding:0.25rem 0.5rem;">🌿 Obsidian Emerald</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setCommunityQuickColor('#0F172A', '#1E293B', '#FFFFFF', '#25D366', '#38BDF8')" style="font-size:11px; padding:0.25rem 0.5rem;">🌌 Midnight Slate</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setCommunityQuickColor('#1E3A5F', '#0B1E36', '#FFFFFF', '#22C55E', '#F59E0B')" style="font-size:11px; padding:0.25rem 0.5rem;">🌊 Royal Clinical</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setCommunityQuickColor('#881337', '#4C0519', '#FFFFFF', '#25D366', '#FB7185')" style="font-size:11px; padding:0.25rem 0.5rem;">🍷 Crimson Medical</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="setCommunityQuickColor('#3B0764', '#1E0436', '#FFFFFF', '#22C55E', '#C084FC')" style="font-size:11px; padding:0.25rem 0.5rem;">💜 Deep Violet</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; padding-top:0.75rem; border-top:1px solid var(--adm-border);">
+          <button type="button" class="mc-btn mc-btn-accent mc-btn-md" style="font-weight:800; padding:0.6rem 1.75rem;" onclick="saveCommunityCMS()">
+            💾 Save & Publish Community Section (حفظ ونشر قسم المجتمع فوراً)
+          </button>
+        </div>
       </div>
     </div>
 
@@ -781,7 +1578,7 @@
             <a href="delivery-pricing.html" class="mc-btn mc-btn-accent mc-btn-sm" style="background:#0F766E; border-color:#0F766E;">
               📦 Open Multi-Courier Pricing Dashboard (58 Wilayas & Communes) →
             </a>
-            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="showToast('✓ Delivery Fees Saved!')">💾 Save Delivery Fee Table</button>
+            <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="saveDeliveryFees()">💾 Save Delivery Fee Table</button>
           </div>
         </div>
 
@@ -796,26 +1593,26 @@
                 <th>Est. Hours</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="delivery-fees-tbody">
               <tr>
                 <td><strong>Capital Zone</strong></td>
                 <td>16-Alger, 09-Blida, 42-Tipaza, 35-Boumerdes</td>
-                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="400"> DZD</td>
-                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="250"> DZD</td>
+                <td><input type="number" id="fee-capital-home" class="chk-input" style="width:90px; height:34px;" min="0" value="400"> DZD</td>
+                <td><input type="number" id="fee-capital-stopdesk" class="chk-input" style="width:90px; height:34px;" min="0" value="250"> DZD</td>
                 <td>24–48 Hours</td>
               </tr>
               <tr>
                 <td><strong>Northern / Coastal</strong></td>
                 <td>Oran, Constantine, Annaba, Setif, Tlemcen, Tizi Ouzou...</td>
-                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="600"> DZD</td>
-                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="350"> DZD</td>
+                <td><input type="number" id="fee-north-home" class="chk-input" style="width:90px; height:34px;" min="0" value="600"> DZD</td>
+                <td><input type="number" id="fee-north-stopdesk" class="chk-input" style="width:90px; height:34px;" min="0" value="350"> DZD</td>
                 <td>48–72 Hours</td>
               </tr>
               <tr>
                 <td><strong>Southern Sahara</strong></td>
                 <td>Ouargla, Ghardaia, Bechar, Adrar, Tamanrasset...</td>
-                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="900"> DZD</td>
-                <td><input type="number" class="chk-input" style="width:90px; height:34px;" value="500"> DZD</td>
+                <td><input type="number" id="fee-south-home" class="chk-input" style="width:90px; height:34px;" min="0" value="900"> DZD</td>
+                <td><input type="number" id="fee-south-stopdesk" class="chk-input" style="width:90px; height:34px;" min="0" value="500"> DZD</td>
                 <td>3–5 Days</td>
               </tr>
             </tbody>
@@ -831,95 +1628,502 @@
     <div id="mod-reports" class="adm-module-panel">
       <div class="adm-split-grid">
         <div class="adm-table-card" style="padding:1.5rem;">
-          <h3 style="font-family:var(--font-family-display); margin:0 0 1rem 0;">Sales by Specialty Tag</h3>
-          <p>🩺 Medicine & Surgery: <strong>45% (2,182,500 DZD)</strong></p>
-          <p>💊 Pharmacy: <strong>28% (1,358,000 DZD)</strong></p>
-          <p>🦷 Dentistry: <strong>15% (727,500 DZD)</strong></p>
-          <p>🏥 Nursing: <strong>12% (582,000 DZD)</strong></p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+              <h3 style="font-family:var(--font-family-display); margin:0 0 0.25rem 0;">📊 Sales by Medical Specialty</h3>
+              <p style="margin:0; font-size:12.5px; color:var(--adm-muted-fg);">Real-time revenue distribution calculated from all confirmed orders.</p>
+            </div>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="renderSpecialtyReports()">🔄 Refresh</button>
+          </div>
+          <div id="admin-reports-specialty-box">
+            <!-- Rendered dynamically by JS -->
+          </div>
         </div>
       </div>
-    </div>
+    </div><!-- /mod-reports -->
 
-  </main>
-
+  </main><!-- /adm-main -->
 
   <!-- =====================================================================
-       ADD / EDIT PRODUCT MODAL
+       ADD / EDIT PRODUCT MODAL (Comprehensive Full PDP Dynamic CMS)
        ===================================================================== -->
   <div id="modal-add-product" class="adm-modal-overlay">
-    <div class="adm-modal-box">
-      <div class="adm-modal-header">
-        <h3 class="adm-modal-title" id="modal-product-title">+ Add New Product to Catalog</h3>
+    <div class="adm-modal-box" style="max-width:940px; width:95vw; max-height:92vh; display:flex; flex-direction:column; overflow:hidden;">
+      <div class="adm-modal-header" style="flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <span style="font-size:1.5rem;">🛍️</span>
+          <div>
+            <h3 class="adm-modal-title" id="modal-product-title">+ Add New Product to Catalog</h3>
+            <div style="font-size:12px; color:var(--color-neutral-500);">All fields sync directly to database and live Product Details page</div>
+          </div>
+        </div>
         <button class="adm-btn-icon" onclick="closeAddProductModal()">✕</button>
       </div>
 
-      <form class="adm-modal-body" onsubmit="saveProductSubmit(event); return false;">
-        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
-          <div class="chk-form-group">
-            <label class="chk-label">Product Name <span class="required">*</span></label>
-            <input type="text" id="p-name" class="chk-input" placeholder="e.g. Obsidian Flex Scrub Set">
+      <!-- Tab Navigation Bar -->
+      <div class="pdp-modal-tabs-bar" style="display:flex; gap:0.25rem; background:var(--color-neutral-100); padding:0.4rem 1rem; border-bottom:1px solid var(--color-neutral-200); overflow-x:auto; flex-shrink:0;">
+        <button type="button" class="adm-modal-tab-btn active" onclick="switchProductModalTab('tab-p-basic', this)">📋 Basic Info</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-pricing', this)">💰 Pricing & Badges</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-desc', this)">📝 Descriptions</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-options-media', this)">🎨 Product Options & Media</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-features', this)">✨ Features</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-specs', this)">⚙️ Specs & Care</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-sizeguide', this)">📐 Size Guide</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-shipping', this)">🚚 Delivery & Returns</button>
+        <button type="button" class="adm-modal-tab-btn" onclick="switchProductModalTab('tab-p-stock', this)">📦 Inventory</button>
+      </div>
+
+      <form id="form-add-product" onsubmit="saveProductSubmit(event); return false;" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+        <div class="adm-modal-body" style="overflow-y:auto; padding:1.25rem; flex:1;">
+
+          <!-- TAB 1: BASIC INFO -->
+          <div id="tab-p-basic" class="adm-modal-tab-pane active">
+            <div class="chk-form-grid three-col" style="margin-bottom:1rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Product Name (English 🇬🇧) <span class="required">*</span></label>
+                <input type="text" id="p-name" class="chk-input" placeholder="e.g. Obsidian Flex Antimicrobial Scrub Set" required>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Nom du Produit (Français 🇫🇷)</label>
+                <input type="text" id="p-name-fr" class="chk-input" placeholder="ex: Tenue Médicale Obsidian Flex">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">اسم المنتج (العربية 🇩🇿)</label>
+                <input type="text" id="p-name-ar" class="chk-input" placeholder="مثال: طقم سكراب أوبسيديان المضاد للبكتيريا" dir="rtl">
+              </div>
+            </div>
+
+            <div class="chk-form-grid three-col" style="margin-bottom:1rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Product SKU / ID <span class="required">*</span></label>
+                <input type="text" id="p-sku" class="chk-input" placeholder="e.g. MC-101-OBS (Auto-generated if empty)">
+                <span style="font-size:11px; color:#64748B;">Used in external URLs: ?id=MC-101-OBS</span>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Category <span class="required">*</span></label>
+                <select id="p-category" class="chk-select">
+                  <option value="Scrubs">Medical Scrubs (أطقم سكراب / Tenues)</option>
+                  <option value="Lab Coats">Lab Coats (معاطف طبية / Blouses)</option>
+                  <option value="Footwear">Medical Footwear (أحذية طبية / Sabots)</option>
+                  <option value="Diagnostic Tools">Diagnostic Tools (أدوات تشخيص / Diagnostic)</option>
+                  <option value="Medical Accessories">Medical Accessories (إكسسوارات وحقائب / Accessoires)</option>
+                </select>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Specialty Tag <span class="required">*</span></label>
+                <select id="p-specialty" class="chk-select">
+                  <option value="medicine">Medicine & Surgery (طب وجراحة / Médecine)</option>
+                  <option value="pharmacy">Pharmacy (صيدلة / Pharmacie)</option>
+                  <option value="dentistry">Dentistry (طب أسنان / Dentaire)</option>
+                  <option value="nursing">Nursing (تمريض / Soins)</option>
+                  <option value="all">All Specialties (عام / Tous)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="chk-form-grid two-col">
+              <div class="chk-form-group">
+                <label class="chk-label">Brand / Manufacturer</label>
+                <input type="text" id="p-brand" class="chk-input" placeholder="e.g. MEDICARE PRO, SurgicalPro, ClinFlex" value="MEDICARE PRO">
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Product Status</label>
+                <select id="p-status" class="chk-select">
+                  <option value="active">🟢 Active (Visible on Storefront)</option>
+                  <option value="draft">🟡 Draft (Hidden from Storefront)</option>
+                  <option value="archived">🔴 Archived</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="chk-form-group">
-            <label class="chk-label">SKU Code</label>
-            <input type="text" id="p-sku" class="chk-input" placeholder="e.g. MC-101-OBS (Auto-generated if blank)">
+
+          <!-- TAB 2: PRICING & BADGES -->
+          <div id="tab-p-pricing" class="adm-modal-tab-pane" style="display:none;">
+            <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Selling Price (DZD) <span class="required">*</span></label>
+                <input type="number" id="p-price" class="chk-input" placeholder="10700" oninput="updatePricePreview()" required>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Original / Before Discount Price (DZD)</label>
+                <input type="number" id="p-original-price" class="chk-input" placeholder="13400 (Leave empty if no discount)" oninput="updatePricePreview()">
+              </div>
+            </div>
+
+            <!-- Live Discount Preview Box -->
+            <div id="p-discount-preview-box" style="padding:0.75rem 1rem; background:var(--color-primary-50); border:1px solid var(--color-primary-200); border-radius:var(--radius-md); margin-bottom:1.25rem; font-size:13px; color:var(--color-primary-900); display:none;">
+              <strong>Live Discount Preview:</strong> <span id="p-discount-preview-text"></span>
+            </div>
+
+            <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Product Badge</label>
+                <select id="p-badge" class="chk-select">
+                  <option value="">No Badge</option>
+                  <option value="sale">−% Sale Discount</option>
+                  <option value="hot">🔥 Hot / Trending</option>
+                  <option value="new">✨ New Arrival</option>
+                  <option value="limited">⏳ Limited Stock</option>
+                  <option value="bundle">⚡ Curated Bundle</option>
+                </select>
+              </div>
+              <div class="chk-form-group" style="display:flex; flex-direction:column; justify-content:center; gap:0.5rem; padding-top:1.25rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:600; font-size:13px; cursor:pointer;">
+                  <input type="checkbox" id="p-is-bestseller"> ⭐ Best Seller Highlight
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; font-weight:600; font-size:13px; cursor:pointer;">
+                  <input type="checkbox" id="p-is-new"> 🆕 Mark as New Release
+                </label>
+              </div>
+            </div>
           </div>
+
+          <!-- TAB 3: TRILINGUAL DESCRIPTIONS -->
+          <div id="tab-p-desc" class="adm-modal-tab-pane" style="display:none;">
+            <!-- Language Sub-Tabs -->
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem; border-bottom:1px solid var(--color-neutral-200); padding-bottom:0.5rem;">
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm active" id="desc-tab-en" onclick="switchDescLangTab('en')">🇬🇧 English</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="desc-tab-fr" onclick="switchDescLangTab('fr')">🇫🇷 Français</button>
+              <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="desc-tab-ar" onclick="switchDescLangTab('ar')">🇩🇿 العربية</button>
+            </div>
+
+            <!-- English Descriptions -->
+            <div id="desc-panel-en" class="desc-lang-panel">
+              <div class="chk-form-group" style="margin-bottom:1rem;">
+                <label class="chk-label">Short Description (English 🇬🇧)</label>
+                <textarea id="p-short-desc" class="chk-input" style="height:70px; line-height:1.5;" placeholder="Brief 1-2 sentence overview in English..."></textarea>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Full Clinical Description (English 🇬🇧)</label>
+                <textarea id="p-desc" class="chk-input" style="height:120px; line-height:1.6;" placeholder="Detailed description in English..."></textarea>
+              </div>
+            </div>
+
+            <!-- French Descriptions -->
+            <div id="desc-panel-fr" class="desc-lang-panel" style="display:none;">
+              <div class="chk-form-group" style="margin-bottom:1rem;">
+                <label class="chk-label">Description Courte (Français 🇫🇷)</label>
+                <textarea id="p-short-desc-fr" class="chk-input" style="height:70px; line-height:1.5;" placeholder="Bref résumé en 1-2 phrases en français..."></textarea>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Description Détaillée (Français 🇫🇷)</label>
+                <textarea id="p-desc-fr" class="chk-input" style="height:120px; line-height:1.6;" placeholder="Description clinique détaillée en français..."></textarea>
+              </div>
+            </div>
+
+            <!-- Arabic Descriptions -->
+            <div id="desc-panel-ar" class="desc-lang-panel" style="display:none;">
+              <div class="chk-form-group" style="margin-bottom:1rem;">
+                <label class="chk-label">الوصف المختصر (العربية 🇩🇿)</label>
+                <textarea id="p-short-desc-ar" class="chk-input" style="height:70px; line-height:1.5;" placeholder="ملخص سريع في سطرين بالعربية..." dir="rtl"></textarea>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">الوصف السريري الكامل (العربية 🇩🇿)</label>
+                <textarea id="p-desc-ar" class="chk-input" style="height:120px; line-height:1.6;" placeholder="الوصف المفصل للمنتج والمواصفات بالعربية..." dir="rtl"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: PRODUCT OPTIONS & MEDIA (UNIFIED SECTION) -->
+          <div id="tab-p-options-media" class="adm-modal-tab-pane" style="display:none;">
+            <!-- Sub-tab Navigation Switcher -->
+            <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; border-bottom:2px solid var(--color-neutral-200); padding-bottom:0.5rem; flex-wrap:wrap;">
+              <button type="button" class="adm-subtab-btn active" id="subtab-btn-colors" onclick="switchOptionsSubTab('colors', this)">
+                🎨 Colors (الألوان)
+              </button>
+              <button type="button" class="adm-subtab-btn" id="subtab-btn-sizes" onclick="switchOptionsSubTab('sizes', this)">
+                📏 Sizes (المقاسات)
+              </button>
+              <button type="button" class="adm-subtab-btn" id="subtab-btn-media" onclick="switchOptionsSubTab('media', this)">
+                🖼️ Media & Gallery (الصور والوسائط)
+              </button>
+            </div>
+
+            <!-- SUB-PANEL 1: COLORS -->
+            <div id="subtab-content-colors" class="adm-options-subpanel" style="display:block;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.85rem;">
+                <div>
+                  <h4 style="margin:0; font-size:14px; color:var(--adm-foreground); font-weight:800;">🎨 Product Colors & Swatches</h4>
+                  <span style="font-size:11.5px; color:#64748B;">Add color names, hex codes, and optional color-specific image links</span>
+                </div>
+                <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" onclick="addColorRow()">+ Add Color</button>
+              </div>
+              <div id="p-colors-container" style="display:flex; flex-direction:column; gap:0.6rem; min-height:80px; background:#F8FAFC; padding:0.75rem; border-radius:8px; border:1px solid #E2E8F0;">
+                <!-- Dynamically populated color rows -->
+              </div>
+            </div>
+
+            <!-- SUB-PANEL 2: SIZES -->
+            <div id="subtab-content-sizes" class="adm-options-subpanel" style="display:none;">
+              <div style="margin-bottom:0.85rem;">
+                <h4 style="margin:0 0 0.25rem 0; font-size:14px; color:var(--adm-foreground); font-weight:800;">📏 Available Product Sizes</h4>
+                <span style="font-size:11.5px; color:#64748B;">Select available sizes from standard presets or enter custom sizes</span>
+              </div>
+
+              <!-- Quick Preset Buttons -->
+              <div style="margin-bottom:0.75rem;">
+                <label class="chk-label" style="font-size:12px; margin-bottom:0.35rem; display:block;">Quick Presets / مقاسات سريعة:</label>
+                <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                  <button type="button" class="adm-demo-role-btn" onclick="applySizesPreset(['XS','S','M','L','XL','XXL'])">Apparel (XS–XXL)</button>
+                  <button type="button" class="adm-demo-role-btn" onclick="applySizesPreset(['S','M','L','XL'])">Standard (S–XL)</button>
+                  <button type="button" class="adm-demo-role-btn" onclick="applySizesPreset(['37','38','39','40','41','42','43','44','45'])">Footwear (37–45 EU)</button>
+                  <button type="button" class="adm-demo-role-btn" onclick="applySizesPreset(['ONE'])">One Size (مقاس موحد)</button>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.85rem; padding:0.75rem; background:#F8FAFC; border-radius:8px; border:1px solid #E2E8F0;" id="p-sizes-pills-container">
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="XS"> XS</label>
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="S"> S</label>
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="M" checked> M</label>
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="L" checked> L</label>
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="XL" checked> XL</label>
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="XXL"> XXL</label>
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="3XL"> 3XL</label>
+                <label class="adm-size-pill"><input type="checkbox" name="p-size-opt" value="ONE"> One Size (موحد)</label>
+              </div>
+
+              <div style="display:flex; gap:0.5rem; align-items:center;">
+                <input type="text" id="p-custom-size-input" class="chk-input" placeholder="Add custom size (e.g. 46, 60x90, Standard)" style="max-width:320px;">
+                <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" onclick="addCustomSizePill()">+ Add Size</button>
+              </div>
+            </div>
+
+            <!-- SUB-PANEL 3: MEDIA & GALLERY -->
+            <div id="subtab-content-media" class="adm-options-subpanel" style="display:none;">
+              <div style="margin-bottom:0.85rem;">
+                <h4 style="margin:0 0 0.25rem 0; font-size:14px; color:var(--adm-foreground); font-weight:800;">🖼️ Product Gallery & Media</h4>
+                <span style="font-size:11.5px; color:#64748B;">Upload multiple images or paste URLs. The first image will be set as the Primary Hero Image.</span>
+              </div>
+
+              <!-- Drag & Drop Upload Zone -->
+              <div class="chk-form-group" style="margin-bottom:1rem;">
+                <input type="file" id="p-file-input" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display:none;">
+                <div class="adm-image-upload-box" id="adm-dropzone" style="cursor:pointer; border:2px dashed var(--color-primary-400); padding:1.5rem 1rem; text-align:center; border-radius:var(--radius-lg); background:#F8FAFC; transition:all 0.2s;">
+                  <div style="font-size:2.2rem; margin-bottom:0.25rem;">📸</div>
+                  <div style="font-size:14px; font-weight:800; color:var(--color-primary-800);">Drag & drop images here, or click to browse</div>
+                  <div style="font-size:11.5px; color:#64748B; margin-top:0.25rem;">Supports PNG, JPG, WEBP (Multiple uploads supported)</div>
+                </div>
+              </div>
+
+              <!-- Direct Image URL adder -->
+              <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem;">
+                <input type="text" id="p-add-image-url-input" class="chk-input" placeholder="Or paste direct image URL (https://...)">
+                <button type="button" class="mc-btn mc-btn-secondary" onclick="addImageUrlFromInput()" style="white-space:nowrap;">+ Add URL</button>
+              </div>
+
+              <!-- Hidden main image URL helper for form parity -->
+              <input type="hidden" id="p-main-img-url" value="">
+
+              <!-- Gallery Thumbnails Interactive Grid -->
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                  <label class="chk-label" style="margin:0; font-size:13px;">Current Images (<span id="gallery-count-badge">0</span>):</label>
+                  <span style="font-size:11px; color:#64748B;">Use ⭐ to set Main Image, ⬅️ ➡️ to reorder</span>
+                </div>
+                <div id="p-image-preview-grid" style="display:flex; flex-wrap:wrap; gap:0.75rem; min-height:80px; padding:0.75rem; background:#F1F5F9; border-radius:var(--radius-md); border:1px solid #CBD5E1;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 6: FEATURES -->
+          <div id="tab-p-features" class="adm-modal-tab-pane" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+              <div>
+                <label class="chk-label" style="font-size:14px; margin:0;">✨ Key Features Grid (Featured on PDP Tab 1):</label>
+                <div style="font-size:11px; color:#64748B;">Add clinical feature cards (e.g. Fluid-Shield, Silver-Ion Antimicrobial, 6 Pockets)</div>
+              </div>
+              <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" onclick="addFeatureRow()">+ Add Feature</button>
+            </div>
+            <div id="p-features-container" style="display:flex; flex-direction:column; gap:0.65rem;">
+              <!-- Dynamically populated feature cards -->
+            </div>
+          </div>
+
+          <!-- TAB 7: SPECS & CARE -->
+          <div id="tab-p-specs" class="adm-modal-tab-pane" style="display:none;">
+            <!-- Specs Table Builder -->
+            <div style="margin-bottom:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid var(--color-neutral-200);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <div>
+                  <label class="chk-label" style="font-size:14px; margin:0;">⚙️ Technical Specifications (Key-Value Pairs):</label>
+                  <div style="font-size:11px; color:#64748B;">e.g. Fabric Composition: 72% Poly, 21% Rayon, 7% Spandex | Fit: Modern Tailored</div>
+                </div>
+                <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" onclick="addSpecRow()">+ Add Specification</button>
+              </div>
+              <div id="p-specs-container" style="display:flex; flex-direction:column; gap:0.5rem;">
+                <!-- Dynamically populated spec rows -->
+              </div>
+            </div>
+
+            <!-- Care Instructions Trilingual -->
+            <div>
+              <label class="chk-label" style="font-size:14px; margin-bottom:0.35rem; display:block;">🧼 Care & Washing Instructions (One line per bullet):</label>
+              <div class="chk-form-grid three-col">
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇬🇧 English:</label>
+                  <textarea id="p-care-instructions" class="chk-input" style="height:90px; line-height:1.4;" placeholder="Machine wash cold inside out.&#10;Tumble dry low."></textarea>
+                </div>
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇫🇷 Français:</label>
+                  <textarea id="p-care-instructions-fr" class="chk-input" style="height:90px; line-height:1.4;" placeholder="Lavage en machine à froid.&#10;Séchage doux."></textarea>
+                </div>
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇩🇿 العربية:</label>
+                  <textarea id="p-care-instructions-ar" class="chk-input" style="height:90px; line-height:1.4;" placeholder="غسيل بارد في الغسالة.&#10;تجفيف بدرجة حرارة منخفضة." dir="rtl"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 8: SIZE GUIDE -->
+          <div id="tab-p-sizeguide" class="adm-modal-tab-pane" style="display:none;">
+            <div style="margin-bottom:1rem;">
+              <label style="display:flex; align-items:center; gap:0.5rem; font-weight:700; font-size:14px; cursor:pointer;">
+                <input type="checkbox" id="p-sizeguide-enabled" checked onchange="toggleSizeGuideFields(this.checked)">
+                📐 Enable "Size Guide & Chart" Modal on this Product
+              </label>
+              <div style="font-size:12px; color:#64748B; margin-top:0.25rem;">When disabled, the Size Guide link will be cleanly hidden from PDP.</div>
+            </div>
+
+            <div id="p-sizeguide-config-box" style="padding:1rem; background:#F8FAFC; border:1px solid var(--color-neutral-200); border-radius:var(--radius-md);">
+              <div class="chk-form-group" style="margin-bottom:1rem;">
+                <label class="chk-label">Size Guide Category Template:</label>
+                <select id="p-sizeguide-template" class="chk-select" onchange="applySizeGuideTemplate(this.value)">
+                  <option value="scrubs">Medical Scrubs & Lab Coats (Chest, Waist, Hips, Height in CM)</option>
+                  <option value="footwear">Medical Shoes & Clogs (EU, Foot Length in CM)</option>
+                  <option value="stethoscope">Diagnostic & Instruments (Standard Clinical Fit)</option>
+                </select>
+              </div>
+
+              <div class="chk-form-group">
+                <label class="chk-label">Measuring Instructions Note:</label>
+                <input type="text" id="p-sizeguide-note" class="chk-input" value="For the best tailored clinical fit, measure your chest, waist, and hips with a flexible tape measure over thin clothing.">
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 9: DELIVERY & RETURNS (TRILINGUAL) -->
+          <div id="tab-p-shipping" class="adm-modal-tab-pane" style="display:none;">
+            <!-- Shipping Info -->
+            <div style="margin-bottom:1.25rem;">
+              <label class="chk-label" style="font-size:14px; margin-bottom:0.35rem; display:block;">🚚 Shipping & Delivery Details (Tab 3 on PDP):</label>
+              <div class="chk-form-grid three-col">
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇬🇧 English:</label>
+                  <textarea id="p-delivery-info" class="chk-input" style="height:75px; line-height:1.4;" placeholder="Express courier delivery across 58 Wilayas with COD."></textarea>
+                </div>
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇫🇷 Français:</label>
+                  <textarea id="p-delivery-info-fr" class="chk-input" style="height:75px; line-height:1.4;" placeholder="Livraison express dans les 58 Wilayas avec paiement à la livraison."></textarea>
+                </div>
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇩🇿 العربية:</label>
+                  <textarea id="p-delivery-info-ar" class="chk-input" style="height:75px; line-height:1.4;" placeholder="توصيل سريع لكافة الـ 58 ولاية مع الدفع عند الاستلام." dir="rtl"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Returns & Warranty -->
+            <div style="margin-bottom:1.25rem;">
+              <label class="chk-label" style="font-size:14px; margin-bottom:0.35rem; display:block;">🔄 Exchange & Return Policy:</label>
+              <div class="chk-form-grid three-col">
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇬🇧 English:</label>
+                  <textarea id="p-return-info" class="chk-input" style="height:70px; line-height:1.4;" placeholder="14-Day Free Exchange across all 58 Wilayas."></textarea>
+                </div>
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇫🇷 Français:</label>
+                  <textarea id="p-return-info-fr" class="chk-input" style="height:70px; line-height:1.4;" placeholder="Échange gratuit sous 14 jours dans les 58 Wilayas."></textarea>
+                </div>
+                <div class="chk-form-group">
+                  <label class="chk-label" style="font-size:11.5px;">🇩🇿 العربية:</label>
+                  <textarea id="p-return-info-ar" class="chk-input" style="height:70px; line-height:1.4;" placeholder="استبدال مجاني للمقاسات خلال 14 يوماً." dir="rtl"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="chk-form-group">
+              <label class="chk-label">Trust Badges Bar (Shown under Add to Cart button):</label>
+              <input type="text" id="p-trust-badges" class="chk-input" value="🚚 58 Wilayas COD, 🔄 14-Day Free Exchange, 🛡️ Antimicrobial Shield" placeholder="Comma separated, e.g. 🚚 58 Wilayas COD, 🔄 Free Exchange, 🛡️ Warranty">
+            </div>
+          </div>
+
+          <!-- TAB 10: INVENTORY -->
+          <div id="tab-p-stock" class="adm-modal-tab-pane" style="display:none;">
+            <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+              <div class="chk-form-group">
+                <label class="chk-label">Current Live Stock (Units) <span class="required">*</span></label>
+                <input type="number" id="p-stock" class="chk-input" placeholder="25" value="25" min="0" required>
+                <span style="font-size:11px; color:#64748B;">When stock reaches 0, PDP will automatically disable purchase and show Out of Stock.</span>
+              </div>
+              <div class="chk-form-group">
+                <label class="chk-label">Low Stock Alert Threshold</label>
+                <input type="number" id="p-min-stock" class="chk-input" placeholder="5" value="5" min="1">
+                <span style="font-size:11px; color:#64748B;">When stock is ≤ this number, PDP shows "Only X left!" badge.</span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
-          <div class="chk-form-group">
-            <label class="chk-label">Category <span class="required">*</span></label>
-            <select id="p-category" class="chk-select">
-              <option value="Scrubs">Medical Scrubs</option>
-              <option value="Lab Coats">Lab Coats</option>
-              <option value="Footwear">Medical Footwear</option>
-              <option value="Diagnostic Tools">Diagnostic Tools</option>
-            </select>
-          </div>
-          <div class="chk-form-group">
-            <label class="chk-label">Specialty Tag <span class="required">*</span></label>
-            <select id="p-specialty" class="chk-select">
-              <option value="medicine">Medicine & Surgery</option>
-              <option value="pharmacy">Pharmacy</option>
-              <option value="dentistry">Dentistry</option>
-              <option value="nursing">Nursing</option>
-            </select>
+        <!-- Sticky Modal Footer -->
+        <div class="adm-modal-footer" style="padding:0.875rem 1.25rem; background:#FFF; border-top:1px solid var(--color-neutral-200); display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+          <button type="button" class="mc-btn mc-btn-secondary" onclick="closeAddProductModal()">Cancel</button>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <span id="p-modal-status-indicator" style="font-size:12px; color:#64748B;"></span>
+            <button type="button"
+                    id="modal-product-save-btn"
+                    class="mc-btn mc-btn-accent mc-btn-lg"
+                    style="font-weight:800; min-width:180px;"
+                    onclick="saveProductSubmit(event)">
+              💾 Save Product
+            </button>
           </div>
         </div>
-
-        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
-          <div class="chk-form-group">
-            <label class="chk-label">Price (DZD) <span class="required">*</span></label>
-            <input type="number" id="p-price" class="chk-input" placeholder="10700">
-          </div>
-          <div class="chk-form-group">
-            <label class="chk-label">Initial Stock</label>
-            <input type="number" id="p-stock" class="chk-input" placeholder="25" value="25">
-          </div>
-        </div>
-
-        <!-- Drag Image Upload -->
-        <div class="chk-form-group" style="margin-bottom:1.25rem;">
-          <label class="chk-label">Product Images (Drag & Drop or Browse):</label>
-          <input type="file" id="p-file-input" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display:none;">
-          <div class="adm-image-upload-box" id="adm-dropzone">
-            <div style="font-size:1.8rem; margin-bottom:0.25rem;">🖼️</div>
-            <div style="font-size:13px; font-weight:700; color:var(--color-primary-800);">Drag & drop images here, or click to browse</div>
-            <div style="font-size:11px; color:#64748B;">Supports PNG, JPG, WEBP up to 10MB</div>
-          </div>
-          <!-- Preview Thumbnails Container -->
-          <div id="p-image-preview-grid" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-top:0.75rem;"></div>
-        </div>
-
-        <button type="button"
-                id="modal-product-save-btn"
-                class="mc-btn mc-btn-accent mc-btn-lg"
-                style="width:100%; font-size:16px; font-weight:800; cursor:pointer; margin-top:0.5rem;"
-                onclick="saveProductSubmit(event)">
-          💾 Save Product to Store Catalog
-        </button>
       </form>
     </div>
   </div>
+
+  <style>
+    .adm-modal-tab-btn {
+      padding: 0.5rem 0.85rem;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #64748B;
+      background: none;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .adm-modal-tab-btn:hover {
+      color: var(--color-primary-800);
+      background: rgba(14, 77, 69, 0.08);
+    }
+    .adm-modal-tab-btn.active {
+      color: #FFF;
+      background: var(--color-primary-700);
+    }
+    .adm-size-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.75rem;
+      background: #F1F5F9;
+      border: 1px solid var(--color-neutral-300);
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    .adm-size-pill:has(input:checked) {
+      background: var(--color-primary-50);
+      border-color: var(--color-primary-600);
+      color: var(--color-primary-900);
+    }
+  </style>
 
 
   <!-- ORDER DETAIL & INVOICE MODAL -->
@@ -931,26 +2135,54 @@
       </div>
 
       <div class="adm-modal-body" id="print-area">
-        <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; margin-bottom:1rem;">
           <div>
             <strong>Customer:</strong> Dr. Ahmed Benali<br>
             <strong>Phone:</strong> 0550 00 00 00<br>
             <strong>Address:</strong> Wilaya 16 - Alger (Commune: El Biar)
           </div>
-          <div style="text-align:right;">
+          <div>
             <strong>Payment:</strong> Cash on Delivery (COD)<br>
             <strong>Delivery:</strong> Home Delivery via ZR Express<br>
             <strong>Total:</strong> 31,000 DZD
           </div>
         </div>
-
-        <div style="margin-top:1.5rem; display:flex; gap:0.5rem;">
-          <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="window.print()">🖨️ Print Invoice & Shipping Label</button>
-          <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="closeOrderDetailModal()">Close</button>
-        </div>
+      </div>
+      <!-- Sticky Order Actions Footer -->
+      <div class="adm-modal-footer no-print">
+        <button class="mc-btn mc-btn-secondary" onclick="closeOrderDetailModal()">Close</button>
+        <button class="mc-btn mc-btn-primary" onclick="printShippingLabel()">🏷️ Print Label</button>
+        <button class="mc-btn mc-btn-secondary" onclick="printInvoice()">🧾 Print Invoice</button>
       </div>
     </div>
   </div>
+
+  <!-- BATCH SHIPPING LABELS & BARCODES PREVIEW MODAL -->
+  <div id="modal-batch-labels-preview" class="adm-modal-overlay">
+    <div class="adm-modal-box" style="max-width: 850px;">
+      <div class="adm-modal-header" style="background:#F0FDF4; border-bottom:1px solid #BBF7D0; padding:1.25rem 1.5rem;">
+        <div>
+          <h3 class="adm-modal-title" id="batch-preview-modal-title" style="color:#0E4D45; font-size:1.15rem; margin:0 0 4px 0;">📦 وصلات الشحن والباركود — جاهزة للطباعة</h3>
+          <span style="font-size:12.5px; color:#15803D; font-weight:700;">✅ تم توليد الباركود بنجاح لكافة الطلبات — يمكنك معاينتها ثم الضغط على زر الطباعة</span>
+        </div>
+        <button class="adm-btn-icon" onclick="closeBatchLabelsModal()">✕</button>
+      </div>
+
+      <div class="adm-modal-body" id="batch-preview-body" style="max-height: 70vh; overflow-y: auto; padding: 1.5rem; background:#F8FAFC;">
+        <!-- Filled dynamically with generated shipping labels & vector barcodes -->
+      </div>
+
+      <div class="adm-modal-footer no-print" style="display:flex; justify-content:space-between; align-items:center; background:#FFFFFF; padding:1rem 1.5rem; border-top:1px solid #E2E8F0;">
+        <button class="mc-btn mc-btn-secondary" onclick="closeBatchLabelsModal()">❌ إغلاق المعاينة</button>
+        <button class="mc-btn mc-btn-primary" onclick="printAllLabels()" style="background:#0E4D45; border-color:#0E4D45; font-weight:800; font-size:14px; padding:0.65rem 1.5rem; display:flex; align-items:center; gap:0.5rem;">
+          🖨️ طباعة جميع الوصلات الآن (Print Labels Now)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BATCH PRINT CONTAINER FOR BULK CONFIRMED ORDERS -->
+  <div id="batch-print-container" style="display:none;"></div>
 
 
   <!-- ADD NEW STAFF MEMBER MODAL -->
@@ -961,49 +2193,249 @@
         <button class="adm-btn-icon" onclick="closeAddStaffModal()">✕</button>
       </div>
 
-      <form class="adm-modal-body" onsubmit="saveStaffSubmit(event)">
-        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
-          <div class="chk-form-group">
-            <label class="chk-label">Full Name <span class="required">*</span></label>
-            <input type="text" id="stf-name" class="chk-input" placeholder="e.g. Dr. Leila Said" required>
+      <form id="form-add-staff" onsubmit="saveStaffSubmit(event); return false;">
+        <div class="adm-modal-body">
+          <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Staff Member Name <span class="required">*</span></label>
+              <input type="text" id="stf-name" class="chk-input" placeholder="e.g. Dr. Youcef Mansouri" required>
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Staff Email <span class="required">*</span></label>
+              <input type="email" id="stf-email" class="chk-input" placeholder="e.g. youcef@medicare.dz" required>
+            </div>
           </div>
-          <div class="chk-form-group">
-            <label class="chk-label">Email Address <span class="required">*</span></label>
-            <input type="email" id="stf-email" class="chk-input" placeholder="leila@medicare.dz" required>
-          </div>
-        </div>
 
-        <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
-          <div class="chk-form-group">
-            <label class="chk-label">Initial Password <span class="required">*</span></label>
-            <input type="password" id="stf-pass" class="chk-input" placeholder="••••••••••••" value="medicare2026" required>
-          </div>
-          <div class="chk-form-group">
-            <label class="chk-label">Role Template <span class="required">*</span></label>
+          <div class="chk-form-group" style="margin-bottom:1.25rem;">
+            <label class="chk-label">Role Template / Preset <span class="required">*</span></label>
             <select id="stf-role-preset" class="chk-select" onchange="onRolePresetChange(this.value)">
-              <option value="Store Manager">💼 Store Manager</option>
-              <option value="Order Handler" selected>📦 Order Handler</option>
-              <option value="Support & Content">🎧 Support & Content</option>
-              <option value="Custom">⚙️ Custom Granular Permissions</option>
+              <option value="Store Manager">Store Manager (Products, Orders, Coupons, Reviews, CMS, Delivery, Reports)</option>
+              <option value="Order Handler">Order Handler (Orders, Reviews)</option>
+              <option value="Support & Content">Support & Content (Reviews Moderation, Homepage CMS)</option>
+              <option value="Custom">Custom Permissions</option>
             </select>
           </div>
+
+          <div class="chk-form-group" style="margin-bottom:1rem;">
+            <label class="chk-label" style="font-weight:700; margin-bottom:0.5rem; display:block;">Granular Permission Checkboxes:</label>
+            <div class="adm-permission-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; background:var(--adm-accent); padding:1rem; border-radius:8px; border:1px solid var(--adm-border);">
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-products" checked> 👕 Products Management
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-inventory" checked> 🏬 Variant Stock & Matrix
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-orders" checked> 📦 Orders Workflow
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-coupons" checked> 🎁 Coupons & Bundles
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-reviews" checked> ✍️ Reviews Moderation
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-homepage" checked> 🖼️ Homepage CMS
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-delivery" checked> 🚚 Wilaya Delivery Fees
+              </label>
+              <label style="display:flex; align-items:center; gap:0.5rem; font-size:13px; cursor:pointer;">
+                <input type="checkbox" id="perm-reports" checked> 📈 Analytics & Reports
+              </label>
+            </div>
+          </div>
         </div>
 
-        <label class="chk-label">Custom Granular Permissions (Toggle Access):</label>
-        <div class="adm-permission-grid">
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-products" checked> <span>👕 Manage Products</span></label>
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-inventory" checked> <span>🏬 Manage Inventory</span></label>
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-orders" checked> <span>📦 Manage Orders</span></label>
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-coupons"> <span>🎁 Manage Coupons</span></label>
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-reviews" checked> <span>✍️ Moderate Reviews</span></label>
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-homepage"> <span>🖼️ Edit Homepage CMS</span></label>
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-delivery"> <span>🚚 Edit Delivery Fees</span></label>
-          <label class="adm-perm-checkbox"><input type="checkbox" id="perm-reports"> <span>📈 View Reports</span></label>
+        <div class="adm-modal-footer">
+          <button type="button" class="mc-btn mc-btn-secondary" onclick="closeAddStaffModal()">Cancel</button>
+          <button type="submit" class="mc-btn mc-btn-accent" style="font-weight:800;">
+            💾 Save Staff Member
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- COUPON CREATION / EDIT MODAL -->
+  <div id="modal-coupon" class="adm-modal-overlay">
+    <div class="adm-modal-box">
+      <div class="adm-modal-header">
+        <h3 id="modal-coupon-title" class="adm-modal-title">🎁 Create New Discount Coupon</h3>
+        <button type="button" class="adm-btn-icon" onclick="closeCouponModal()">✕</button>
+      </div>
+
+      <form id="form-coupon" onsubmit="saveCouponSubmit(event); return false;">
+        <input type="hidden" id="cpn-edit-id" value="">
+        <div class="adm-modal-body">
+          <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Coupon Code <span class="required">*</span></label>
+              <input type="text" id="cpn-code" class="chk-input" placeholder="e.g. SUMMER20" style="text-transform:uppercase; font-weight:700; letter-spacing:1px;" oninput="this.value = this.value.toUpperCase()" required>
+              <span style="font-size:11px; color:#64748B;">Auto-capitalized (e.g. STUDENT10)</span>
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Discount Type <span class="required">*</span></label>
+              <select id="cpn-type" class="chk-select" onchange="onCouponTypeChange(this.value)">
+                <option value="percentage">Percentage Discount (%)</option>
+                <option value="fixed">Fixed Amount (DZD)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+            <div class="chk-form-group">
+              <label class="chk-label" id="cpn-value-label">Discount Percentage (%) <span class="required">*</span></label>
+              <input type="number" id="cpn-value" class="chk-input" placeholder="e.g. 15" min="1" max="100" step="1" required>
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Usage Limit (Max Uses) <span class="required">*</span></label>
+              <input type="number" id="cpn-limit" class="chk-input" placeholder="e.g. 500" min="1" step="1" value="500" required>
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+            <div class="chk-form-group">
+              <label class="chk-label">Expiry Date (Optional)</label>
+              <input type="date" id="cpn-expiry" class="chk-input">
+              <span style="font-size:11px; color:#64748B;">Leave empty for unlimited validity</span>
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Coupon Status <span class="required">*</span></label>
+              <select id="cpn-status" class="chk-select">
+                <option value="Active">Active (Usable at checkout)</option>
+                <option value="Inactive">Inactive (Disabled)</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <button type="submit" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%;">
-          Create Staff Account & Send Invite
-        </button>
+        <div class="adm-modal-footer">
+          <button type="button" class="mc-btn mc-btn-secondary" onclick="closeCouponModal()">Cancel</button>
+          <button type="submit" class="mc-btn mc-btn-accent" style="font-weight:800;">
+            💾 Save Coupon
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       REVIEW REPLY MODAL
+       ===================================================================== -->
+  <div id="modal-review-reply" class="adm-modal-overlay">
+    <div class="adm-modal-box" style="max-width:550px;">
+      <div class="adm-modal-header">
+        <h3 id="modal-reply-title" class="adm-modal-title">💬 Reply to Customer Review</h3>
+        <button type="button" class="adm-btn-icon" onclick="closeReviewReplyModal()">✕</button>
+      </div>
+
+      <form id="form-review-reply" onsubmit="submitReviewReply(event); return false;">
+        <input type="hidden" id="reply-review-id" value="">
+        <div class="adm-modal-body">
+          <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:1rem; margin-bottom:1.25rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <strong id="reply-customer-name" style="color:#0F172A; font-size:14px;">Customer Name</strong>
+              <span id="reply-rating-stars" style="color:#F59E0B; font-weight:700;">★★★★★</span>
+            </div>
+            <p id="reply-review-comment" style="font-size:13px; color:#475569; margin:0; font-style:italic; line-height:1.5;">"Customer review text here..."</p>
+          </div>
+
+          <div class="chk-form-group">
+            <label class="chk-label" for="reply-text">Admin Official Reply / رد الإدارة الرسمي <span class="required">*</span></label>
+            <textarea id="reply-text" class="chk-input" rows="4" style="height:auto; padding:0.75rem; font-family:inherit; resize:vertical;" placeholder="Write your response to the customer (e.g. Thank you for your feedback! We appreciate your trust in MEDICARE...)" required></textarea>
+            <span style="font-size:11px; color:#64748B; margin-top:4px; display:block;">This reply will be publicly visible to all customers on the product page.</span>
+          </div>
+        </div>
+
+        <div class="adm-modal-footer">
+          <button type="button" class="mc-btn mc-btn-secondary" onclick="closeReviewReplyModal()">Cancel</button>
+          <button type="submit" class="mc-btn mc-btn-accent" style="font-weight:800;">
+            💾 Publish Reply
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       CREATE / EDIT BUNDLE MODAL
+       ===================================================================== -->
+  <div id="modal-bundle" class="adm-modal-overlay">
+    <div class="adm-modal-box" style="max-width:700px;">
+      <div class="adm-modal-header">
+        <h3 id="modal-bundle-title" class="adm-modal-title">🎁 Create / Edit Merchandising Bundle</h3>
+        <button type="button" class="adm-btn-icon" onclick="closeBundleModal()">✕</button>
+      </div>
+
+      <form id="form-bundle" onsubmit="saveBundleSubmit(event); return false;">
+        <input type="hidden" id="b-id" value="">
+        <div class="adm-modal-body">
+          <div class="chk-form-group" style="margin-bottom:1rem;">
+            <label class="chk-label" for="b-name">Bundle Name / Label <span class="required">*</span></label>
+            <input type="text" id="b-name" class="chk-input" placeholder="e.g. Complete The Clinical Look" required>
+            <span style="font-size:11px; color:var(--adm-muted-fg); margin-top:3px; display:block;">Displayed as the badge/headline on the product detail cross-sell box.</span>
+          </div>
+
+          <div class="chk-form-group" style="margin-bottom:1rem;">
+            <label class="chk-label" for="b-anchor-product">Anchor Product (Trigger Page) <span class="required">*</span></label>
+            <select id="b-anchor-product" class="chk-select" onchange="onAnchorProductChange()" required>
+              <!-- Populated by JS -->
+            </select>
+            <span style="font-size:11px; color:var(--adm-muted-fg); margin-top:3px; display:block;">The bundle cross-sell box will appear on this product's detail page.</span>
+          </div>
+
+          <div class="chk-form-group" style="margin-bottom:1rem;">
+            <label class="chk-label">Bundled Products (Choose 2 to 4 items) <span class="required">*</span></label>
+            <div style="font-size:11px; color:var(--adm-muted-fg); margin-bottom:6px;">Select products included in this discounted package (including or complementary to the anchor):</div>
+            <div id="b-products-selection-list" style="max-height:220px; overflow-y:auto; border:1px solid var(--adm-border); border-radius:8px; padding:0.5rem; background:var(--adm-background); display:flex; flex-direction:column; gap:0.4rem;">
+              <!-- Checkboxes dynamically rendered with thumbnails, title, and prices -->
+            </div>
+          </div>
+
+          <div class="chk-form-grid two-col" style="margin-bottom:1rem;">
+            <div class="chk-form-group">
+              <label class="chk-label" for="b-price">Discounted Bundle Price (DZD) <span class="required">*</span></label>
+              <input type="number" id="b-price" class="chk-input" placeholder="e.g. 33500" min="100" oninput="calculateBundleLiveSummary()" required>
+            </div>
+            <div class="chk-form-group">
+              <label class="chk-label">Bundle Status</label>
+              <div style="display:flex; align-items:center; gap:0.5rem; height:42px;">
+                <label style="display:inline-flex; align-items:center; gap:0.5rem; font-size:13px; font-weight:700; cursor:pointer; color:var(--adm-foreground);">
+                  <input type="checkbox" id="b-active" checked style="width:18px; height:18px; accent-color:var(--color-primary-600); cursor:pointer;">
+                  <span>Active (Visible on Storefront)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Summary Card -->
+          <div id="bundle-live-summary-card" style="background:var(--adm-accent); border:1px solid var(--adm-border); border-radius:8px; padding:1rem;">
+            <div style="font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--adm-muted-fg); margin-bottom:0.5rem;">
+              📊 Live Pricing & Margin Calculation
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:13px;">
+              <span>Total Combined Value:</span>
+              <strong id="b-summary-total-val">0 DZD</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:13px;">
+              <span>Discounted Bundle Price:</span>
+              <strong id="b-summary-bundle-price" style="color:var(--color-primary-600);">0 DZD</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px dashed var(--adm-border); padding-top:4px; margin-top:4px;">
+              <span>Customer Savings:</span>
+              <span id="b-summary-savings" style="font-weight:800; color:#10B981;">0 DZD (0% OFF)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="adm-modal-footer">
+          <button type="button" class="mc-btn mc-btn-secondary" onclick="closeBundleModal()">Cancel</button>
+          <button type="submit" class="mc-btn mc-btn-accent" style="font-weight:800;">
+            💾 Save Bundle
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -1014,6 +2446,8 @@
   <!-- Supabase Backend SDK & Client Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
+  <script src="src/i18n.js"></script>
+  <script src="src/product-catalog.js"></script>
   <script src="src/supabase-client.js"></script>
   <script src="src/admin.js"></script>
 </body>

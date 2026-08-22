@@ -5,10 +5,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  let cart = [
-    { id: 'MC-101-OBS', name: 'Obsidian Flex Antimicrobial Scrub Set', nameAr: 'طقم سكراب أوبسيديان', price: 10700, qty: 1, img: 'assets/medicare_scrubs_hero_1786614154492.png' },
-    { id: 'MC-202', name: 'Titanium Master Precision Stethoscope', nameAr: 'سماعة تيتانيوم', price: 19800, qty: 1, img: 'assets/medicare_stethoscope_1786614166370.png' }
-  ];
+  let cart = (window.MedicareCart && typeof window.MedicareCart.getCart === 'function')
+    ? window.MedicareCart.getCart()
+    : JSON.parse(localStorage.getItem('medicare_cart') || '[]');
 
   const toast = document.getElementById('copy-toast');
   const langToggleBtn = document.getElementById('lang-toggle-btn');
@@ -133,18 +132,21 @@ document.addEventListener('DOMContentLoaded', () => {
      3. 1-CLICK REORDER SYSTEM
      ------------------------------------------------------------------ */
   window.reorderItems = function(...itemIds) {
-    const catalogMap = {
-      'MC-101-OBS': { id: 'MC-101-OBS', name: 'Obsidian Flex Antimicrobial Scrub Set', nameAr: 'طقم سكراب أوبسيديان', price: 10700, img: 'assets/medicare_scrubs_hero_1786614154492.png' },
-      'MC-202': { id: 'MC-202', name: 'Titanium Master Precision Stethoscope', nameAr: 'سماعة تيتانيوم', price: 19800, img: 'assets/medicare_stethoscope_1786614166370.png' },
-      'MC-303': { id: 'MC-303', name: 'Executive Fluid-Shield Lab Coat', nameAr: 'معطف مختبر مقاوم للسوائل', price: 13400, img: 'assets/medicare_lab_coat_1786614177321.png' }
-    };
-
+    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
     itemIds.forEach(id => {
-      const item = catalogMap[id];
+      let item = customProds.find(p => String(p.id) === String(id));
+      if (!item && window.getProductById) item = window.getProductById(id);
       if (item) {
-        const existing = cart.find(i => i.id === id);
-        if (existing) existing.qty++;
-        else cart.push({ ...item, qty: 1 });
+        if (window.MedicareCart && typeof window.MedicareCart.addItem === 'function') {
+          window.MedicareCart.addItem({
+            productId: item.id,
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            qty: 1,
+            image: (Array.isArray(item.images) && item.images[0]) || item.img || ''
+          });
+        }
       }
     });
 

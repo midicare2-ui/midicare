@@ -82,17 +82,17 @@
       </div>
 
       <div class="mc-header-actions">
-        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+        <a href="https://wa.me/213662497253" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
           <span>💬</span>
           <span class="btn-text">اطلب الآن</span>
         </a>
         <button class="mc-icon-btn" aria-label="Wishlist">
           <span style="color:#EF4444">♥</span>
-          <span id="wsh-wishlist-count-badge" class="mc-icon-badge">4</span>
+          <span id="wsh-wishlist-count-badge" class="mc-icon-badge">0</span>
         </button>
         <button id="wsh-cart-btn" class="mc-icon-btn" aria-label="Shopping Cart">
           <span>🛒</span>
-          <span id="wsh-cart-badge" class="mc-icon-badge">2</span>
+          <span id="wsh-cart-badge" class="mc-icon-badge">0</span>
         </button>
         <button class="mc-icon-btn mc-account-btn" onclick="window.location.href='account.html'" aria-label="My Account" title="My Account">
           <span>👤</span>
@@ -116,7 +116,7 @@
     <div class="wsh-page-header">
       <div>
         <h1 class="wsh-title">
-          <span>♥</span> My Saved Wishlist <span id="wsh-total-count" style="font-size:1.1rem; color:var(--color-primary-700); font-weight:700;">(4 Items)</span>
+          <span>♥</span> My Saved <span id="wsh-total-count" style="font-size:1.1rem; color:var(--color-primary-700); font-weight:700;"></span>
         </h1>
         <p class="wsh-subtitle">Keep track of your favorite medical wear and diagnostic tools. Saved automatically in local storage.</p>
       </div>
@@ -149,33 +149,18 @@
         </div>
       </div>
 
-      <!-- Rating Overview Histogram -->
-      <div class="rev-overview-card">
-        <div class="rev-score-box">
-          <div class="rev-score-big">4.8</div>
-          <div class="rev-score-stars">★★★★★</div>
-          <div style="font-size:12.5px; color:var(--color-neutral-500); font-weight:600;">Based on 142 reviews</div>
-        </div>
-
-        <div class="pdp-review-histogram">
-          <div class="pdp-histo-row"><span>5 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:85%"></div></div><span>85% (121)</span></div>
-          <div class="pdp-histo-row"><span>4 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:11%"></div></div><span>11% (16)</span></div>
-          <div class="pdp-histo-row"><span>3 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:3%"></div></div><span>3% (4)</span></div>
-          <div class="pdp-histo-row"><span>2 Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:1%"></div></div><span>1% (1)</span></div>
-          <div class="pdp-histo-row"><span>1 Star</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:0%"></div></div><span>0% (0)</span></div>
-        </div>
-
-        <div style="text-align:center;">
-          <button class="mc-btn mc-btn-accent" onclick="openReviewModal()">
-            ✍️ Write a Review — أضف تقييمك
-          </button>
+      <!-- Rating Overview — rendered dynamically by wishlist.js -->
+      <div id="rev-overview-card" class="rev-overview-card">
+        <div style="text-align:center; padding:2rem; color:var(--color-neutral-400);">
+          <div style="font-size:2rem; margin-bottom:0.5rem;">⭐</div>
+          <div style="font-size:14px;">Loading reviews…</div>
         </div>
       </div>
 
       <!-- Reviews Sort & Filter Bar -->
       <div class="rev-controls-row">
-        <div style="font-family:var(--font-family-display); font-size:14px; font-weight:700; color:var(--color-neutral-800);">
-          Showing 3 of 142 Reviews
+        <div id="rev-showing-label" style="font-family:var(--font-family-display); font-size:14px; font-weight:700; color:var(--color-neutral-800);">
+          <!-- Populated by JS -->
         </div>
 
         <select id="review-sort-select" class="mc-sort-select" onchange="sortReviews(this.value)">
@@ -186,100 +171,16 @@
         </select>
       </div>
 
-      <!-- Review Cards List Container -->
+      <!-- Review Cards — dynamically rendered by wishlist.js from Supabase -->
       <div id="reviews-list-container">
-        
-        <!-- Review 1 (With Store Owner Reply) -->
-        <div class="rev-card">
-          <div class="rev-user-header">
-            <div class="rev-user-name">
-              <span>Dr. Reda K.</span>
-              <span class="rev-verified-tag">✓ Verified Doctor (طبيب مقيم)</span>
-            </div>
-            <span style="font-size:12px; color:var(--color-neutral-400);">August 11, 2026</span>
-          </div>
-
-          <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">★★★★★</div>
-          <h4 style="margin:0 0 0.35rem 0; font-family:var(--font-family-display); font-size:15px; color:var(--color-neutral-900);">
-            Exceptional scrub set for 24-hour ER shifts!
-          </h4>
-          <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">
-            The 4-way flex stretch fabric is unmatched. I wore this through a demanding 24-hour ER guard at Mustapha Pacha University Hospital. Stays wrinkle-free, repels liquid spills, and keeps cool under intense movement. Express shipping to Algiers arrived in under 24h!
-          </p>
-
-          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
-            <div style="display:flex; gap:0.5rem;">
-              <img src="assets/medicare_scrubs_hero_1786614154492.png" alt="Review photo 1" style="width:60px; height:60px; border-radius:var(--radius-md); object-fit:cover; border:1px solid var(--color-neutral-200);">
-              <img src="assets/medicare_medical_bag_1786614187700.png" alt="Review photo 2" style="width:60px; height:60px; border-radius:var(--radius-md); object-fit:cover; border:1px solid var(--color-neutral-200);">
-            </div>
-
-            <button class="rev-helpful-btn" onclick="voteHelpful(this, 24)">
-              👍 Helpful (<span class="vote-count">24</span>)
-            </button>
-          </div>
-
-          <!-- Official Store Owner Reply -->
-          <div class="rev-owner-reply-box">
-            <div class="rev-owner-title">
-              <span>💬 Official Response from MEDICARE Team</span>
-              <span style="font-size:11px; font-weight:500; color:var(--color-primary-700);">• August 12, 2026</span>
-            </div>
-            <div>
-              Thank you Dr. Reda! We are thrilled to hear that the Obsidian Flex Scrub Set performed so well during your 24-hour ER shift at Mustapha Pacha. Thank you for your dedication to patient care!
-            </div>
-          </div>
+        <div class="rev-empty-state" style="text-align:center; padding:3rem 1rem; color:var(--color-neutral-400);">
+          <div style="font-size:2.5rem; margin-bottom:0.75rem;">💬</div>
+          <div style="font-size:16px; font-weight:700; margin-bottom:0.5rem;">No Reviews Yet</div>
+          <div style="font-size:13px;">Be the first to share your experience! كن أول من يكتب تقييماً.</div>
+          <button class="mc-btn mc-btn-accent mc-btn-sm" style="margin-top:1.25rem;" onclick="openReviewModal()">
+            ✍️ Write a Review
+          </button>
         </div>
-
-        <!-- Review 2 -->
-        <div class="rev-card">
-          <div class="rev-user-header">
-            <div class="rev-user-name">
-              <span>Amina M.</span>
-              <span class="rev-verified-tag">✓ Verified Student (طالبة صيدلة)</span>
-            </div>
-            <span style="font-size:12px; color:var(--color-neutral-400);">August 08, 2026</span>
-          </div>
-
-          <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">★★★★★</div>
-          <h4 style="margin:0 0 0.35rem 0; font-family:var(--font-family-display); font-size:15px; color:var(--color-neutral-900);">
-            Perfect fit and elegant Obsidian Teal color
-          </h4>
-          <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">
-            Ordered the Pharmacy Starter Kit bundle. The lab coat fabric feels super premium and the stethoscope acoustic clarity is amazing. Size M fit perfectly according to the size chart table.
-          </p>
-
-          <div style="display:flex; justify-content:flex-end;">
-            <button class="rev-helpful-btn" onclick="voteHelpful(this, 18)">
-              👍 Helpful (<span class="vote-count">18</span>)
-            </button>
-          </div>
-        </div>
-
-        <!-- Review 3 -->
-        <div class="rev-card">
-          <div class="rev-user-header">
-            <div class="rev-user-name">
-              <span>Dr. Yacine B.</span>
-              <span class="rev-verified-tag">✓ Verified Surgeon (طبيب جراح)</span>
-            </div>
-            <span style="font-size:12px; color:var(--color-neutral-400);">August 02, 2026</span>
-          </div>
-
-          <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">★★★★★</div>
-          <h4 style="margin:0 0 0.35rem 0; font-family:var(--font-family-display); font-size:15px; color:var(--color-neutral-900);">
-            Best medical shoes for long operating room hours
-          </h4>
-          <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">
-            The Clinical Cushion Clogs drastically reduced my back and foot fatigue during 6-hour surgical procedures. Highly recommended for all surgeons in Algeria.
-          </p>
-
-          <div style="display:flex; justify-content:flex-end;">
-            <button class="rev-helpful-btn" onclick="voteHelpful(this, 31)">
-              👍 Helpful (<span class="vote-count">31</span>)
-            </button>
-          </div>
-        </div>
-
       </div><!-- /#reviews-list-container -->
 
     </section>
@@ -339,17 +240,16 @@
           <textarea id="rev-body" class="chk-input" style="height:100px; padding:0.75rem;" placeholder="Describe how the product fit, fabric quality, and performance met your medical practice needs..." required></textarea>
         </div>
 
-        <!-- Optional Photo Upload Dropzone -->
+        <!-- Photo Upload Dropzone -->
         <div class="chk-form-group" style="margin-bottom:1.25rem;">
           <label class="chk-label">Add Product Photos (Optional):</label>
-          <div class="rev-photo-dropzone" onclick="simulatePhotoUpload()">
+          <input type="file" id="rev-photo-input" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display:none;" onchange="handlePhotoSelect(event)">
+          <div class="rev-photo-dropzone" id="rev-photo-dropzone" onclick="document.getElementById('rev-photo-input').click()">
             <div style="font-size:1.5rem;">📷</div>
-            <div style="font-size:13px; font-weight:700; color:var(--color-primary-800);">Click to upload photos</div>
-            <div style="font-size:11px; color:var(--color-neutral-500);">PNG, JPG up to 5MB</div>
+            <div style="font-size:13px; font-weight:700; color:var(--color-primary-800);">Click or drag & drop to upload photos</div>
+            <div style="font-size:11px; color:var(--color-neutral-500);">PNG, JPG, WEBP up to 5MB</div>
           </div>
-          <div id="rev-photo-preview-msg" style="font-size:11.5px; color:var(--color-success-700); font-weight:700; display:none; margin-top:0.35rem;">
-            ✓ 1 photo attached (scrub_preview.jpg)
-          </div>
+          <div id="rev-photo-previews" class="rev-preview-grid"></div>
         </div>
 
         <button type="submit" class="mc-btn mc-btn-accent mc-btn-lg" style="width:100%;">
@@ -373,7 +273,7 @@
         <div class="mc-cart-shipping-note">🚚 Express Delivery — All 58 Wilayas • COD</div>
         <div class="mc-cart-total-row">
           <span>Subtotal:</span>
-          <span id="wsh-cart-total">30,500 DZD</span>
+          <span id="wsh-cart-total">0 DZD</span>
         </div>
         <button class="mc-btn mc-btn-accent mc-btn-lg mc-btn-full" onclick="window.location.href='checkout.html'">Proceed to Checkout (COD) — الدفع عند الاستلام</button>
       </div>
@@ -383,9 +283,35 @@
   <!-- Toast Notification -->
   <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
 
+  <!-- =====================================================================
+       MOBILE ONLY: Persistent Bottom Navigation Bar
+       ===================================================================== -->
+  <nav id="mob-bottom-nav" class="mc-mob-bottom-nav" aria-label="Main navigation">
+    <a href="index.html" class="mc-mob-nav-item" data-tab="home">
+      <span class="mc-mob-nav-icon">🏠</span>
+      <span class="mc-mob-nav-label">Home</span>
+    </a>
+    <a href="category.html" class="mc-mob-nav-item" data-tab="shop">
+      <span class="mc-mob-nav-icon">🛍️</span>
+      <span class="mc-mob-nav-label">Shop</span>
+    </a>
+    <button class="mc-mob-nav-item" id="mob-nav-cart" data-tab="cart" aria-label="Shopping cart">
+      <span class="mc-mob-nav-icon" style="position:relative; display:inline-block;">
+        🛒<span id="mob-cart-badge" class="mc-mob-cart-badge" aria-label="items in cart">0</span>
+      </span>
+      <span class="mc-mob-nav-label">Cart</span>
+    </button>
+    <a href="account.html" class="mc-mob-nav-item" data-tab="account">
+      <span class="mc-mob-nav-icon">👤</span>
+      <span class="mc-mob-nav-label">Account</span>
+    </a>
+  </nav>
+
   <!-- Supabase Backend SDK & Client Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
+  <script src="src/i18n.js"></script>
+  <script src="src/product-catalog.js"></script>
   <script src="src/supabase-client.js"></script>
   <script src="src/cart.js"></script>
   <script src="src/account-header.js"></script>

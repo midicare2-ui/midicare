@@ -8,23 +8,51 @@ CREATE TABLE IF NOT EXISTS public.products (
   id VARCHAR(50) PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   name_ar VARCHAR(255) NOT NULL,
-  specialty VARCHAR(50) NOT NULL CHECK (specialty IN ('medicine', 'pharmacy', 'dentistry', 'nursing')),
+  category VARCHAR(100) DEFAULT 'Scrubs',
+  specialty VARCHAR(50) NOT NULL CHECK (specialty IN ('medicine', 'pharmacy', 'dentistry', 'nursing', 'all')),
   price NUMERIC(10, 2) NOT NULL,
   original_price NUMERIC(10, 2),
   rating NUMERIC(3, 2) DEFAULT 5.00,
   reviews_count INT DEFAULT 0,
   material VARCHAR(100),
-  brand VARCHAR(100),
+  brand VARCHAR(100) DEFAULT 'MEDICARE PRO',
   badge VARCHAR(50),
-  colors TEXT[],
-  sizes TEXT[],
-  images TEXT[],
+  colors JSONB DEFAULT '[]'::jsonb,
+  sizes TEXT[] DEFAULT ARRAY['S','M','L','XL']::text[],
+  images TEXT[] DEFAULT ARRAY[]::text[],
+  short_description TEXT,
+  description TEXT,
+  features JSONB DEFAULT '[]'::jsonb,
+  specifications JSONB DEFAULT '{}'::jsonb,
+  care_instructions TEXT[] DEFAULT ARRAY[]::text[],
+  size_guide JSONB DEFAULT '{"enabled": true}'::jsonb,
+  delivery_info TEXT,
+  return_info TEXT,
+  trust_badges TEXT[] DEFAULT ARRAY['🚚 58 Wilayas COD', '🔄 14-Day Free Exchange', '🛡️ Antimicrobial Shield']::text[],
   is_new BOOLEAN DEFAULT FALSE,
   is_bestseller BOOLEAN DEFAULT FALSE,
   stock INT DEFAULT 20,
+  min_stock INT DEFAULT 5,
   stock_by_variant JSONB DEFAULT '{}'::jsonb,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'draft', 'archived')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration helpers to ensure existing tables receive new columns seamlessly
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS category VARCHAR(100) DEFAULT 'Scrubs';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS short_description TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS features JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS specifications JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS care_instructions TEXT[] DEFAULT ARRAY[]::text[];
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS size_guide JSONB DEFAULT '{"enabled": true}'::jsonb;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS delivery_info TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS return_info TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS trust_badges TEXT[];
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS min_stock INT DEFAULT 5;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 -- 2. CATEGORIES TABLE
 CREATE TABLE IF NOT EXISTS public.categories (
@@ -138,9 +166,79 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.staff ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.wilayas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.communes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 
 -- Public Read Policies
+DROP POLICY IF EXISTS "Allow public read products" ON public.products;
 CREATE POLICY "Allow public read products" ON public.products FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow auth insert products" ON public.products;
+CREATE POLICY "Allow auth insert products" ON public.products FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow auth update products" ON public.products;
+CREATE POLICY "Allow auth update products" ON public.products FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow auth delete products" ON public.products;
+CREATE POLICY "Allow auth delete products" ON public.products FOR DELETE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow public read reviews" ON public.reviews;
 CREATE POLICY "Allow public read reviews" ON public.reviews FOR SELECT USING (is_approved = true);
+
+DROP POLICY IF EXISTS "Allow public insert reviews" ON public.reviews;
+CREATE POLICY "Allow public insert reviews" ON public.reviews FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow auth update reviews" ON public.reviews;
+CREATE POLICY "Allow auth update reviews" ON public.reviews FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow auth delete reviews" ON public.reviews;
+CREATE POLICY "Allow auth delete reviews" ON public.reviews FOR DELETE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow public insert orders" ON public.orders;
 CREATE POLICY "Allow public insert orders" ON public.orders FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public select orders" ON public.orders;
 CREATE POLICY "Allow public select orders" ON public.orders FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow auth update orders" ON public.orders;
+CREATE POLICY "Allow auth update orders" ON public.orders FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public read staff" ON public.staff;
+CREATE POLICY "Allow public read staff" ON public.staff FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow auth insert staff" ON public.staff;
+CREATE POLICY "Allow auth insert staff" ON public.staff FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow auth update staff" ON public.staff;
+CREATE POLICY "Allow auth update staff" ON public.staff FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow auth delete staff" ON public.staff;
+CREATE POLICY "Allow auth delete staff" ON public.staff FOR DELETE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Allow public read wilayas" ON public.wilayas;
+CREATE POLICY "Allow public read wilayas" ON public.wilayas FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read communes" ON public.communes;
+CREATE POLICY "Allow public read communes" ON public.communes FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read coupons" ON public.coupons;
+CREATE POLICY "Allow public read coupons" ON public.coupons FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow public read categories" ON public.categories;
+CREATE POLICY "Allow public read categories" ON public.categories FOR SELECT USING (true);
+
+-- 11. SUBSCRIBERS TABLE (Newsletter / VIP Updates)
+CREATE TABLE IF NOT EXISTS public.subscribers (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  subscribed_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.subscribers ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow public insert subscribers" ON public.subscribers;
+CREATE POLICY "Allow public insert subscribers" ON public.subscribers FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow auth select subscribers" ON public.subscribers;
+CREATE POLICY "Allow auth select subscribers" ON public.subscribers FOR SELECT TO authenticated USING (true);
+

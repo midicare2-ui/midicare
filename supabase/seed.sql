@@ -69,15 +69,9 @@ ON CONFLICT (code) DO NOTHING;
 INSERT INTO public.communes (wilaya_code, name) VALUES
 ('16', 'El Biar'), ('16', 'Hydra'), ('16', 'Bab Ezzouar'), ('16', 'Kouba'), ('16', 'Sidi M’Hamed'), ('16', 'Zeralda'), ('16', 'Cheraga'), ('16', 'Dely Ibrahim');
 
--- 3. SEED PRODUCTS
-INSERT INTO public.products (id, name, name_ar, specialty, price, original_price, rating, reviews_count, material, brand, badge, colors, sizes, images, is_new, is_bestseller, stock) VALUES
-('MC-101', 'Obsidian Flex Antimicrobial Scrub Set', 'طقم سكراب أوبسيديان المضاد للبكتيريا', 'medicine', 10700, 13400, 4.8, 142, 'antimicrobial', 'medicare', 'sale', ARRAY['#0E4D45','#1E3A5F','#6B7280'], ARRAY['XS','S','M','L','XL','XXL'], ARRAY['assets/medicare_scrubs_hero_1786614154492.png','assets/medicare_lab_coat_1786614177321.png'], false, true, 12),
-('MC-102', 'ClinFlex 4-Way Stretch Scrub Pants', 'بنطلون سكراب مرن بـ 4 اتجاهات', 'nursing', 6800, NULL, 4.7, 98, 'flex', 'clinflex', 'new', ARRAY['#0F766E','#7C3AED','#1D4ED8'], ARRAY['S','M','L','XL'], ARRAY['assets/medicare_lab_coat_1786614177321.png','assets/medicare_scrubs_hero_1786614154492.png'], true, false, 28),
-('MC-103', 'Executive Fluid-Shield Lab Coat', 'معطف مختبر مقاوم للسوائل', 'pharmacy', 13400, 16700, 4.9, 211, 'fluid-shield', 'medicare', 'hot', ARRAY['#F8F8F8','#1E3A5F'], ARRAY['S','M','L','XL','XXL'], ARRAY['assets/medicare_lab_coat_1786614177321.png','assets/medicare_scrubs_hero_1786614154492.png'], false, true, 58),
-('MC-108', 'Titanium Master Diagnostic Stethoscope', 'سماعة تيتانيوم الدقيقة', 'medicine', 19800, 24000, 5.0, 317, 'antimicrobial', 'medicare', 'hot', ARRAY['#0E4D45','#1E3A5F','#6B7280'], ARRAY['ONE'], ARRAY['assets/medicare_stethoscope_1786614166370.png','assets/medicare_medical_bag_1786614187700.png'], false, true, 9),
-('MC-110', 'Clinical Cushion Antibacterial Clogs', 'قبقاب طبي بمقدمة مغلقة', 'nursing', 9000, 11300, 4.5, 128, 'antimicrobial', 'medicare', 'sale', ARRAY['#0E4D45','#F8F8F8','#1E3A5F'], ARRAY['37','38','39','40','41','42','43','44','45'], ARRAY['assets/medicare_footwear_1786615096505.png'], false, true, 15),
-('MC-112', '1st Year Pharmacy Starter Kit', 'حقيبة الصيدلة — السنة الأولى', 'pharmacy', 17400, 23400, 4.9, 183, 'antimicrobial', 'medicare', 'bundle', ARRAY['#0E4D45'], ARRAY['ONE'], ARRAY['assets/medicare_starter_kit_1786615195273.png'], false, true, 5)
-ON CONFLICT (id) DO NOTHING;
+-- 3. PRODUCTS
+-- Products are managed purely dynamically via Admin Panel & Supabase
+
 
 -- 4. SEED COUPONS
 INSERT INTO public.coupons (code, discount_type, value, usage_limit, times_used, active) VALUES

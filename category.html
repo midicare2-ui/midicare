@@ -54,7 +54,7 @@
 
     /* WhatsApp FAB (mobile) */
     .mc-whatsapp-fab {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      position: fixed; bottom: 4.85rem; right: 1.5rem;
       width: 50px; height: 50px; border-radius: 50%;
       background: #25D366; color: #FFF;
       display: flex; align-items: center; justify-content: center;
@@ -119,11 +119,11 @@
       </div>
 
       <div class="mc-header-actions">
-        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+        <a href="https://wa.me/213662497253" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
           <span>💬</span>
           <span class="btn-text">اطلب الآن</span>
         </a>
-        <button class="mc-icon-btn" aria-label="Wishlist">
+        <button class="mc-icon-btn" aria-label="Wishlist" onclick="window.location.href='wishlist.html'">
           <span>♥</span>
           <span id="wishlist-badge" class="mc-icon-badge">2</span>
         </button>
@@ -138,13 +138,44 @@
           <span>🏠</span>
           <span class="btn-text">Home</span>
         </a>
-        <button id="lang-toggle-btn" class="mc-toggle-btn">
-          <span>🌐</span>
-          <span class="btn-text">العربية</span>
-        </button>
+        <!-- Trilingual Language Switcher -->
+        <div class="mc-lang-dropdown">
+          <button id="lang-toggle-btn" class="mc-toggle-btn mc-lang-btn" aria-label="Switch Language">
+            <span>🌐</span>
+            <span class="btn-text">Language</span>
+            <span style="font-size:10px; opacity:0.7;">▼</span>
+          </button>
+          <div id="lang-dropdown-menu" class="mc-lang-menu">
+            <button class="mc-lang-option" data-lang="ar">
+              <span>🇩🇿</span>
+              <span>العربية</span>
+            </button>
+            <button class="mc-lang-option" data-lang="en">
+              <span>🇬🇧</span>
+              <span>English</span>
+            </button>
+            <button class="mc-lang-option" data-lang="fr">
+              <span>🇫🇷</span>
+              <span>Français</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
+
+  <!-- =====================================================================
+       MOBILE ONLY: Horizontal Category Pill Filter Bar
+       ===================================================================== -->
+  <div id="mob-pill-bar" class="mc-mob-pill-bar" role="tablist" aria-label="Browse by category">
+    <button class="mc-mob-pill active" data-filter="all" role="tab" aria-selected="true">⭐ All</button>
+    <button class="mc-mob-pill" data-filter="scrubs" role="tab" aria-selected="false">🩺 Scrubs</button>
+    <button class="mc-mob-pill" data-filter="lab-coats" role="tab" aria-selected="false">🥼 Lab Coats</button>
+    <button class="mc-mob-pill" data-filter="calots" role="tab" aria-selected="false">🧢 Calots & Caps</button>
+    <button class="mc-mob-pill" data-filter="footwear" role="tab" aria-selected="false">👟 Footwear</button>
+    <button class="mc-mob-pill" data-filter="diagnostic" role="tab" aria-selected="false">🔬 Diagnostic</button>
+    <button class="mc-mob-pill" data-filter="starter-kits" role="tab" aria-selected="false">🎒 Starter Kits</button>
+  </div>
 
   <!-- =====================================================================
        BREADCRUMB
@@ -185,10 +216,19 @@
           <option value="top-rated">⭐ Top Rated</option>
         </select>
 
+        <!-- Show All / Paginate toggle -->
+        <button id="toggle-view-all-btn" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-weight:700; font-size:12px; white-space:nowrap; padding:0.4rem 0.75rem;" onclick="toggleShowAllMode()">
+          👀 View All (48)
+        </button>
+
         <!-- Grid/List view toggle -->
         <div class="mc-view-toggle" role="group" aria-label="View style">
-          <button id="grid-view-btn" class="mc-view-btn active" aria-label="Grid view" title="Grid view">⊞</button>
-          <button id="list-view-btn" class="mc-view-btn" aria-label="List view" title="List view">☰</button>
+          <button id="grid-view-btn" class="mc-view-btn" aria-label="Grid view" title="Grid view">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          </button>
+          <button id="list-view-btn" class="mc-view-btn active" aria-label="List view" title="List view">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -198,6 +238,8 @@
   <div id="chips-bar" class="mc-chips-bar" role="region" aria-label="Active filters">
     <!-- Chips rendered by JS -->
   </div>
+
+
 
   <!-- =====================================================================
        MAIN LAYOUT: SIDEBAR + PRODUCT GRID
@@ -397,8 +439,24 @@
          =================================================================== -->
     <div class="mc-product-grid-area">
 
+      <!-- ===============================================================
+           OFFERS & BUNDLES (Frequently Bought Together Merchandising Packages)
+           =============================================================== -->
+      <section id="cat-bundles-section" class="mc-cat-bundles-box" style="display:none;" aria-label="Special Merchandising Bundles">
+        <div class="mc-cat-bundles-header">
+          <div class="mc-cat-bundles-title-wrap">
+            <span class="mc-cat-bundles-badge">🔥 Limited Merchandising Offers</span>
+            <h2 class="mc-cat-bundles-title">Curated Clinical Bundles & Sets</h2>
+          </div>
+          <span id="cat-bundles-subtitle" style="font-size:12.5px; font-weight:700; color:#0E4D45;">Save up to 25% on packaged sets</span>
+        </div>
+        <div id="cat-bundles-carousel" class="mc-cat-bundles-carousel">
+          <!-- Dynamically populated from active bundles in localStorage medicare_bundles -->
+        </div>
+      </section>
+
       <!-- Product Grid (dynamically populated by JS) -->
-      <div id="product-grid" class="mc-product-grid" role="list" aria-label="Products">
+      <div id="product-grid" class="mc-product-grid list-view" role="list" aria-label="Products">
         <!-- Skeleton loaders shown on initial load -->
       </div>
 
@@ -560,15 +618,42 @@
   <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
 
   <!-- WhatsApp FAB -->
-  <a href="https://wa.me/213550000000" target="_blank" class="mc-whatsapp-fab" aria-label="WhatsApp Quick Order">💬</a>
+  <a href="https://wa.me/213662497253" target="_blank" class="mc-whatsapp-fab" aria-label="WhatsApp Quick Order">💬</a>
+
+  <!-- =====================================================================
+       MOBILE ONLY: Persistent Bottom Navigation Bar
+       ===================================================================== -->
+  <nav id="mob-bottom-nav" class="mc-mob-bottom-nav" aria-label="Main navigation">
+    <a href="index.html" class="mc-mob-nav-item" data-tab="home">
+      <span class="mc-mob-nav-icon">🏠</span>
+      <span class="mc-mob-nav-label">Home</span>
+    </a>
+    <a href="category.html" class="mc-mob-nav-item active" data-tab="shop" aria-current="page">
+      <span class="mc-mob-nav-icon">🛍️</span>
+      <span class="mc-mob-nav-label">Shop</span>
+    </a>
+    <button class="mc-mob-nav-item" id="mob-nav-cart" data-tab="cart" aria-label="Shopping cart">
+      <span class="mc-mob-nav-icon" style="position:relative; display:inline-block;">
+        🛒<span id="mob-cart-badge" class="mc-mob-cart-badge" aria-label="items in cart">0</span>
+      </span>
+      <span class="mc-mob-nav-label">Cart</span>
+    </button>
+    <a href="account.html" class="mc-mob-nav-item" data-tab="account">
+      <span class="mc-mob-nav-icon">👤</span>
+      <span class="mc-mob-nav-label">Account</span>
+    </a>
+  </nav>
 
   <!-- Supabase Backend SDK & Client Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
+  <script src="src/i18n.js"></script>
+  <script src="src/product-catalog.js"></script>
   <script src="src/supabase-client.js"></script>
   <script src="src/cart.js"></script>
   <script src="src/account-header.js"></script>
   <script src="src/category.js"></script>
+  <script src="src/category-mobile.js"></script>
 </body>
 </html>
 

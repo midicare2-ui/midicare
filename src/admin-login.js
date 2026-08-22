@@ -1,42 +1,21 @@
 /* ==========================================================================
-   MEDICARE — ADMIN AUTHENTICATION & LOGIN ENGINE
-   JWT/Session Token Engine, 2FA OTP Gate, Rate-Limiting Brute Force Protection
+   MEDICARE — ADMIN AUTHENTICATION ENGINE
+   Owner: midicare2@gmail.com | 2-step: password + 4-digit security code
    ========================================================================== */
 
 const STAFF_ACCOUNTS = {
-  'owner@medicare.dz': {
-    name: 'Dr. Karim Owner',
-    email: 'owner@medicare.dz',
+  'midicare2@gmail.com': {
+    name: 'Owner',
+    email: 'midicare2@gmail.com',
     role: 'Owner',
     roleLabel: '👑 Owner (Full Access)',
     requires2FA: true,
     permissions: ['all']
-  },
-  'manager@medicare.dz': {
-    name: 'Youcef Manager',
-    email: 'manager@medicare.dz',
-    role: 'Store Manager',
-    roleLabel: '💼 Store Manager',
-    requires2FA: false,
-    permissions: ['products:all', 'inventory:manage', 'categories:manage', 'coupons:manage', 'homepage:cms', 'reports:view']
-  },
-  'handler@medicare.dz': {
-    name: 'Farid Order Handler',
-    email: 'handler@medicare.dz',
-    role: 'Order Handler',
-    roleLabel: '📦 Order Handler',
-    requires2FA: false,
-    permissions: ['orders:view', 'orders:update', 'customers:view', 'reviews:manage']
-  },
-  'support@medicare.dz': {
-    name: 'Sara Support',
-    email: 'support@medicare.dz',
-    role: 'Support & Content',
-    roleLabel: '🎧 Support & Content',
-    requires2FA: false,
-    permissions: ['reviews:manage', 'homepage:cms']
   }
 };
+
+const OWNER_PASSWORD  = 'midicare2026';
+const OWNER_2FA_CODE  = '2026';
 
 let failedLoginCount = 0;
 let isLockedOut = false;
@@ -49,96 +28,58 @@ document.addEventListener('DOMContentLoaded', () => {
   const toast    = document.getElementById('copy-toast');
 
   /* ------------------------------------------------------------------
-     1. FILL CREDENTIALS (DEMO BUTTONS)
-     ------------------------------------------------------------------ */
-  window.fillCredentials = function(email, label) {
-    document.getElementById('login-email').value = email;
-    document.getElementById('login-password').value = 'medicare2026';
-    const notice = document.getElementById('selected-role-notice');
-    if (notice) notice.innerHTML = `Currently selected: <strong>${label}</strong>`;
-  };
-
-  /* ------------------------------------------------------------------
-     2. LOGIN SUBMISSION WITH RATE LIMITING
+     1. LOGIN SUBMISSION WITH RATE LIMITING
      ------------------------------------------------------------------ */
   window.handleAdminLogin = async function(e) {
     e.preventDefault();
 
     if (isLockedOut) {
-      showAlert('⚠️ System locked due to multiple failed attempts. Please wait 30 seconds.');
+      showAlert('⛔ System locked after multiple failed attempts. Please wait 30 seconds.');
       return;
     }
 
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pass  = document.getElementById('login-password').value.trim();
 
-    let account = STAFF_ACCOUNTS[email];
-    let authSuccess = false;
+    const account = STAFF_ACCOUNTS[email];
 
-    // Check Supabase Auth if available
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-      try {
-        const config = window.MEDICARE_CONFIG || {};
-        const sb = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
-        const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-        if (!error && data?.user) {
-          authSuccess = true;
-          if (!account) {
-            account = {
-              name: data.user.user_metadata?.name || email.split('@')[0],
-              email: email,
-              role: 'Store Manager',
-              permissions: ['products', 'orders', 'inventory']
-            };
-          }
-        }
-      } catch (err) {
-        console.warn('Supabase auth attempt error:', err);
-      }
-    }
-
-    // Fallback to local accounts check if offline or default demo password
-    if (!authSuccess && account && pass === 'medicare2026') {
-      authSuccess = true;
-    }
-
-    if (!authSuccess) {
+    // Only the registered owner email is accepted
+    if (!account || pass !== OWNER_PASSWORD) {
       failedLoginCount++;
       if (failedLoginCount >= 3) {
         isLockedOut = true;
-        showAlert('⛔ Too many failed login attempts! Account locked for 30 seconds.');
+        showAlert('⛔ Too many failed login attempts! System locked for 30 seconds.');
         setTimeout(() => {
           isLockedOut = false;
           failedLoginCount = 0;
           hideAlert();
         }, 30000);
       } else {
-        showAlert(`⚠️ Invalid staff email or password. Attempt ${failedLoginCount} of 3.`);
+        showAlert(`⚠️ Invalid email or password. Attempt ${failedLoginCount} of 3.`);
       }
       return;
     }
 
-    // Success login flow
+    // Success — go to 2FA step
     failedLoginCount = 0;
     hideAlert();
-
-    if (account.requires2FA) {
-      pendingUserToVerify = account;
-      openOtpModal();
-      showToast('🛡️ 2FA OTP Required for Owner account');
-    } else {
-      createSession(account);
-    }
+    pendingUserToVerify = account;
+    openOtpModal();
   };
 
   /* ------------------------------------------------------------------
-     3. 2FA OTP MODAL LOGIC
+     2. 2FA SECURITY CODE MODAL
      ------------------------------------------------------------------ */
   function openOtpModal() {
     if (!otpModal) return;
+    // Clear inputs before showing
+    document.querySelectorAll('.otp-digit-input').forEach(i => { i.value = ''; i.style.borderColor = ''; i.style.boxShadow = ''; });
     otpModal.style.visibility = 'visible';
     otpModal.style.opacity = '1';
     otpModal.style.pointerEvents = 'all';
+    // Focus first input
+    const first = document.getElementById('otp-1');
+    if (first) setTimeout(() => first.focus(), 100);
   }
 
   function closeOtpModal() {
@@ -146,24 +87,54 @@ document.addEventListener('DOMContentLoaded', () => {
     otpModal.style.visibility = 'hidden';
     otpModal.style.opacity = '0';
     otpModal.style.pointerEvents = 'none';
+    pendingUserToVerify = null;
   }
+  window.closeOtpModal = closeOtpModal;
 
   window.moveOtp = function(input, index) {
-    if (input.value.length === 1 && index < 6) {
+    // Allow backspace to go back
+    if (input.value === '' && index > 1) {
+      const prev = input.previousElementSibling;
+      if (prev) prev.focus();
+      return;
+    }
+    if (input.value.length === 1 && index < 4) {
       const next = input.nextElementSibling;
       if (next) next.focus();
+    }
+    // Auto-submit when last digit filled
+    if (index === 4 && input.value.length === 1) {
+      setTimeout(() => window.verifyOtpSubmit(), 150);
     }
   };
 
   window.verifyOtpSubmit = function() {
     if (!pendingUserToVerify) return;
-    showToast('✓ 2FA Code Verified!');
+    const inputs = document.querySelectorAll('.otp-digit-input');
+    const code = Array.from(inputs).map(i => i.value.trim()).join('');
+
+    if (code !== OWNER_2FA_CODE) {
+      showToast('❌ رمز التحقق غير صحيح');
+      inputs.forEach(i => {
+        i.style.borderColor = '#EF4444';
+        i.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.3)';
+      });
+      // Clear after shake
+      setTimeout(() => {
+        inputs.forEach(i => { i.value = ''; i.style.borderColor = ''; i.style.boxShadow = ''; });
+        const first = document.getElementById('otp-1');
+        if (first) first.focus();
+      }, 1200);
+      return;
+    }
+
+    showToast('✅ تم التحقق! جاري الدخول...');
     closeOtpModal();
     createSession(pendingUserToVerify);
   };
 
   /* ------------------------------------------------------------------
-     4. CREATE SESSION & REDIRECT TO ADMIN
+     3. CREATE SESSION & REDIRECT TO ADMIN
      ------------------------------------------------------------------ */
   function createSession(userObj) {
     const session = {
@@ -173,15 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     localStorage.setItem('medicare_admin_session', JSON.stringify(session));
-    showToast(`✓ Welcome back, ${userObj.name}! Redirecting...`);
 
     setTimeout(() => {
       window.location.href = 'admin.html';
-    }, 800);
+    }, 600);
   }
 
   /* ------------------------------------------------------------------
-     5. UTILITIES
+     4. UTILITIES
      ------------------------------------------------------------------ */
   function showAlert(msg) {
     if (!alertBox) return;

@@ -398,7 +398,155 @@
   transition: border-color var(--transition-fast);
 }
 
-.rev-photo-dropzone:hover {
-  border-color: var(--color-primary-500);
+.rev-photo-dropzone:hover,
+.rev-photo-dropzone.dragover {
+  border-color: var(--color-primary-600);
   background: var(--color-primary-50);
+  transform: scale(1.01);
 }
+
+.rev-preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.rev-preview-item {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid var(--color-neutral-200);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+  animation: fadeIn 0.3s ease;
+}
+
+.rev-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rev-preview-item .remove-btn {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  background: rgba(15, 23, 42, 0.75);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.rev-preview-item .remove-btn:hover {
+  background: #EF4444;
+  transform: scale(1.15);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --------------------------------------------------------------------------
+   MOBILE RESPONSIVE ENHANCEMENTS (320px – 640px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .wsh-container {
+    padding: 1.25rem 0.875rem 5rem;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .wsh-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+  }
+
+  .wsh-title {
+    font-size: 1.35rem;
+  }
+
+  .wsh-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .wsh-actions-bar {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .wsh-actions-bar .mc-btn {
+    font-size: 12px;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .wsh-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .wsh-card {
+    border-radius: var(--radius-lg);
+  }
+
+  .wsh-info {
+    padding: 0.75rem 0.625rem;
+  }
+
+  .wsh-name {
+    font-size: 12.5px;
+    margin-bottom: 0.25rem;
+  }
+
+  .wsh-price-row {
+    margin-bottom: 0.5rem;
+  }
+
+  .wsh-price-current {
+    font-size: 13.5px;
+  }
+
+  .wsh-card-actions {
+    gap: 0.4rem;
+  }
+
+  .wsh-card-actions .mc-btn {
+    font-size: 11.5px;
+    padding: 0.45rem 0.5rem;
+  }
+
+  .rev-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .rev-stat-box {
+    padding: 1rem;
+  }
+
+  .rev-breakdown-card {
+    padding: 1rem;
+  }
+
+  .rev-card {
+    padding: 1rem;
+  }
+}
+

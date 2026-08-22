@@ -4,45 +4,17 @@
    ========================================================================== */
 
 /* ------------------------------------------------------------------
-   PRODUCT DATA CATALOG (48 products, 16 per page)
+   PRODUCT DATA CATALOG (Imported from single source of truth product-catalog.js)
    ------------------------------------------------------------------ */
-const CATALOG = [
-  { id:'MC-101', name:'Obsidian Flex Antimicrobial Scrub Set', nameAr:'طقم سكراب أوبسيديان المضاد للبكتيريا', specialty:'medicine', price:10700, originalPrice:13400, rating:4.8, reviews:142, material:'antimicrobial', brand:'medicare', badge:'sale', colors:['#0E4D45','#1E3A5F','#6B7280'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_lab_coat_1786614177321.png', sizes:['XS','S','M','L','XL','XXL'], isNew:false, isBestSeller:true },
-  { id:'MC-102', name:'ClinFlex 4-Way Stretch Scrub Pants', nameAr:'بنطلون سكراب مرن بـ 4 اتجاهات', specialty:'nursing', price:6800, originalPrice:null, rating:4.7, reviews:98, material:'flex', brand:'clinflex', badge:'new', colors:['#0F766E','#7C3AED','#1D4ED8'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['S','M','L','XL'], isNew:true, isBestSeller:false },
-  { id:'MC-103', name:'Executive Fluid-Shield Lab Coat', nameAr:'معطف مختبر مقاوم للسوائل', specialty:'pharmacy', price:13400, originalPrice:16700, rating:4.9, reviews:211, material:'fluid-shield', brand:'medicare', badge:'hot', colors:['#F8F8F8','#1E3A5F'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['S','M','L','XL','XXL'], isNew:false, isBestSeller:true },
-  { id:'MC-104', name:'SurgicalPro Nano-Coat Lab Coat', nameAr:'معطف مختبر بطلاء نانو', specialty:'medicine', price:15800, originalPrice:19000, rating:4.6, reviews:67, material:'nano-coating', brand:'surgicalpro', badge:'sale', colors:['#F8F8F8','#6B7280'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_stethoscope_1786614166370.png', sizes:['XS','S','M','L','XL'], isNew:false, isBestSeller:false },
-  { id:'MC-105', name:'Pharmacy Antimicrobial Tunic Top', nameAr:'قميص صيدلة مضاد للبكتيريا', specialty:'pharmacy', price:7200, originalPrice:null, rating:4.5, reviews:54, material:'antimicrobial', brand:'pharmawear', badge:'new', colors:['#0E4D45','#BE185D','#7C3AED'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_footwear_1786615096505.png', sizes:['XS','S','M','L'], isNew:true, isBestSeller:false },
-  { id:'MC-106', name:'Dental Flex Short-Sleeve Scrub Top', nameAr:'قميص سكراب دنتال قصير الكم', specialty:'dentistry', price:8500, originalPrice:10200, rating:4.7, reviews:89, material:'flex', brand:'medicare', badge:'sale', colors:['#1D4ED8','#6B7280','#0F766E'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_lab_coat_1786614177321.png', sizes:['S','M','L','XL'], isNew:false, isBestSeller:false },
-  { id:'MC-107', name:'Nursing Cotton Premium Scrub Set', nameAr:'طقم سكراب تمريض قطن فاخر', specialty:'nursing', price:9300, originalPrice:11200, rating:4.4, reviews:73, material:'cotton', brand:'medicare', badge:null, colors:['#0E4D45','#BE185D','#F8F8F8'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['XS','S','M','L','XL','XXL'], isNew:false, isBestSeller:false },
-  { id:'MC-108', name:'Titanium Master Diagnostic Stethoscope', nameAr:'سماعة تيتانيوم الدقيقة', specialty:'medicine', price:19800, originalPrice:24000, rating:5.0, reviews:317, material:'antimicrobial', brand:'medicare', badge:'hot', colors:['#0E4D45','#1E3A5F','#6B7280'], img:'assets/medicare_stethoscope_1786614166370.png', img2:'assets/medicare_medical_bag_1786614187700.png', sizes:['ONE'], isNew:false, isBestSeller:true },
-  { id:'MC-109', name:'Obsidian Antimicrobial V-Neck Scrub', nameAr:'سكراب رقبة V مضاد للبكتيريا', specialty:'medicine', price:5900, originalPrice:null, rating:4.6, reviews:44, material:'antimicrobial', brand:'clinflex', badge:'new', colors:['#1E3A5F','#0E4D45'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_lab_coat_1786614177321.png', sizes:['S','M','L','XL'], isNew:true, isBestSeller:false },
-  { id:'MC-110', name:'Clinical Cushion Antibacterial Clogs', nameAr:'قبقاب طبي بمقدمة مغلقة', specialty:'nursing', price:9000, originalPrice:11300, rating:4.5, reviews:128, material:'antimicrobial', brand:'medicare', badge:'sale', colors:['#0E4D45','#F8F8F8','#1E3A5F'], img:'assets/medicare_footwear_1786615096505.png', img2:'assets/medicare_medical_bag_1786614187700.png', sizes:['37','38','39','40','41','42','43','44','45'], isNew:false, isBestSeller:true },
-  { id:'MC-111', name:'Doctor Elite Medical Equipment Bag', nameAr:'حقيبة المعدات الطبية للأطباء', specialty:'medicine', price:14500, originalPrice:17800, rating:4.8, reviews:96, material:'fluid-shield', brand:'surgicalpro', badge:'sale', colors:['#0E4D45','#1E3A5F','#6B7280'], img:'assets/medicare_medical_bag_1786614187700.png', img2:'assets/medicare_stethoscope_1786614166370.png', sizes:['ONE'], isNew:false, isBestSeller:false },
-  { id:'MC-112', name:'1st Year Pharmacy Starter Kit', nameAr:'حقيبة الصيدلة — السنة الأولى', specialty:'pharmacy', price:17400, originalPrice:23400, rating:4.9, reviews:183, material:'antimicrobial', brand:'medicare', badge:'bundle', colors:['#0E4D45'], img:'assets/medicare_starter_kit_1786615195273.png', img2:'assets/medicare_medical_bag_1786614187700.png', sizes:['ONE'], isNew:false, isBestSeller:true },
-  { id:'MC-113', name:'SurgicalPro Fluid-Resistant Gloves', nameAr:'قفازات مقاومة للسوائل', specialty:'medicine', price:3200, originalPrice:null, rating:4.3, reviews:31, material:'fluid-shield', brand:'surgicalpro', badge:'new', colors:['#F8F8F8','#0E4D45'], img:'assets/medicare_stethoscope_1786614166370.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['S','M','L','XL'], isNew:true, isBestSeller:false },
-  { id:'MC-114', name:'Dental Operator Fluid-Shield Apron', nameAr:'مريلة طب الأسنان المقاومة للسوائل', specialty:'dentistry', price:6500, originalPrice:8000, rating:4.6, reviews:57, material:'fluid-shield', brand:'medicare', badge:'sale', colors:['#0E4D45','#F8F8F8'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['ONE'], isNew:false, isBestSeller:false },
-  { id:'MC-115', name:'Clinical Surgery Resident Starter Pack', nameAr:'حقيبة الجراحة السريرية للمقيمين', specialty:'medicine', price:37200, originalPrice:47900, rating:5.0, reviews:249, material:'antimicrobial', brand:'medicare', badge:'bundle', colors:['#0E4D45'], img:'assets/medicare_medical_bag_1786614187700.png', img2:'assets/medicare_starter_kit_1786615195273.png', sizes:['ONE'], isNew:false, isBestSeller:true },
-  { id:'MC-116', name:'ClinFlex Compression Support Socks', nameAr:'جوارب ضغط طبية دعم مكثف', specialty:'nursing', price:2800, originalPrice:3500, rating:4.4, reviews:64, material:'flex', brand:'clinflex', badge:null, colors:['#0E4D45','#6B7280','#F8F8F8'], img:'assets/medicare_footwear_1786615096505.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['S','M','L','XL'], isNew:false, isBestSeller:false },
-  // Page 2
-  { id:'MC-117', name:'Nano-Coat Pharmacist Lab Coat L/S', nameAr:'معطف صيدلاني بطلاء نانو', specialty:'pharmacy', price:16900, originalPrice:20500, rating:4.7, reviews:88, material:'nano-coating', brand:'surgicalpro', badge:'sale', colors:['#F8F8F8','#1E3A5F'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['S','M','L','XL','XXL'], isNew:false, isBestSeller:false },
-  { id:'MC-118', name:'Antimicrobial Nurse Cap Pack (5x)', nameAr:'طاقية تمريض مضادة للبكتيريا (5 قطع)', specialty:'nursing', price:1800, originalPrice:null, rating:4.2, reviews:29, material:'antimicrobial', brand:'pharmawear', badge:'new', colors:['#F8F8F8','#6B7280'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_footwear_1786615096505.png', sizes:['ONE'], isNew:true, isBestSeller:false },
-  { id:'MC-119', name:'Dental Loupes Protective Carry Case', nameAr:'حافظة نظارة طب الأسنان', specialty:'dentistry', price:4100, originalPrice:5200, rating:4.5, reviews:42, material:'cotton', brand:'medicare', badge:'sale', colors:['#1E3A5F','#6B7280'], img:'assets/medicare_medical_bag_1786614187700.png', img2:'assets/medicare_stethoscope_1786614166370.png', sizes:['ONE'], isNew:false, isBestSeller:false },
-  { id:'MC-120', name:'Surgery Elite 4-Pocket Scrub Top', nameAr:'قميص سكراب جراحي 4 جيوب', specialty:'medicine', price:7600, originalPrice:9200, rating:4.8, reviews:134, material:'flex', brand:'medicare', badge:'hot', colors:['#0E4D45','#6B7280','#1D4ED8'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_lab_coat_1786614177321.png', sizes:['XS','S','M','L','XL'], isNew:false, isBestSeller:true },
-  { id:'MC-121', name:'PharmaWear Knee-Length Lab Coat', nameAr:'معطف مختبر طول الركبة', specialty:'pharmacy', price:12100, originalPrice:14800, rating:4.6, reviews:76, material:'cotton', brand:'pharmawear', badge:'sale', colors:['#F8F8F8'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['XS','S','M','L','XL','XXL'], isNew:false, isBestSeller:false },
-  { id:'MC-122', name:'Clinical Shoe Cover Dispensing Box', nameAr:'صندوق غطاء الحذاء الطبي', specialty:'medicine', price:2200, originalPrice:null, rating:4.1, reviews:18, material:'fluid-shield', brand:'surgicalpro', badge:null, colors:['#F8F8F8'], img:'assets/medicare_footwear_1786615096505.png', img2:'assets/medicare_medical_bag_1786614187700.png', sizes:['ONE'], isNew:false, isBestSeller:false },
-  { id:'MC-123', name:'Nursing Elite Backpack Medical Bag', nameAr:'حقيبة ظهر تمريض للمعدات', specialty:'nursing', price:11300, originalPrice:13900, rating:4.7, reviews:102, material:'fluid-shield', brand:'medicare', badge:'sale', colors:['#0E4D45','#6B7280','#1E3A5F'], img:'assets/medicare_medical_bag_1786614187700.png', img2:'assets/medicare_starter_kit_1786615195273.png', sizes:['ONE'], isNew:false, isBestSeller:false },
-  { id:'MC-124', name:'Flex-Tech Dental Scrub Set', nameAr:'طقم سكراب دنتال مرن', specialty:'dentistry', price:9800, originalPrice:12000, rating:4.6, reviews:61, material:'flex', brand:'clinflex', badge:'sale', colors:['#0F766E','#7C3AED','#1D4ED8'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_lab_coat_1786614177321.png', sizes:['XS','S','M','L','XL'], isNew:false, isBestSeller:false },
-  { id:'MC-125', name:'Precision Aneroid Blood Pressure Monitor', nameAr:'جهاز قياس الضغط الدقيق', specialty:'medicine', price:8700, originalPrice:null, rating:4.9, reviews:198, material:'antimicrobial', brand:'surgicalpro', badge:'new', colors:['#0E4D45','#F8F8F8'], img:'assets/medicare_stethoscope_1786614166370.png', img2:'assets/medicare_medical_bag_1786614187700.png', sizes:['ONE'], isNew:true, isBestSeller:true },
-  { id:'MC-126', name:'ClinFlex Unisex Jogger Scrub Pants', nameAr:'بنطلون جوجر سكراب مرن', specialty:'nursing', price:6100, originalPrice:7500, rating:4.5, reviews:87, material:'flex', brand:'clinflex', badge:'sale', colors:['#0E4D45','#6B7280','#BE185D','#7C3AED'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_footwear_1786615096505.png', sizes:['XS','S','M','L','XL','XXL'], isNew:false, isBestSeller:false },
-  { id:'MC-127', name:'Executive Embroidered Pharmacy Coat', nameAr:'معطف صيدلة مطرز فاخر', specialty:'pharmacy', price:18500, originalPrice:22000, rating:4.8, reviews:115, material:'nano-coating', brand:'medicare', badge:'hot', colors:['#F8F8F8','#1E3A5F'], img:'assets/medicare_lab_coat_1786614177321.png', img2:'assets/medicare_stethoscope_1786614166370.png', sizes:['S','M','L','XL','XXL'], isNew:false, isBestSeller:false },
-  { id:'MC-128', name:'Medicine & Surgery Complete Kit 2026', nameAr:'حقيبة الطب والجراحة الكاملة 2026', specialty:'medicine', price:42000, originalPrice:55000, rating:5.0, reviews:341, material:'antimicrobial', brand:'medicare', badge:'bundle', colors:['#0E4D45'], img:'assets/medicare_starter_kit_1786615195273.png', img2:'assets/medicare_medical_bag_1786614187700.png', sizes:['ONE'], isNew:false, isBestSeller:true },
-  { id:'MC-129', name:'Nursing Cotton Comfort Boot Socks', nameAr:'جوارب بوت قطن تمريض مريحة', specialty:'nursing', price:1500, originalPrice:null, rating:4.3, reviews:22, material:'cotton', brand:'pharmawear', badge:null, colors:['#F8F8F8','#0E4D45','#6B7280'], img:'assets/medicare_footwear_1786615096505.png', img2:'assets/medicare_scrubs_hero_1786614154492.png', sizes:['S','M','L','XL'], isNew:false, isBestSeller:false },
-  { id:'MC-130', name:'Dental Operative Magnification Visor', nameAr:'واقي طب الأسنان مع تكبير', specialty:'dentistry', price:22000, originalPrice:27500, rating:4.9, reviews:77, material:'fluid-shield', brand:'surgicalpro', badge:'sale', colors:['#F8F8F8','#1E3A5F'], img:'assets/medicare_stethoscope_1786614166370.png', img2:'assets/medicare_medical_bag_1786614187700.png', sizes:['ONE'], isNew:false, isBestSeller:false },
-  { id:'MC-131', name:'Flex Cotton Blend Scrub Cap Set', nameAr:'طاقية سكراب فلكس قطن (3 قطع)', specialty:'medicine', price:3400, originalPrice:4200, rating:4.4, reviews:47, material:'cotton', brand:'medicare', badge:'sale', colors:['#0E4D45','#F8F8F8','#7C3AED'], img:'assets/medicare_scrubs_hero_1786614154492.png', img2:'assets/medicare_lab_coat_1786614177321.png', sizes:['ONE'], isNew:false, isBestSeller:false },
-  { id:'MC-132', name:'Anti-Fatigue Clinical Floor Mat', nameAr:'حصيرة طبية مضادة للإرهاق', specialty:'nursing', price:7800, originalPrice:null, rating:4.6, reviews:39, material:'antimicrobial', brand:'clinflex', badge:'new', colors:['#0E4D45','#6B7280'], img:'assets/medicare_medical_bag_1786614187700.png', img2:'assets/medicare_footwear_1786615096505.png', sizes:['60x90','60x120'], isNew:true, isBestSeller:false },
-];
+const CATALOG = (typeof window !== 'undefined' && window.PRODUCT_CATALOG)
+  ? window.PRODUCT_CATALOG
+  : (typeof require !== 'undefined' ? require('./product-catalog.js').PRODUCT_CATALOG : []);
+
+// Expose CATALOG globally for category-mobile.js to access
+window.CATALOG = CATALOG;
 
 const PRODUCTS_PER_PAGE = 16;
+let showAllMode = false;
 let currentPage = 1;
 let filteredProducts = [...CATALOG];
 let activeFilters = {};
@@ -50,6 +22,9 @@ let selectedSizes = new Set();
 let selectedColors = new Set();
 let cart = [];
 let cartCount = 0;
+
+// Cache for Supabase products (loaded async on DOMContentLoaded)
+let _supabaseProducts = [];
 
 /* ------------------------------------------------------------------
    DOM REFS
@@ -90,16 +65,26 @@ function starsHTML(rating) {
   return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
 }
 
-function formatPrice(n) { return n.toLocaleString('fr-DZ') + ' DZD'; }
+function formatPrice(n) {
+  const num = Number(n);
+  if (isNaN(num)) return '0 DZD';
+  return num.toLocaleString('fr-DZ') + ' DZD';
+}
 
 function discountPct(original, current) {
-  return original ? Math.round((1 - current / original) * 100) : 0;
+  const orig = Number(original);
+  const cur = Number(current);
+  if (orig && cur && orig > cur) {
+    return Math.round((1 - cur / orig) * 100);
+  }
+  return 0;
 }
 
 /* ------------------------------------------------------------------
    SKELETON LOADING — shown on first render
    ------------------------------------------------------------------ */
 function renderSkeletons(count = 16) {
+  if (!productGrid) return;
   productGrid.innerHTML = Array.from({length: count}).map(() => `
     <div class="mc-skeleton-card" role="listitem" aria-label="Loading product">
       <div class="mc-skeleton-img"></div>
@@ -123,47 +108,92 @@ function renderSkeletons(count = 16) {
    PRODUCT CARD RENDERER
    ------------------------------------------------------------------ */
 function productCardHTML(p) {
-  const disc = discountPct(p.originalPrice, p.price);
-  const badgeMap = { sale:'mc-badge-sale', new:'mc-badge-new', hot:'mc-badge-hot', limited:'mc-badge-limited', bundle:'mc-badge-bundle' };
-  const badgeLabel = { sale:`−${disc}%`, new:'New', hot:'🔥 Hot', limited:'Limited', bundle:'Bundle' };
+  if (!p) return '';
+  const defaultPlaceholderSvg = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400" fill="%23f8fafc"><rect width="400" height="400" fill="%23f8fafc"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="50" fill="%2394a3b8">🩺</text></svg>';
+  const pId = p.id || p.sku || 'prod';
+  
+  const currentLang = (window.MC_I18N ? window.MC_I18N.getCurrentLang() : (localStorage.getItem('medicare_lang') || 'en'));
+  const pName = (window.MC_I18N ? window.MC_I18N.getProductField(p, 'name', currentLang) : (p.name || 'Medical Product'));
+  const pNameAr = p.nameAr || p.name_ar || p.name;
+  const pPrice = Number(p.price) || 0;
+  const pOrigPrice = (p.originalPrice || p.original_price) ? Number(p.originalPrice || p.original_price) : null;
+  const pImg = p.img || (Array.isArray(p.images) && p.images[0]) || defaultPlaceholderSvg;
+  const pImg2 = p.img2 || (Array.isArray(p.images) && p.images[1]) || pImg;
+  const pRating = Number(p.rating) || 5;
+  const pReviews = Number(p.reviews ?? p.reviews_count) || 0;
+  const pSpecialty = p.specialty || 'medicine';
 
-  const colorSwatches = p.colors.slice(0, 4).map((c, i) => `
-    <button class="mc-card-swatch ${i===0?'active':''}" style="background:${c}" title="${c}" 
-      onclick="swapColor(event, '${p.id}', '${c}')" aria-label="Color ${c}"></button>
-  `).join('');
-  const moreColors = p.colors.length > 4 ? `<span class="mc-swatch-more">+${p.colors.length - 4}</span>` : '';
+  let stock = 10;
+  try {
+    const overrides = JSON.parse(localStorage.getItem('medicare_stock_overrides') || '{}');
+    stock = overrides[pId] !== undefined ? Number(overrides[pId]) : (Number(p.stock) ?? 10);
+  } catch (e) {}
+  const isOutOfStock = stock <= 0;
+
+  const disc = discountPct(pOrigPrice, pPrice);
+  const badgeMap = { sale:'mc-badge-sale', new:'mc-badge-new', hot:'mc-badge-hot', limited:'mc-badge-limited', bundle:'mc-badge-bundle' };
+  const badgeLabel = { 
+    sale:`−${disc}%`, 
+    new: currentLang === 'ar' ? 'جديد' : (currentLang === 'fr' ? 'Nouveau' : 'New'), 
+    hot: currentLang === 'ar' ? '🔥 رائج' : (currentLang === 'fr' ? '🔥 Tendance' : '🔥 Hot'), 
+    limited: currentLang === 'ar' ? 'كمية محدودة' : (currentLang === 'fr' ? 'Stock Limité' : 'Limited'), 
+    bundle: currentLang === 'ar' ? 'باقة' : (currentLang === 'fr' ? 'Pack' : 'Bundle')
+  };
+
+  const colorSwatches = (Array.isArray(p.colors) ? p.colors : []).slice(0, 4).map((c, i) => {
+    const hex = (typeof c === 'string') ? (c.startsWith('#') ? c : '#0E4D45') : (c.hex || '#0E4D45');
+    const name = (typeof c === 'string') ? c : (c.name || 'Color');
+    return `
+      <button class="mc-card-swatch ${i===0?'active':''}" style="background:${hex}" title="${name}" 
+        onclick="swapColor(event, '${pId}', '${hex}')" aria-label="Color ${name}"></button>
+    `;
+  }).join('');
+  const moreColors = (Array.isArray(p.colors) && p.colors.length > 4) ? `<span class="mc-swatch-more">+${p.colors.length - 4}</span>` : '';
+
+  const safeName = String(pName).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  const safeNameAr = String(pNameAr).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+  const addBtnLabel = isOutOfStock 
+    ? (currentLang === 'ar' ? '⚠️ نفد من المخزون' : (currentLang === 'fr' ? '⚠️ Rupture de stock' : '⚠️ Out of Stock')) 
+    : (currentLang === 'ar' ? '🛒 أضف إلى السلة' : (currentLang === 'fr' ? '🛒 Ajouter au panier' : '🛒 Add to Cart'));
 
   return `
-    <div class="mc-cat-card" role="listitem" data-id="${p.id}" data-specialty="${p.specialty}" data-price="${p.price}" data-rating="${p.rating}" onclick="window.location.href='product-detail.html?id=${p.id}'">
+    <div class="mc-cat-card" role="listitem" data-id="${pId}" data-specialty="${pSpecialty}" data-price="${pPrice}" data-rating="${pRating}" style="opacity:${isOutOfStock ? '0.78' : '1'};" onclick="window.location.href='product-detail.html?id=${pId}'">
       <div class="mc-card-img-wrap">
-        <img class="mc-card-img-primary" src="${p.img}" alt="${p.name}" loading="lazy">
-        <img class="mc-card-img-secondary" src="${p.img2 || p.img}" alt="${p.name} alternate view" loading="lazy">
+        <img class="mc-card-img-primary" src="${pImg}" alt="${safeName}" loading="lazy" onerror="this.src='${defaultPlaceholderSvg}'">
+        <img class="mc-card-img-secondary" src="${pImg2}" alt="${safeName} alternate view" loading="lazy" onerror="this.src='${defaultPlaceholderSvg}'">
 
         <!-- Badges -->
         <div class="mc-card-badges">
+          ${isOutOfStock ? '<span class="mc-card-badge mc-badge-limited" style="background:#EF4444; color:#fff;">⚠️ Out of Stock</span>' : ''}
           ${p.badge ? `<span class="mc-card-badge ${badgeMap[p.badge] || 'mc-badge-sale'}">${badgeLabel[p.badge] || p.badge}</span>` : ''}
           ${p.isBestSeller ? '<span class="mc-card-badge mc-badge-hot">Best Seller</span>' : ''}
         </div>
 
         <!-- Wishlist -->
-        <button class="mc-card-wishlist" onclick="toggleWishlist(event, this, '${p.name}')" aria-label="Add to wishlist">♥</button>
+        <button class="mc-card-wishlist" onclick="toggleWishlist(event, this, '${safeName}')" aria-label="Add to wishlist">♥</button>
 
         <!-- Quick View -->
-        <button class="mc-card-quick-view" onclick="event.stopPropagation(); window.location.href='product-detail.html?id=${p.id}'">⚡ View Details</button>
+        <button class="mc-card-quick-view" onclick="event.stopPropagation(); window.location.href='product-detail.html?id=${pId}'">⚡ ${currentLang === 'ar' ? 'تفاصيل المنتج' : (currentLang === 'fr' ? 'Voir Détails' : 'View Details')}</button>
       </div>
 
       <div class="mc-card-body">
-        <span class="mc-card-specialty">${specialtyLabel(p.specialty)}</span>
-        <h3 class="mc-card-name">${p.name}</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="mc-card-specialty">${specialtyLabel(pSpecialty)}</span>
+          <span style="font-size:11px; font-weight:700; color:${isOutOfStock ? '#EF4444' : '#15803D'};">
+            ${isOutOfStock ? (currentLang === 'ar' ? 'نفد المخزون' : (currentLang === 'fr' ? 'Épuisé' : 'Out of Stock')) : `${stock} ${currentLang === 'ar' ? 'متوفر' : (currentLang === 'fr' ? 'en stock' : 'in stock')}`}
+          </span>
+        </div>
+        <h3 class="mc-card-name">${pName}</h3>
 
         <div class="mc-card-stars">
-          <span class="mc-stars-display" aria-label="${p.rating} out of 5 stars">${starsHTML(p.rating)}</span>
-          <span class="mc-review-count">(${p.reviews})</span>
+          <span class="mc-stars-display" aria-label="${pRating} out of 5 stars">${starsHTML(pRating)}</span>
+          <span class="mc-review-count">(${pReviews})</span>
         </div>
 
         <div class="mc-card-pricing">
-          <span class="mc-card-price">${formatPrice(p.price)}</span>
-          ${p.originalPrice ? `<span class="mc-card-original-price">${formatPrice(p.originalPrice)}</span>` : ''}
+          <span class="mc-card-price">${formatPrice(pPrice)}</span>
+          ${pOrigPrice ? `<span class="mc-card-original-price">${formatPrice(pOrigPrice)}</span>` : ''}
           ${disc >= 5 ? `<span class="mc-card-discount-pct">−${disc}%</span>` : ''}
         </div>
 
@@ -173,9 +203,10 @@ function productCardHTML(p) {
       </div>
 
       <div class="mc-card-footer">
-        <button class="mc-card-add-btn" id="add-btn-${p.id}"
-          onclick="addToCart(event, '${p.id}', '${p.name.replace(/'/g,"\\'")}', '${p.nameAr.replace(/'/g,"\\'")}', ${p.price}, '${p.img}')">
-          🛒 Add to Cart
+        <button class="mc-card-add-btn" id="add-btn-${pId}"
+          ${isOutOfStock ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}
+          onclick="addToCart(event, '${pId}', '${safeName}', '${safeNameAr}', ${pPrice}, '${pImg}')">
+          ${addBtnLabel}
         </button>
       </div>
     </div>
@@ -190,6 +221,24 @@ function specialtyLabel(s) {
    EMPTY STATE
    ------------------------------------------------------------------ */
 function emptyStateHTML() {
+  // Check if store has any products at all (vs just filtered out)
+  const hasAnyProducts = getLiveCatalog().length > 0;
+
+  if (!hasAnyProducts) {
+    return `
+      <div class="mc-empty-state" role="status" style="padding:3rem 1.5rem;">
+        <div class="mc-empty-icon" style="font-size:3rem;">📦</div>
+        <h2 class="mc-empty-title" style="color:#0E4D45;">المتجر جاهز — أضف منتجاتك الآن</h2>
+        <p class="mc-empty-desc" style="color:#475569; max-width:380px; margin:0.75rem auto 1.25rem;">
+          لا توجد منتجات حتى الآن. قم بإضافة منتجاتك من لوحة التحكم (Admin) وستظهر هنا تلقائياً.
+        </p>
+        <a href="admin.html" class="mc-btn mc-btn-primary" style="display:inline-flex; align-items:center; gap:0.5rem; text-decoration:none; padding:0.65rem 1.5rem;">
+          ⚙️ فتح لوحة التحكم — Open Admin Panel
+        </a>
+      </div>
+    `;
+  }
+
   return `
     <div class="mc-empty-state" role="status">
       <div class="mc-empty-icon">🔍</div>
@@ -227,6 +276,99 @@ function sortProducts(arr) {
   });
 }
 
+function getLiveCatalog() {
+  // Start with static catalog (single source of truth product-catalog.js)
+  let base = (typeof window !== 'undefined' && window.PRODUCT_CATALOG)
+    ? [...window.PRODUCT_CATALOG]
+    : (typeof require !== 'undefined' ? [...require('./product-catalog.js').PRODUCT_CATALOG] : []);
+
+  // ── Merge Supabase products (fetched async on init)
+  // Products from Supabase take precedence over static catalog for same id
+  if (_supabaseProducts && _supabaseProducts.length > 0) {
+    _supabaseProducts.forEach(sp => {
+      const idx = base.findIndex(p => String(p.id) === String(sp.id));
+      const normalized = {
+        id:          sp.id,
+        name:        sp.name,
+        name_ar:     sp.name_ar || sp.name,
+        specialty:   sp.specialty,
+        price:       Number(sp.price),
+        originalPrice: sp.original_price ? Number(sp.original_price) : null,
+        rating:      Number(sp.rating) || 5,
+        reviews:     Number(sp.reviews_count) || 0,
+        stock:       Number(sp.stock) || 0,
+        material:    sp.material || '',
+        brand:       sp.brand || 'medicare',
+        badge:       sp.badge || '',
+        colors:      Array.isArray(sp.colors) ? sp.colors : [],
+        sizes:       Array.isArray(sp.sizes) ? sp.sizes : ['S','M','L','XL'],
+        img:         (Array.isArray(sp.images) && sp.images.length > 0 && sp.images[0]) ? sp.images[0] : (typeof sp.images === 'string' && sp.images ? sp.images : ''),
+        img2:        (Array.isArray(sp.images) && sp.images.length > 1 && sp.images[1]) ? sp.images[1] : null,
+        images:      (Array.isArray(sp.images) && sp.images.length > 0) ? sp.images : [],
+        isBestSeller: sp.is_bestseller || false,
+        isNew:       sp.is_new || false
+      };
+      if (idx >= 0) {
+        base[idx] = normalized; // Update existing entry
+      } else {
+        base.unshift(normalized); // Add new product at top
+      }
+    });
+  }
+
+  // ── Merge localStorage custom products (Admin-added when Supabase was offline)
+  try {
+    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    customProds.forEach(cp => {
+      if (!base.some(p => String(p.id) === String(cp.id))) {
+        const primaryImage = (Array.isArray(cp.images) && cp.images.length > 0 && cp.images[0])
+          ? cp.images[0]
+          : (typeof cp.images === 'string' && cp.images ? cp.images : (cp.img || ''));
+
+        // Normalize same as Supabase products to ensure img, reviews etc. are mapped correctly
+        const normalized = {
+          id:           cp.id || cp.sku,
+          name:         cp.name || '',
+          name_ar:      cp.name_ar || cp.name || '',
+          specialty:    cp.specialty || '',
+          price:        Number(cp.price) || 0,
+          originalPrice: cp.original_price ? Number(cp.original_price) : (cp.originalPrice || null),
+          rating:       Number(cp.rating) || 5,
+          reviews:      Number(cp.reviews_count ?? cp.reviews) || 0,
+          stock:        Number(cp.stock) || 0,
+          material:     cp.material || '',
+          brand:        cp.brand || 'medicare',
+          badge:        cp.badge || '',
+          colors:       Array.isArray(cp.colors) ? cp.colors : [],
+          sizes:        Array.isArray(cp.sizes) ? cp.sizes : ['S','M','L','XL'],
+          img:          primaryImage,
+          img2:         (Array.isArray(cp.images) && cp.images.length > 1) ? cp.images[1] : (cp.img2 || null),
+          images:       (Array.isArray(cp.images) && cp.images.length > 0) ? cp.images : [primaryImage],
+          isBestSeller: cp.is_bestseller || cp.isBestSeller || false,
+          isNew:        cp.is_new || cp.isNew || false,
+          // Preserve all other fields (features, specs, etc.)
+          ...Object.fromEntries(Object.entries(cp).filter(([k]) => !['id','name','name_ar','specialty','price','original_price','originalPrice','rating','reviews_count','reviews','stock','material','brand','badge','colors','sizes','images','img','img2','is_bestseller','isBestSeller','is_new','isNew'].includes(k)))
+        };
+        base.unshift(normalized);
+      }
+    });
+  } catch (e) {}
+
+  // ── Apply stock overrides
+  const overrides = JSON.parse(localStorage.getItem('medicare_stock_overrides') || '{}');
+  return base.map(p => ({
+    ...p,
+    stock: overrides[p.id] !== undefined ? Number(overrides[p.id]) : (Number(p.stock) ?? 10)
+  }));
+}
+
+let activeCategoryFilter = 'all';
+
+window.setCategoryFilter = function(catKey) {
+  activeCategoryFilter = catKey || 'all';
+  applyFilters();
+};
+
 /* ------------------------------------------------------------------
    FILTER LOGIC
    ------------------------------------------------------------------ */
@@ -239,12 +381,41 @@ function applyFilters() {
   const minPrice     = parseInt(document.getElementById('price-min')?.value || 0);
   const maxPrice     = parseInt(document.getElementById('price-max')?.value || 50000);
 
-  filteredProducts = CATALOG.filter(p => {
+  const liveList = getLiveCatalog();
+
+  filteredProducts = liveList.filter(p => {
+    // Top category pills filter (All, Scrubs, Lab Coats, Calots & Caps, Footwear, Diagnostic, Starter Kits)
+    if (activeCategoryFilter && activeCategoryFilter !== 'all') {
+      const catLower = (p.category || '').toLowerCase();
+      const nameLower = (p.name + ' ' + (p.name_ar || p.nameAr || '')).toLowerCase();
+      const specialty = (p.specialty || '').toLowerCase();
+
+      if (activeCategoryFilter === 'scrubs') {
+        const isScrub = catLower.includes('scrub') || nameLower.includes('scrub') || nameLower.includes('سكراب') || specialty === 'medicine' || specialty === 'nursing';
+        if (!isScrub) return false;
+      } else if (activeCategoryFilter === 'lab-coats') {
+        const isLabCoat = catLower.includes('lab') || catLower.includes('coat') || nameLower.includes('coat') || nameLower.includes('مئزر') || nameLower.includes('بلوزة');
+        if (!isLabCoat) return false;
+      } else if (activeCategoryFilter === 'calots') {
+        const isCalot = catLower.includes('calot') || catLower.includes('cap') || nameLower.includes('cap') || nameLower.includes('طاقية') || nameLower.includes('قبعة');
+        if (!isCalot) return false;
+      } else if (activeCategoryFilter === 'footwear') {
+        const isFootwear = catLower.includes('footwear') || catLower.includes('shoe') || catLower.includes('clog') || nameLower.includes('حذاء') || nameLower.includes('قبقاب');
+        if (!isFootwear) return false;
+      } else if (activeCategoryFilter === 'diagnostic') {
+        const isDiag = catLower.includes('diagnostic') || nameLower.includes('stethoscope') || nameLower.includes('سماعة') || nameLower.includes('ضغط');
+        if (!isDiag) return false;
+      } else if (activeCategoryFilter === 'starter-kits') {
+        const isKit = catLower.includes('kit') || catLower.includes('bundle') || nameLower.includes('kit') || nameLower.includes('حقيبة') || nameLower.includes('باقة');
+        if (!isKit) return false;
+      }
+    }
+
     if (specialties.length  && !specialties.includes(p.specialty))   return false;
     if (materials.length    && !materials.includes(p.material))      return false;
     if (brands.length       && !brands.includes(p.brand))            return false;
-    if (selectedSizes.size  && p.sizes.length > 0 && !p.sizes.some(s => selectedSizes.has(s))) return false;
-    if (selectedColors.size && !p.colors.some(c => selectedColors.has(c))) return false;
+    if (selectedSizes.size  && p.sizes && p.sizes.length > 0 && !p.sizes.some(s => selectedSizes.has(s))) return false;
+    if (selectedColors.size && p.colors && !p.colors.some(c => selectedColors.has(c))) return false;
     if (p.price < minPrice || p.price > maxPrice)                    return false;
     if (p.rating < minRating)                                        return false;
     return true;
@@ -257,28 +428,65 @@ function applyFilters() {
 }
 
 /* ------------------------------------------------------------------
-   RENDER PAGE (paginated slice)
+   SHOW ALL / PAGINATION TOGGLE
+   ------------------------------------------------------------------ */
+window.toggleShowAllMode = function() {
+  showAllMode = !showAllMode;
+  currentPage = 1;
+  renderPage();
+  if (showAllMode) {
+    showToast(`✓ Showing all ${filteredProducts.length} products on one page`);
+  } else {
+    showToast(`✓ Switched to paginated view (16 / page)`);
+  }
+};
+
+/* ------------------------------------------------------------------
+   RENDER PAGE (paginated slice or show-all)
    ------------------------------------------------------------------ */
 function renderPage() {
   const sorted = sortProducts(filteredProducts);
-  const start  = (currentPage - 1) * PRODUCTS_PER_PAGE;
-  const slice  = sorted.slice(start, start + PRODUCTS_PER_PAGE);
   const total  = filteredProducts.length;
+  const toggleBtn = document.getElementById('toggle-view-all-btn');
 
-  // Result count
-  if (resultCount) {
-    const end = Math.min(start + PRODUCTS_PER_PAGE, total);
-    resultCount.textContent = total === 0
-      ? 'No products found'
-      : `Showing ${start + 1}–${end} of ${total} products`;
+  if (toggleBtn) {
+    toggleBtn.innerHTML = showAllMode 
+      ? `📄 Paginate (16/p)` 
+      : `👀 View All (${total})`;
+    toggleBtn.className = showAllMode 
+      ? 'mc-btn mc-btn-primary mc-btn-sm' 
+      : 'mc-btn mc-btn-secondary mc-btn-sm';
   }
 
-  // Grid
+  // Empty Grid
   if (total === 0) {
     productGrid.innerHTML = emptyStateHTML();
-    paginationEl.innerHTML = '';
+    if (paginationEl) paginationEl.innerHTML = '';
+    if (resultCount) resultCount.textContent = 'No products found';
     if (resultsSummary) resultsSummary.textContent = '';
     return;
+  }
+
+  // Show All Mode (Continuous view of all matching products)
+  if (showAllMode) {
+    productGrid.innerHTML = sorted.map(productCardHTML).join('');
+    if (resultCount) {
+      resultCount.textContent = `Showing all ${total} of ${total} products`;
+    }
+    if (resultsSummary) {
+      resultsSummary.textContent = `All ${total} products displayed`;
+    }
+    renderPagination(total);
+    return;
+  }
+
+  // Paginated slice
+  const start  = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const slice  = sorted.slice(start, start + PRODUCTS_PER_PAGE);
+  const end = Math.min(start + PRODUCTS_PER_PAGE, total);
+
+  if (resultCount) {
+    resultCount.textContent = `Showing ${start + 1}–${end} of ${total} products`;
   }
 
   productGrid.innerHTML = slice.map(productCardHTML).join('');
@@ -293,32 +501,64 @@ function renderPage() {
 }
 
 /* ------------------------------------------------------------------
-   PAGINATION
+   PAGINATION CONTROLS
    ------------------------------------------------------------------ */
 function renderPagination(total) {
   if (!paginationEl) return;
   const totalPages = Math.ceil(total / PRODUCTS_PER_PAGE);
-  if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
 
-  let html = '';
+  if (showAllMode) {
+    paginationEl.innerHTML = `
+      <div class="mc-pagination-tools">
+        <span style="font-size:13px; font-weight:700; color:var(--color-primary-700);">✓ Showing all ${total} products</span>
+        <button class="mc-page-btn" onclick="toggleShowAllMode()" style="padding:0 1rem; width:auto; font-weight:700;">
+          📄 Switch to Paginated View (16 / page)
+        </button>
+        <button class="mc-page-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" style="padding:0 0.8rem; width:auto;">
+          ↑ Back to Top
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  if (totalPages <= 1) {
+    paginationEl.innerHTML = `
+      <div class="mc-pagination-tools">
+        <span style="font-size:13px; color:var(--color-neutral-600);">Showing all ${total} products</span>
+      </div>
+    `;
+    return;
+  }
+
+  let pagesHtml = '';
 
   // Prev
-  html += `<button class="mc-page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} aria-label="Previous page">‹ Prev</button>`;
+  pagesHtml += `<button class="mc-page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} aria-label="Previous page">‹ Prev</button>`;
 
   // Pages with ellipsis
   const pages = getPageNumbers(currentPage, totalPages);
   pages.forEach(p => {
     if (p === '...') {
-      html += `<span class="mc-page-dots">…</span>`;
+      pagesHtml += `<span class="mc-page-dots">…</span>`;
     } else {
-      html += `<button class="mc-page-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})" aria-label="Page ${p}" aria-current="${p === currentPage ? 'page' : 'false'}">${p}</button>`;
+      pagesHtml += `<button class="mc-page-btn ${p === currentPage ? 'active' : ''}" onclick="goPage(${p})" aria-label="Page ${p}" aria-current="${p === currentPage ? 'page' : 'false'}">${p}</button>`;
     }
   });
 
   // Next
-  html += `<button class="mc-page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} aria-label="Next page">Next ›</button>`;
+  pagesHtml += `<button class="mc-page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} aria-label="Next page">Next ›</button>`;
 
-  paginationEl.innerHTML = html;
+  paginationEl.innerHTML = `
+    <div class="mc-pagination-pages">
+      ${pagesHtml}
+    </div>
+    <div class="mc-pagination-tools">
+      <button class="mc-page-btn" onclick="toggleShowAllMode()" style="padding:0 1rem; width:auto; font-weight:700;" title="View all products on a single page">
+        👀 View All ${total} Products
+      </button>
+    </div>
+  `;
 }
 
 function getPageNumbers(cur, total) {
@@ -337,6 +577,138 @@ window.goPage = function(page) {
   currentPage = page;
   renderPage();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+/* ------------------------------------------------------------------
+   OFFERS & BUNDLES (Frequently Bought Together Merchandising Packages)
+   ------------------------------------------------------------------ */
+function getCategoryStoredBundles() {
+  try {
+    const raw = localStorage.getItem('medicare_bundles');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {}
+
+  return [];
+}
+
+function getProductFromAnyCatalog(id) {
+  if (window.getProductById && typeof window.getProductById === 'function') {
+    const p = window.getProductById(id);
+    if (p) return p;
+  }
+  if (window.PRODUCT_CATALOG_MAP && window.PRODUCT_CATALOG_MAP[id]) {
+    return window.PRODUCT_CATALOG_MAP[id];
+  }
+  return CATALOG.find(p => p.id === id) || null;
+}
+
+function renderCategoryBundles() {
+  const section = document.getElementById('cat-bundles-section');
+  const carousel = document.getElementById('cat-bundles-carousel');
+  const subtitleEl = document.getElementById('cat-bundles-subtitle');
+  if (!section || !carousel) return;
+
+  const allBundles = getCategoryStoredBundles();
+  const activeBundles = allBundles.filter(b => b.active);
+
+  if (activeBundles.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  if (subtitleEl) {
+    subtitleEl.textContent = `${activeBundles.length} Active Special Package${activeBundles.length > 1 ? 's' : ''} — Save up to 25%`;
+  }
+
+  carousel.innerHTML = activeBundles.map(bundle => {
+    const items = (bundle.productIds || []).map(id => getProductFromAnyCatalog(id)).filter(Boolean);
+    const totalVal = items.reduce((sum, p) => sum + Number(p.price || 0), 0);
+    const bundlePrice = Number(bundle.bundlePrice || totalVal);
+    const savings = Math.max(0, totalVal - bundlePrice);
+    const savingsPct = totalVal > 0 ? Math.round((savings / totalVal) * 100) : 0;
+    const anchorId = bundle.anchorProductId || items[0]?.id || '';
+
+    const thumbsHTML = items.map((it, idx) => {
+      const itImg = Array.isArray(it.images) && it.images[0] ? it.images[0] : (it.img || 'assets/medicare_scrubs_hero_1786614154492.png');
+      const plus = idx < items.length - 1 ? '<span class="mc-cat-bundle-plus-sign">+</span>' : '';
+      return `
+        <a href="product-detail.html?id=${it.id}" title="${it.name} (${Number(it.price || 0).toLocaleString()} DZD)" style="display:inline-flex; align-items:center; text-decoration:none;">
+          <img src="${itImg}" alt="${it.name}" class="mc-cat-bundle-item-thumb">
+        </a>
+        ${plus}
+      `;
+    }).join('');
+
+    return `
+      <div class="mc-cat-bundle-card">
+        <div class="mc-cat-bundle-card-top">
+          <div class="mc-cat-bundle-name">
+            <span>⚡ ${bundle.name}</span>
+            <span class="mc-cat-bundle-savings-badge">Save ${savings.toLocaleString()} DZD</span>
+          </div>
+
+          <div class="mc-cat-bundle-items-row">
+            ${thumbsHTML}
+          </div>
+
+          <div class="mc-cat-bundle-pricing">
+            <div>
+              <div class="mc-cat-bundle-orig-price">${totalVal.toLocaleString()} DZD</div>
+              <div class="mc-cat-bundle-disc-price">${bundlePrice.toLocaleString()} DZD</div>
+            </div>
+            <span style="font-size:11.5px; font-weight:800; color:#15803D; background:#DCFCE7; padding:2px 6px; border-radius:4px;">
+              ${savingsPct}% OFF
+            </span>
+          </div>
+        </div>
+
+        <div class="mc-cat-bundle-actions">
+          <button type="button" class="mc-btn mc-btn-accent mc-cat-bundle-btn" onclick="addCatBundleToCart('${bundle.id}')">
+            🛒 Add Bundle to Cart
+          </button>
+          <a href="product-detail.html?id=${anchorId}" class="mc-cat-bundle-link">
+            👁️ View Full Bundle Details →
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  section.style.display = 'block';
+}
+
+window.addCatBundleToCart = function(bundleId) {
+  const allBundles = getCategoryStoredBundles();
+  const bundle = allBundles.find(b => b.id === bundleId);
+  if (!bundle) return;
+
+  const items = (bundle.productIds || []).map(id => getProductFromAnyCatalog(id)).filter(Boolean);
+  if (items.length === 0) return;
+
+  if (window.MedicareCart && typeof window.MedicareCart.addItem === 'function') {
+    items.forEach(bp => {
+      const bpImg = Array.isArray(bp.images) && bp.images[0] ? bp.images[0] : (bp.img || 'assets/medicare_scrubs_hero_1786614154492.png');
+      window.MedicareCart.addItem({
+        productId: bp.id,
+        id: bp.id,
+        name: bp.name,
+        nameAr: bp.nameAr || bp.name_ar || bp.name,
+        price: Number(bp.price || 0),
+        qty: 1,
+        size: Array.isArray(bp.sizes) && bp.sizes[0] ? bp.sizes[0] : 'M',
+        color: Array.isArray(bp.colors) && bp.colors[0] ? (typeof bp.colors[0] === 'string' ? bp.colors[0] : bp.colors[0].name) : 'Standard',
+        image: bpImg
+      });
+    });
+  }
+
+  // Sync category cart UI
+  if (typeof renderCartDrawer === 'function') renderCartDrawer();
+  if (catCartOverlay) catCartOverlay.classList.add('open');
+  showToast(`⚡ Added ${bundle.name} (${items.length} items) to cart!`);
 };
 
 /* ------------------------------------------------------------------
@@ -530,19 +902,26 @@ if (filterOverlay) filterOverlay.addEventListener('click', e => { if (e.target =
 if (sidebarReset)  sidebarReset.addEventListener('click', clearAllFilters);
 
 /* ------------------------------------------------------------------
-   VIEW TOGGLE (Grid / List)
+   VIEW TOGGLE (Grid / List) — Defaults to List View
    ------------------------------------------------------------------ */
-if (gridViewBtn) gridViewBtn.addEventListener('click', () => {
-  productGrid.classList.remove('list-view');
-  gridViewBtn.classList.add('active');
-  listViewBtn?.classList.remove('active');
-});
+function setViewMode(mode) {
+  if (!productGrid) return;
+  if (mode === 'list') {
+    productGrid.classList.add('list-view');
+    listViewBtn?.classList.add('active');
+    gridViewBtn?.classList.remove('active');
+    try { localStorage.setItem('medicare_view_mode', 'list'); } catch (_) {}
+  } else {
+    productGrid.classList.remove('list-view');
+    gridViewBtn?.classList.add('active');
+    listViewBtn?.classList.remove('active');
+    try { localStorage.setItem('medicare_view_mode', 'grid'); } catch (_) {}
+  }
+}
+window.setViewMode = setViewMode;
 
-if (listViewBtn) listViewBtn.addEventListener('click', () => {
-  productGrid.classList.add('list-view');
-  listViewBtn.classList.add('active');
-  gridViewBtn?.classList.remove('active');
-});
+if (gridViewBtn) gridViewBtn.addEventListener('click', () => setViewMode('grid'));
+if (listViewBtn) listViewBtn.addEventListener('click', () => setViewMode('list'));
 
 /* ------------------------------------------------------------------
    SORT
@@ -617,6 +996,8 @@ function renderCartDrawer() {
 
   if (totalEl) totalEl.textContent = formatPrice(subtotal);
 }
+window.renderCart = renderCartDrawer;
+window.renderCartDrawer = renderCartDrawer;
 
 window.catUpdateQty = function(idx, delta) {
   if (window.MedicareCart) {
@@ -661,49 +1042,180 @@ window.swapColor = function(event, id, color) {
 };
 
 /* ------------------------------------------------------------------
-   SEARCH BAR (minimal, delegates to filter)
+   SEARCH BAR (Comprehensive single-word & substring matcher)
    ------------------------------------------------------------------ */
+function normalizeSearchText(str) {
+  if (!str) return '';
+  return String(str)
+    .toLowerCase()
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[\u064B-\u065F]/g, '') // remove arabic tashkeel
+    .trim();
+}
+
+function runCatalogSearch(query) {
+  const rawQ = (query || '').trim();
+  const q = normalizeSearchText(rawQ);
+  const liveList = getLiveCatalog();
+  
+  if (!q) {
+    filteredProducts = [...liveList];
+    currentPage = 1;
+    renderPage();
+    return;
+  }
+
+  const tokens = q.split(/\s+/).filter(Boolean);
+
+  filteredProducts = liveList.filter(p => {
+    const pFields = [
+      p.name,
+      p.nameAr,
+      p.name_ar,
+      p.description,
+      p.descriptionAr,
+      p.description_ar,
+      p.category,
+      p.specialty,
+      p.brand,
+      p.material,
+      p.sku
+    ].filter(Boolean);
+
+    const normText = normalizeSearchText(pFields.join(' '));
+
+    // Match if full query is found OR every typed word/letter token matches
+    return normText.includes(q) || tokens.every(tok => normText.includes(tok));
+  });
+
+  currentPage = 1;
+  renderPage();
+  renderChips({specialties:[],materials:[],brands:[],minRating:0,minPrice:0,maxPrice:50000});
+}
+
 const searchInput = document.getElementById('cat-search-input');
 if (searchInput) {
   searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim().toLowerCase();
-    if (!q) { filteredProducts = [...CATALOG]; currentPage = 1; renderPage(); return; }
-    filteredProducts = CATALOG.filter(p =>
-      p.name.toLowerCase().includes(q) || p.nameAr.includes(q) ||
-      p.specialty.includes(q) || p.brand.includes(q)
-    );
-    currentPage = 1;
-    renderPage();
-    renderChips({specialties:[],materials:[],brands:[],minRating:0,minPrice:0,maxPrice:50000});
+    runCatalogSearch(searchInput.value);
+  });
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      runCatalogSearch(searchInput.value);
+    }
   });
 }
 
 /* ------------------------------------------------------------------
-   LANGUAGE TOGGLE
+   TRILINGUAL LANGUAGE TOGGLE & DISPATCHER
    ------------------------------------------------------------------ */
 const langToggleBtn = document.getElementById('lang-toggle-btn');
+const langDropdownMenu = document.getElementById('lang-dropdown-menu');
+
 if (langToggleBtn) {
-  langToggleBtn.addEventListener('click', () => {
-    const isRTL = document.documentElement.getAttribute('dir') === 'rtl';
-    document.documentElement.setAttribute('dir', isRTL ? 'ltr' : 'rtl');
-    document.documentElement.setAttribute('lang', isRTL ? 'en' : 'ar');
-    langToggleBtn.querySelector('.btn-text').textContent = isRTL ? 'العربية' : 'English';
-    document.documentElement.style.fontFamily = isRTL
-      ? 'var(--font-family-body)'
-      : '"IBM Plex Sans Arabic", "Readex Pro", sans-serif';
-    showToast(isRTL ? '🌐 Switched to English' : '🌐 تم التبديل إلى العربية');
+  langToggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (langDropdownMenu) {
+      langDropdownMenu.classList.toggle('show');
+    } else {
+      const cur = window.MC_I18N ? window.MC_I18N.getCurrentLang() : 'en';
+      const next = cur === 'en' ? 'ar' : (cur === 'ar' ? 'fr' : 'en');
+      if (window.MC_I18N) window.MC_I18N.setLang(next);
+      applyFilters();
+    }
   });
 }
+
+if (langDropdownMenu) {
+  langDropdownMenu.querySelectorAll('.mc-lang-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selected = btn.dataset.lang;
+      if (window.MC_I18N) window.MC_I18N.setLang(selected);
+      applyFilters();
+      langDropdownMenu.classList.remove('show');
+    });
+  });
+
+  document.addEventListener('click', e => {
+    if (langToggleBtn && !langToggleBtn.contains(e.target) && !langDropdownMenu.contains(e.target)) {
+      langDropdownMenu.classList.remove('show');
+    }
+  });
+}
+
+window.addEventListener('medicare_language_changed', () => {
+  applyFilters();
+});
 
 /* ------------------------------------------------------------------
    INIT — skeleton then render
    ------------------------------------------------------------------ */
-document.addEventListener('DOMContentLoaded', () => {
-  renderSkeletons(16);
-  updatePriceRange();
+// Expose applyFilters, runCatalogSearch and renderCategoryBundles globally
+window.applyFilters = applyFilters;
+window.runCatalogSearch = runCatalogSearch;
+window.renderCategoryBundles = renderCategoryBundles;
 
-  // Simulate network delay for skeleton demo
-  setTimeout(() => {
+document.addEventListener('DOMContentLoaded', async () => {
+  const initialViewMode = (typeof localStorage !== 'undefined' && localStorage.getItem('medicare_view_mode')) || 'list';
+  setViewMode(initialViewMode);
+
+  // Check URL query parameters (e.g. ?specialty=medicine or ?search=scrub)
+  let initialSearchQuery = '';
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const spec = params.get('specialty');
+    if (spec && spec !== 'all') {
+      const cb = document.querySelector(`input[name="specialty"][value="${spec}"]`);
+      if (cb) cb.checked = true;
+    }
+    const sq = params.get('search') || params.get('q');
+    if (sq) {
+      initialSearchQuery = sq;
+      if (searchInput) searchInput.value = sq;
+    }
+  } catch (e) {}
+
+  // ── Immediately render products (zero wait time, zero dummy/skeleton flickering)
+  updatePriceRange();
+  if (initialSearchQuery) {
+    runCatalogSearch(initialSearchQuery);
+  } else {
     applyFilters();
-  }, 750);
+  }
+  renderCategoryBundles();
+
+  // ── Fetch live products from Supabase async in background
+  if (window.MedicareDB && typeof window.MedicareDB.getProducts === 'function') {
+    try {
+      const sbProds = await window.MedicareDB.getProducts({ limit: 200 });
+      if (Array.isArray(sbProds) && sbProds.length > 0) {
+        _supabaseProducts = sbProds;
+        // Re-render with the fresh Supabase data
+        if (searchInput && searchInput.value.trim()) {
+          runCatalogSearch(searchInput.value);
+        } else {
+          applyFilters();
+        }
+        renderCategoryBundles();
+      }
+    } catch (e) {
+      console.warn('[Category] Supabase getProducts failed:', e);
+    }
+  }
 });
+
+window.addEventListener('medicare_bundles_updated', renderCategoryBundles);
+window.addEventListener('medicare_stock_updated', () => {
+  applyFilters();
+});
+window.addEventListener('medicare_products_updated', () => {
+  applyFilters();
+});
+window.addEventListener('storage', (e) => {
+  if (e.key === 'medicare_stock_overrides' || e.key === 'medicare_custom_products') {
+    applyFilters();
+  }
+});
+

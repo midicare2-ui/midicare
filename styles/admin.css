@@ -156,13 +156,46 @@
   transition: width 0.3s ease;
 }
 
+.adm-sidebar-brand-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--adm-sidebar-border);
+}
+
 .adm-sidebar-brand {
   padding: 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-bottom: 1px solid var(--adm-sidebar-border);
   text-decoration: none;
+  flex: 1;
+}
+
+.adm-drawer-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 0.75rem;
+  background: var(--adm-sidebar-accent);
+  color: var(--adm-sidebar-fg);
+  border: 1px solid var(--adm-sidebar-border);
+  border-radius: var(--adm-radius-md);
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 120ms;
+}
+
+[dir="rtl"] .adm-drawer-close-btn {
+  margin-right: 0;
+  margin-left: 0.75rem;
+}
+
+.adm-drawer-close-btn:hover {
+  background: var(--adm-destructive);
+  color: #FFFFFF;
 }
 
 .adm-brand-name {
@@ -262,6 +295,23 @@
   color: var(--adm-muted-fg);
 }
 
+/* Backdrop Overlay */
+.adm-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 990;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* --------------------------------------------------------------------------
    MAIN WORKSPACE
    -------------------------------------------------------------------------- */
@@ -284,6 +334,41 @@
   top: 0;
   z-index: 90;
   box-shadow: var(--adm-shadow-sm);
+  gap: 1rem;
+}
+
+.adm-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.adm-header-title-wrap {
+  min-width: 0;
+  flex: 1;
+}
+
+.adm-hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--adm-secondary);
+  border: 1px solid var(--adm-border);
+  border-radius: var(--adm-radius-md);
+  color: var(--adm-foreground);
+  font-size: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms, border-color 120ms;
+}
+
+.adm-hamburger-btn:hover {
+  background: var(--adm-accent);
+  border-color: var(--adm-ring);
 }
 
 .adm-header-title {
@@ -298,6 +383,7 @@
   display: flex;
   align-items: center;
   gap: 0.875rem;
+  flex-shrink: 0;
 }
 
 .adm-user-top-badge {
@@ -638,6 +724,60 @@
 
 .adm-modal-body { padding: 1.5rem; }
 
+.adm-modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--adm-border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background: var(--adm-muted);
+}
+
+/* Modal Form Controls */
+.chk-form-grid.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.chk-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.chk-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--adm-foreground);
+}
+
+.chk-label .required {
+  color: #EF4444;
+}
+
+.chk-input,
+.chk-select {
+  width: 100%;
+  height: 40px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--adm-input);
+  border-radius: var(--adm-radius-md);
+  font-size: 13.5px;
+  background: var(--adm-background);
+  color: var(--adm-foreground);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+
+.chk-input:focus,
+.chk-select:focus {
+  border-color: var(--adm-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--adm-ring) 25%, transparent);
+}
+
 /* --------------------------------------------------------------------------
    ACCESS DENIED OVERLAY
    -------------------------------------------------------------------------- */
@@ -722,23 +862,733 @@
   background: var(--adm-muted);
 }
 
+/* ==========================================================================
+   RESPONSIVE — TABLET (< 1024px)
+   ========================================================================== */
+@media (max-width: 1023px) {
+  /* Sidebar becomes a slide-out drawer */
+  .adm-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s;
+    box-shadow: none;
+    width: 280px;
+    max-width: 85vw;
+  }
+
+  [dir="rtl"] .adm-sidebar {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .adm-sidebar.adm-drawer-open {
+    transform: translateX(0);
+    box-shadow: var(--adm-shadow-2xl), 8px 0 40px rgba(0,0,0,0.25);
+  }
+
+  [dir="rtl"] .adm-sidebar.adm-drawer-open {
+    transform: translateX(0);
+    box-shadow: var(--adm-shadow-2xl), -8px 0 40px rgba(0,0,0,0.25);
+  }
+
+  .adm-drawer-close-btn {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 18px;
+  }
+
+  /* Body: no sidebar offset since drawer overlays */
+  body.admin-body {
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .adm-main {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* Hamburger visible on tablet/mobile */
+  .adm-hamburger-btn {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Header adjustments */
+  .adm-header {
+    padding: 0.75rem 1rem;
+    z-index: 95;
+    gap: 0.75rem;
+  }
+
+  .adm-header-title {
+    font-size: 1.05rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* KPI cards: 2 columns on tablet */
+  .adm-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  /* Module panels padding reduction */
+  .adm-module-panel {
+    padding: 1rem;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Table toolbar: stack vertically */
+  .adm-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .adm-table-toolbar > * {
+    width: 100%;
+  }
+
+  .adm-search-box {
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* Action buttons: larger touch targets */
+  .adm-btn-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .adm-table td .adm-btn-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Forms in modals: single column on tablet */
+  .mc-form-grid,
+  .chk-form-grid.two-col,
+  [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Matrix grid on tablet */
+  .adm-matrix-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Split grid: stack */
+  .adm-split-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hide "Add Product" text label on tablet, show icon only */
+  .adm-header-add-btn span {
+    display: none;
+  }
+
+  .adm-header-add-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .adm-header-add-btn::after {
+    content: '+';
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE — MOBILE PHONES (< 768px)
+   ========================================================================== */
+@media (max-width: 767px) {
+  /* Body layout */
+  body.admin-body {
+    font-size: 13px;
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Main Workspace */
+  .adm-main {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    min-width: 0;
+  }
+
+  /* Fixed / Sticky Mobile Top Header */
+  .adm-header {
+    padding: 0.5rem 0.75rem;
+    min-height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    background: var(--adm-card);
+    border-bottom: 1px solid var(--adm-border);
+    box-shadow: var(--adm-shadow-sm);
+  }
+
+  .adm-header-left {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .adm-header-title-wrap {
+    flex: 1 1 auto;
+    text-align: center;
+    overflow: hidden;
+    padding: 0 0.25rem;
+    min-width: 0;
+  }
+
+  .adm-header-title {
+    font-size: 0.88rem;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .adm-header-actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* Touch-friendly buttons (44px target) */
+  .adm-hamburger-btn,
+  .adm-btn-icon,
+  .adm-header-add-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .adm-header-add-btn {
+    padding: 0;
+  }
+
+  .adm-header-add-btn span {
+    display: none;
+  }
+
+  .adm-header-add-btn::after {
+    content: '+';
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* Module panels padding */
+  .adm-module-panel {
+    padding: 0.75rem;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ----------------------------------------------------------------
+     DATA TABLES — Horizontally Contained Scroll Container with Cue
+     ---------------------------------------------------------------- */
+  .adm-table-card {
+    border-radius: var(--adm-radius-lg);
+    overflow: hidden;
+    position: relative;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+  }
+
+  .adm-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    position: relative;
+    scrollbar-width: thin;
+    display: block;
+  }
+
+  /* Visual scroll hint indicator */
+  .adm-table-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to right, transparent, color-mix(in oklch, var(--adm-foreground) 8%, transparent));
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  [dir="rtl"] .adm-table-card::after {
+    right: auto;
+    left: 0;
+    background: linear-gradient(to left, transparent, color-mix(in oklch, var(--adm-foreground) 8%, transparent));
+  }
+
+  .adm-table {
+    min-width: 600px;
+    width: 100%;
+    font-size: 12.5px;
+  }
+
+  .adm-table th {
+    padding: 0.65rem 0.75rem;
+    font-size: 11px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .adm-table td {
+    padding: 0.75rem 0.65rem;
+    vertical-align: middle;
+  }
+
+  /* Action buttons in tables */
+  .adm-table td .adm-btn-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 16px;
+    margin: 2px;
+  }
+
+  .adm-table td select.chk-select {
+    min-height: 40px;
+    font-size: 12px;
+  }
+
+  /* Table toolbar */
+  .adm-table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.75rem;
+    gap: 0.65rem;
+  }
+
+  .adm-table-toolbar > * {
+    width: 100%;
+  }
+
+  .adm-search-box {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .adm-search-input {
+    height: 44px;
+    font-size: 14px;
+  }
+
+  /* ----------------------------------------------------------------
+     MODALS → Full-Screen Bottom Sheet on Mobile
+     ---------------------------------------------------------------- */
+  .adm-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 2000;
+  }
+
+  .adm-modal-box {
+    max-width: 100vw !important;
+    width: 100% !important;
+    max-height: 94dvh;
+    height: auto;
+    border-radius: 18px 18px 0 0 !important;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+    margin: 0;
+  }
+
+  .adm-modal-overlay.open .adm-modal-box {
+    transform: translateY(0);
+  }
+
+  .adm-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--adm-card);
+    border-bottom: 1px solid var(--adm-border);
+    padding: 0.875rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .adm-modal-header .adm-btn-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 18px;
+  }
+
+  .adm-modal-title {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 0.5rem;
+  }
+
+  .adm-modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem 1.25rem 2rem;
+  }
+
+  /* Sticky Modal Action Footer */
+  .adm-modal-footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    background: var(--adm-card);
+    border-top: 1px solid var(--adm-border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .adm-modal-footer .mc-btn {
+    flex: 1;
+    min-height: 46px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ----------------------------------------------------------------
+     DASHBOARD HOME: KPI CARDS & CHARTS
+     ---------------------------------------------------------------- */
+  .adm-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+
+  .adm-kpi-card {
+    padding: 0.75rem;
+    border-radius: var(--adm-radius-lg);
+  }
+
+  .adm-kpi-label {
+    font-size: 11px;
+  }
+
+  .adm-kpi-val {
+    font-size: 1.25rem;
+  }
+
+  .adm-kpi-trend {
+    font-size: 10.5px;
+  }
+
+  .adm-kpi-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+  }
+
+  /* Split grid & charts */
+  .adm-split-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .adm-chart-placeholder {
+    height: 190px;
+    padding: 0.75rem 0.5rem 0.25rem;
+    gap: 0.25rem;
+  }
+
+  /* ----------------------------------------------------------------
+     FORMS & MATRICES
+     ---------------------------------------------------------------- */
+  .adm-form-row,
+  .mc-form-grid,
+  .chk-form-grid,
+  .chk-form-grid.two-col,
+  [class*="grid-cols-2"],
+  [style*="grid-template-columns: 1fr 1fr"],
+  [style*="grid-template-columns: repeat(2"] {
+    grid-template-columns: 1fr !important;
+    display: grid !important;
+    gap: 0.75rem !important;
+  }
+
+  .chk-input,
+  .chk-select {
+    min-height: 44px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  /* Permissions checkbox grid */
+  .adm-permission-grid {
+    grid-template-columns: 1fr 1fr;
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  /* Variant / inventory matrix */
+  .adm-matrix-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  /* Access denied box */
+  .adm-access-denied-box {
+    padding: 2rem 1rem;
+    margin: 1.5rem auto;
+    max-width: 100%;
+  }
+
+  .adm-access-denied-icon {
+    font-size: 2.8rem;
+  }
+
+  .adm-access-denied-title {
+    font-size: 1.25rem;
+  }
+
+  /* Sidebar drawer width */
+  .adm-sidebar {
+    width: 86vw;
+    max-width: 320px;
+  }
+
+  #sidebar-role-label {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE — EXTRA SMALL PHONES (< 400px, e.g. 360px Galaxy S)
+   ========================================================================== */
+@media (max-width: 399px) {
+  .adm-header-title {
+    font-size: 0.8rem;
+    max-width: 130px;
+  }
+
+  .adm-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .adm-kpi-card {
+    padding: 0.6rem;
+  }
+
+  .adm-kpi-val {
+    font-size: 1.1rem;
+  }
+
+  .adm-kpi-label {
+    font-size: 10px;
+  }
+
+  .adm-kpi-trend {
+    font-size: 9.5px;
+  }
+
+  .adm-permission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .adm-matrix-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .adm-modal-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .adm-modal-body {
+    padding: 0.875rem 1rem 1.5rem;
+  }
+
+  .adm-modal-footer {
+    padding: 0.65rem 1rem;
+  }
+}
+
 /* --------------------------------------------------------------------------
    PRINT STYLES
    -------------------------------------------------------------------------- */
 @media print {
+  @page {
+    margin: 1cm;
+    size: auto;
+  }
+
   body {
     background: #ffffff !important;
     color: #000000 !important;
   }
   
-  /* Hide main site wrapper, sidebars, topbars, and non-print modal parts */
-  .adm-sidebar,
-  .adm-topbar,
-  .adm-content,
-  .adm-modal-header,
+  /* Global non-printable UI elements */
   .no-print,
+  .adm-modal-header,
+  .adm-modal-footer,
+  .adm-btn-icon,
   .mc-btn,
-  .adm-btn-icon {
+  .adm-sidebar,
+  .adm-header,
+  .adm-sidebar-backdrop {
+    display: none !important;
+  }
+
+  /* "Hide everything except the target" pattern for label-only print */
+  body.printing-label-only > *:not(#modal-order-detail) {
+    display: none !important;
+  }
+  body.printing-label-only #modal-order-detail * {
+    visibility: visible;
+  }
+  body.printing-label-only #print-invoice-section,
+  body.printing-label-only #print-invoice-section * {
+    display: none !important;
+  }
+  body.printing-label-only #print-label-section {
+    display: flex !important;
+    margin: 0 !important;
+  }
+  
+  /* "Hide everything except the target" pattern for invoice-only print */
+  body.printing-invoice-only > *:not(#modal-order-detail) {
+    display: none !important;
+  }
+  body.printing-invoice-only #modal-order-detail * {
+    visibility: visible;
+  }
+  body.printing-invoice-only #print-label-section,
+  body.printing-invoice-only #print-label-section * {
+    display: none !important;
+  }
+  body.printing-invoice-only #print-invoice-section {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* =========================================================================
+     BATCH PRINT RULES (All Confirmed Labels / All Confirmed Invoices)
+     ========================================================================= */
+  body.printing-all-labels > *:not(#batch-print-container),
+  body.printing-all-invoices > *:not(#batch-print-container) {
+    display: none !important;
+  }
+
+  body.printing-all-labels #batch-print-container,
+  body.printing-all-invoices #batch-print-container {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    background: transparent !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    visibility: visible !important;
+  }
+
+  body.printing-all-labels #batch-print-container *,
+  body.printing-all-invoices #batch-print-container * {
+    visibility: visible !important;
+  }
+
+  body.printing-all-labels #print-invoice-section,
+  body.printing-all-labels #print-invoice-section * {
+    display: none !important;
+  }
+
+  body.printing-all-invoices #print-label-section,
+  body.printing-all-invoices #print-label-section * {
+    display: none !important;
+  }
+
+  .batch-order-page {
+    page-break-after: always !important;
+    break-after: page !important;
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .batch-order-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Default modal print when no specific single-item class is set */
+  body:not(.printing-label-only):not(.printing-invoice-only):not(.printing-all-labels):not(.printing-all-invoices) > *:not(#modal-order-detail) {
     display: none !important;
   }
 
@@ -750,7 +1600,7 @@
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
-    background: none !important;
+    background: transparent !important;
     backdrop-filter: none !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -776,16 +1626,13 @@
   }
 
   #modal-order-detail .adm-modal-body,
-  #print-area,
-  #print-area * {
-    visibility: visible !important;
-  }
-
   #print-area {
     display: block !important;
     position: static !important;
     width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
+    visibility: visible !important;
   }
 }
+

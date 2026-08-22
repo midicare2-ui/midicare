@@ -65,10 +65,28 @@
           <span>👤</span>
         </button>
 
-        <button id="lang-toggle-btn" class="mc-toggle-btn">
-          <span>🌐</span>
-          <span class="btn-text">العربية</span>
-        </button>
+        <!-- Trilingual Language Switcher -->
+        <div class="mc-lang-dropdown">
+          <button id="lang-toggle-btn" class="mc-toggle-btn mc-lang-btn" aria-label="Switch Language">
+            <span>🌐</span>
+            <span class="btn-text">Language</span>
+            <span style="font-size:10px; opacity:0.7;">▼</span>
+          </button>
+          <div id="lang-dropdown-menu" class="mc-lang-menu">
+            <button class="mc-lang-option" data-lang="ar">
+              <span>🇩🇿</span>
+              <span>العربية</span>
+            </button>
+            <button class="mc-lang-option" data-lang="en">
+              <span>🇬🇧</span>
+              <span>English</span>
+            </button>
+            <button class="mc-lang-option" data-lang="fr">
+              <span>🇫🇷</span>
+              <span>Français</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -197,6 +215,30 @@
                 </div>
               </div>
 
+              <!-- Courier Company Dropdown -->
+              <div class="chk-form-group" id="group-courier" style="margin-top: 1.25rem;">
+                <label class="chk-label" for="chk-courier">Courier Company (شركة التوصيل) <span class="required">*</span></label>
+                <select id="chk-courier" class="chk-select" required onchange="onCourierSelectChange(this.value)">
+                  <!-- Populated dynamically by JS with courier names -->
+                </select>
+                <span class="chk-error-msg">Please select your preferred courier company.</span>
+
+                <!-- Dynamic Price & ETA Info Banner -->
+                <div id="courier-rate-info" style="margin-top: 0.6rem; display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: var(--radius-lg); padding: 0.65rem 1rem; font-size: 13px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="courier-rate-logo" style="font-size: 18px;">⚡</span>
+                    <div>
+                      <strong id="courier-rate-name" style="color: #0F172A;">ZR Express</strong>
+                      <span id="courier-rate-eta" style="color: #64748B; font-size: 12px; margin-left: 6px;">⏱ 24–48 Hours</span>
+                    </div>
+                  </div>
+                  <div style="text-align: right;">
+                    <span style="font-size: 11px; color: #64748B; display: block;">سعر التوصيل (Delivery Fee)</span>
+                    <strong id="courier-rate-price" style="color: #0E4D45; font-size: 15px;">400 DZD</strong>
+                  </div>
+                </div>
+              </div>
+
               <!-- Full Address -->
               <div class="chk-form-group" id="group-address" style="margin-top: 1.25rem;">
                 <label class="chk-label" for="chk-address">Full Street Address / Hospital / Clinic <span class="required">*</span></label>
@@ -214,6 +256,8 @@
 
           </form>
         </div>
+
+        <!-- Hidden submit trigger for inside-form submit on mobile -->
 
 
         <!-- Right Column: Persistent Order Summary Sidebar -->
@@ -269,7 +313,7 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" form="checkout-form" class="mc-btn mc-btn-accent mc-btn-lg chk-place-order-btn" id="place-order-btn">
+            <button type="button" class="mc-btn mc-btn-accent mc-btn-lg chk-place-order-btn" id="place-order-btn" onclick="handleOrderSubmit(event)">
               Place Order — تأكيد الطلب ➔
             </button>
 
@@ -315,9 +359,6 @@
         </div>
 
         <div class="chk-confirmation-ctas">
-          <a id="conf-whatsapp-track-link" href="#" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-lg">
-            💬 Track Order via WhatsApp — تتبع الطلب
-          </a>
           <a href="index.html" class="mc-btn mc-btn-secondary mc-btn-lg">
             🏠 Return to Store
           </a>
@@ -330,9 +371,35 @@
   <!-- Toast Notification -->
   <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
 
+  <!-- =====================================================================
+       MOBILE ONLY: Persistent Bottom Navigation Bar
+       ===================================================================== -->
+  <nav id="mob-bottom-nav" class="mc-mob-bottom-nav" aria-label="Main navigation">
+    <a href="index.html" class="mc-mob-nav-item" data-tab="home">
+      <span class="mc-mob-nav-icon">🏠</span>
+      <span class="mc-mob-nav-label">Home</span>
+    </a>
+    <a href="category.html" class="mc-mob-nav-item" data-tab="shop">
+      <span class="mc-mob-nav-icon">🛍️</span>
+      <span class="mc-mob-nav-label">Shop</span>
+    </a>
+    <button class="mc-mob-nav-item active" id="mob-nav-cart" data-tab="cart" aria-label="Shopping cart" aria-current="page">
+      <span class="mc-mob-nav-icon" style="position:relative; display:inline-block;">
+        🛒<span id="mob-cart-badge" class="mc-mob-cart-badge" aria-label="items in cart">0</span>
+      </span>
+      <span class="mc-mob-nav-label">Cart</span>
+    </button>
+    <a href="account.html" class="mc-mob-nav-item" data-tab="account">
+      <span class="mc-mob-nav-icon">👤</span>
+      <span class="mc-mob-nav-label">Account</span>
+    </a>
+  </nav>
+
   <!-- Supabase Backend SDK & Client Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
+  <script src="src/i18n.js"></script>
+  <script src="src/product-catalog.js"></script>
   <script src="src/supabase-client.js"></script>
   <script src="src/cart.js"></script>
   <script src="src/account-header.js"></script>

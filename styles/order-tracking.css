@@ -412,3 +412,54 @@
 }
 
 [dir="rtl"] .dash-address-badge { right: auto; left: 1rem; }
+
+/* --------------------------------------------------------------------------
+   MOBILE RESPONSIVE ENHANCEMENTS (320px – 640px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .trk-container {
+    padding: 1.25rem 0.875rem 5rem;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .trk-lookup-box {
+    padding: 1.75rem 1rem;
+    border-radius: var(--radius-xl);
+    margin-bottom: 1.75rem;
+  }
+
+  .trk-lookup-title {
+    font-size: 1.4rem;
+  }
+
+  .trk-card {
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-xl);
+  }
+
+  .trk-order-num-title {
+    font-size: 1.2rem;
+  }
+
+  .trk-step-icon-bg {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .trk-timeline {
+    padding-left: 1.25rem;
+  }
+
+  [dir="rtl"] .trk-timeline {
+    padding-left: 0;
+    padding-right: 1.25rem;
+  }
+
+  .dash-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+

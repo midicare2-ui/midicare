@@ -5,76 +5,113 @@
    ========================================================================== */
 
 /* ------------------------------------------------------------------
-   ALGERIAN 58 WILAYAS & COMMUNES DATA DATABASE
+   ALGERIAN 58 WILAYAS & FULL COMMUNES DATABASE
    ------------------------------------------------------------------ */
 const WILAYAS_DATA = [
-  { code: '01', name: '01 - Adrar', zone: 'south', communes: ['Adrar', 'Reggane', 'Timimoun', 'Zaouiet Kounta', 'Aoulef'] },
-  { code: '02', name: '02 - Chlef', zone: 'north', communes: ['Chlef', 'Tenes', 'Boukadir', 'Oued Fodda', 'El Karimia'] },
-  { code: '03', name: '03 - Laghouat', zone: 'south', communes: ['Laghouat', 'Aflou', 'Hassi R’Mel', 'Ksar El Hirane'] },
-  { code: '04', name: '04 - Oum El Bouaghi', zone: 'north', communes: ['Oum El Bouaghi', 'Ain Beida', 'Ain M’lila'] },
-  { code: '05', name: '05 - Batna', zone: 'north', communes: ['Batna', 'Barika', 'Ain Touta', 'N’Gaous', 'Arris'] },
-  { code: '06', name: '06 - Béjaïa', zone: 'north', communes: ['Béjaïa', 'Amizour', 'Akbou', 'El Kseur', 'Tichy'] },
-  { code: '07', name: '07 - Biskra', zone: 'south', communes: ['Biskra', 'Tolga', 'Sidi Okba', 'Ouled Djellal'] },
-  { code: '08', name: '08 - Béchar', zone: 'south', communes: ['Béchar', 'Abadla', 'Kenadsa', 'Béni Abbès'] },
-  { code: '09', name: '09 - Blida', zone: 'capital', communes: ['Blida', 'Boufarik', 'Ouled Yaich', 'Mouzaia', 'El Affroun'] },
-  { code: '10', name: '10 - Bouira', zone: 'north', communes: ['Bouira', 'Lakhdaria', 'Sour El Ghozlane', 'Ain Bessem'] },
-  { code: '11', name: '11 - Tamanrasset', zone: 'south', communes: ['Tamanrasset', 'In Salah', 'In Guezzam'] },
-  { code: '12', name: '12 - Tébessa', zone: 'north', communes: ['Tébessa', 'Cheria', 'El Aouinet', 'Bir El Ater'] },
-  { code: '13', name: '13 - Tlemcen', zone: 'north', communes: ['Tlemcen', 'Mansourah', 'Maghnia', 'Remchi', 'Ghazaouet'] },
-  { code: '14', name: '14 - Tiaret', zone: 'north', communes: ['Tiaret', 'Sougueur', 'Frenda', 'Ksar Chellala'] },
-  { code: '15', name: '15 - Tizi Ouzou', zone: 'north', communes: ['Tizi Ouzou', 'Draâ Ben Khedda', 'Azazga', 'Tigzirt', 'Boghni'] },
-  { code: '16', name: '16 - Alger (العاصمة)', zone: 'capital', communes: ['El Biar', 'Hydra', 'Bab Ezzouar', 'Kouba', 'Sidi M’Hamed', 'Zeralda', 'Cheraga', 'Dely Ibrahim', 'Ain Taya', 'Bordj El Kiffan', 'Bachedjerrah', 'Draria', 'Saoula'] },
-  { code: '17', name: '17 - Djelfa', zone: 'north', communes: ['Djelfa', 'Ain Oussera', 'Hassi Bahbah', 'Messaad'] },
-  { code: '18', name: '18 - Jijel', zone: 'north', communes: ['Jijel', 'Tahar', 'El Milia', 'Ziama Mansouriah'] },
-  { code: '19', name: '19 - Sétif', zone: 'north', communes: ['Sétif', 'El Eulma', 'Ain Oulmene', 'Ain Arnat', 'Bougaa'] },
-  { code: '20', name: '20 - Saïda', zone: 'north', communes: ['Saïda', 'Ain El Hadjar', 'Youb'] },
-  { code: '21', name: '21 - Skikda', zone: 'north', communes: ['Skikda', 'El Harrouch', 'Collo', 'Azzaba'] },
-  { code: '22', name: '22 - Sidi Bel Abbès', zone: 'north', communes: ['Sidi Bel Abbès', 'Télagh', 'Sfisef', 'Ben Badis'] },
-  { code: '23', name: '23 - Annaba', zone: 'north', communes: ['Annaba', 'El Bouni', 'Berrahal', 'El Hadjar'] },
-  { code: '24', name: '24 - Guelma', zone: 'north', communes: ['Guelma', 'Oued Zenati', 'Bouchegouf'] },
-  { code: '25', name: '25 - Constantine', zone: 'north', communes: ['Constantine', 'El Khroub', 'Hamma Bouziane', 'Didouche Mourad', 'Zighoud Youcef'] },
-  { code: '26', name: '26 - Médéa', zone: 'north', communes: ['Médéa', 'Berrouaghia', 'Ksar El Boukhari'] },
-  { code: '27', name: '27 - Mostaganem', zone: 'north', communes: ['Mostaganem', 'Ain Tedeles', 'Bouguerat'] },
-  { code: '28', name: '28 - M’Sila', zone: 'north', communes: ['M’Sila', 'Bou Saâda', 'Sidi Aissa'] },
-  { code: '29', name: '29 - Mascara', zone: 'north', communes: ['Mascara', 'Sigg', 'Tighennif'] },
-  { code: '30', name: '30 - Ouargla', zone: 'south', communes: ['Ouargla', 'Hassi Messaoud', 'Touggourt'] },
-  { code: '31', name: '31 - Oran (وهران)', zone: 'north', communes: ['Oran', 'Es Senia', 'Bir El Djir', 'Ain El Turk', 'Arzew', 'Betioua'] },
-  { code: '32', name: '32 - El Bayadh', zone: 'south', communes: ['El Bayadh', 'Brezina', 'El Abiodh Sidi Cheikh'] },
-  { code: '33', name: '33 - Illizi', zone: 'south', communes: ['Illizi', 'Djanet'] },
-  { code: '34', name: '34 - Bordj Bou Arréridj', zone: 'north', communes: ['Bordj Bou Arréridj', 'Ras El Oued', 'Bordj Ghedir'] },
-  { code: '35', name: '35 - Boumerdès', zone: 'capital', communes: ['Boumerdès', 'Bordj Menaiel', 'Khemis El Khechna', 'Dellys'] },
-  { code: '36', name: '36 - El Tarf', zone: 'north', communes: ['El Tarf', 'El Kala', 'Ben M’Hidi'] },
-  { code: '37', name: '37 - Tindouf', zone: 'south', communes: ['Tindouf'] },
-  { code: '38', name: '38 - Tissemsilt', zone: 'north', communes: ['Tissemsilt', 'Theniet El Had'] },
-  { code: '39', name: '39 - El Oued', zone: 'south', communes: ['El Oued', 'Robbah', 'El M’Ghair', 'Djamaa'] },
-  { code: '40', name: '40 - Khenchela', zone: 'north', communes: ['Khenchela', 'Kais', 'Chechar'] },
-  { code: '41', name: '41 - Souk Ahras', zone: 'north', communes: ['Souk Ahras', 'Sedrata', 'M’daourouch'] },
-  { code: '42', name: '42 - Tipaza', zone: 'capital', communes: ['Tipaza', 'Cherchell', 'Kolea', 'Bou Ismail', 'Hadjout'] },
-  { code: '43', name: '43 - Mila', zone: 'north', communes: ['Mila', 'Chelghoum Laid', 'Tadjenanet'] },
-  { code: '44', name: '44 - Aïn Defla', zone: 'north', communes: ['Aïn Defla', 'Khemis Miliana', 'El Attaf'] },
-  { code: '45', name: '45 - Naâma', zone: 'south', communes: ['Naâma', 'Mecheria', 'Ain Sefra'] },
-  { code: '46', name: '46 - Aïn Témouchent', zone: 'north', communes: ['Aïn Témouchent', 'Hammam Bou Hadjar', 'Beni Saf'] },
-  { code: '47', name: '47 - Ghardaïa', zone: 'south', communes: ['Ghardaïa', 'Metlili', 'El Guerrara', 'Bounoura'] },
-  { code: '48', name: '48 - Relizane', zone: 'north', communes: ['Relizane', 'Oued Rhiou', 'Mazouna'] },
-  { code: '49', name: '49 - El M’Ghair', zone: 'south', communes: ['El M’Ghair', 'Djamaa'] },
-  { code: '50', name: '50 - El Meniaa', zone: 'south', communes: ['El Meniaa'] },
-  { code: '51', name: '51 - Ouled Djellal', zone: 'south', communes: ['Ouled Djellal', 'Sidi Khaled'] },
-  { code: '52', name: '52 - Bordj Baji Mokhtar', zone: 'south', communes: ['Bordj Baji Mokhtar'] },
-  { code: '53', name: '53 - Béni Abbès', zone: 'south', communes: ['Béni Abbès'] },
-  { code: '54', name: '54 - Timimoun', zone: 'south', communes: ['Timimoun'] },
-  { code: '55', name: '55 - Touggourt', zone: 'south', communes: ['Touggourt', 'Tebesbest'] },
-  { code: '56', name: '56 - Djanet', zone: 'south', communes: ['Djanet'] },
-  { code: '57', name: '57 - In Salah', zone: 'south', communes: ['In Salah'] },
-  { code: '58', name: '58 - In Guezzam', zone: 'south', communes: ['In Guezzam'] }
+  { code: '01', name: '01 - Adrar', zone: 'south', communes: ['Adrar','Tamest','Charouine','Reggane','In Zghmir','Titmime','Ksar Kaddour','Tsabit','Aoulef','Timiaouine','Timimoun','Zaouiet Kounta','Fenoughil','Tinerkouk','Deldoul','Sali','Akabli','Ouled Said','Ouled Aissa','Bouda'] },
+  { code: '02', name: '02 - Chlef', zone: 'north', communes: ['Chlef','Ténès','Benairia','El Karimia','Taougrite','Beni Haoua','Sobha','Harchoun','Ouled Fares','Sidi Abderrahmane','Medjadja','El Hadjadj','Bouzghaia','Ain Merane','Oued Sly','Abou El Hassan','Chettia','Sidi Akacha','Boukadir','Beni Rached','Talassa','Herenfa','Oued Goussine','El Marsa','Tadjena','Sendjas','Zeboudja','Beni Bouattab','El Attaf','Djendel','El Abadia','Ain Defla'] },
+  { code: '03', name: '03 - Laghouat', zone: 'south', communes: ['Laghouat','Ksar El Hirane','Bennasser Benchohra','Sidi Makhlouf','Hassi Delaa','Hassi R\'Mel','Aflou','Ain Mahdi','Tadjmout','Kheneg','Gueltet Sidi Saad','Ain Sidi Ali','Brida','El Ghicha','Hadj Mechri','Sebgag','Taouiala','Tadjrouna','Sidi Bouzid','El Houaita','Oued Morra','Oued M\'zi'] },
+  { code: '04', name: '04 - Oum El Bouaghi', zone: 'north', communes: ['Oum El Bouaghi','Ain Beida','Ain M\'lila','Ain Babouche','Berriche','Fkirina','Souk Naamane','Oum El Bouaghi Centre','El Amiria','Ain Kercha','Hanchir Toumghani','El Djazia','Ain Zitoun','Ouled Hamla','Behir Chergui','Sigus','Ain El Beida Sahara','El Fedjoudj Boughrara Saoudi','Guerbes','Dhalaa','Ain Diss','Ghassira','Ain Fakroun','Rahia'] },
+  { code: '05', name: '05 - Batna', zone: 'north', communes: ['Batna','Ghisset','Maafa','Merouana','Seriana','M\'doukel','N\'Gaous','Tazoult','Barika','Arris','Boumia','Timgad','Ouyoun El Assafir','Ain Djasser','Tigherghar','Ouled Si Slimane','Oued El Ma','Djerma','Sefiane','El Madher','Ain Yagout','Fesdis','Boulhilat','Laouinate','Bitam','Rahbat','Tighanimine','Menaa','El Akfadou','Oued Chaaba','Gosbat','Oued Taga','Chir','Taxlent','El Hassi','Abdelkader','Tazolt','Kimmel','Tilatou','Teniet El Abed','Dougga','Ouled Ammar','Hidoussa','Ain Touta','Oued Chaaba'] },
+  { code: '06', name: '06 - Béjaïa', zone: 'north', communes: ['Béjaïa','Amizour','El Kseur','Seddouk','Tichy','Aokas','Souk El Tenine','Tazmalt','Akbou','Ighram','Adekar','Beni Maouche','Tizi N\'Berber','Chemini','Souk Oufella','Tamokra','Tinebdar','Tibane','Tifra','Boudjellil','Feraoun','Kendira','Draa El Kaid','Toudja','Oued Ghir','Barbacha','El Flaye','Melbou','Beni Ksila','Tala Hamza','Fenaïa Ilmaten','Chellata','Beni Djellil','Aït Smail','Amalou','Ighil Ali','Beni Melikeche','Ouzellaguen','Boukhelifa','Kherrata','Bir Ould Khelifa','Aït Nâemane'] },
+  { code: '07', name: '07 - Biskra', zone: 'south', communes: ['Biskra','Oumache','Branis','Chetma','Ouled Djellal','Tolga','Sidi Okba','Zeribet El Oued','El Kantara','Ain Naga','El Outaya','Djemorah','Lichana','Mziraa','M\'chouneche','Ain Zaatout','Bouchagroun','El Haouch','Foughala','Besbes','Ras El Miaad','Doucen'] },
+  { code: '08', name: '08 - Béchar', zone: 'south', communes: ['Béchar','Erg Ferradj','Ouled Khodeir','Meridja','Timoudi','Lahmar','Beni Abbes','Kenadsa','Taghit','Beni Ikhlef','Kerzaz','Oulad Khoudir','Igli','El Ouata','Tabelbala','Boukais','Mogheul'] },
+  { code: '09', name: '09 - Blida', zone: 'capital', communes: ['Blida','Boufarik','Guerrouaou','Chiffa','Hammam Melouane','Ben Khellil','Soumaa','Mouzaia','El Affroun','Oued Alleug','Bouinan','Beni Tamou','Bougara','Chebli','Larbaa','Meftah','Ouled Yaich','Djebabra','Bouarfa'] },
+  { code: '10', name: '10 - Bouira', zone: 'north', communes: ['Bouira','El Asnam','Haizer','Taghzout','Sur El Ghozlane','Ain Bessem','Lakhdaria','Kadiria','Bechloul','M\'Chedallah','Maala','El Adjiba','Dirrah','Ridane','Ain Laloui','Saharidj','Tizi N\'Tleta','Raffour','Dechmia','Bordj Okhriss','Dirah','Ain El Hadjar','Ain Turk','Taguedit','Chorfa','Tillatou'] },
+  { code: '11', name: '11 - Tamanrasset', zone: 'south', communes: ['Tamanrasset','Abalessa','In Ghar','In Guezzam','In Salah','Foggaret Azzaouia','Tazrouk','Tin Zaouatine','Ideles'] },
+  { code: '12', name: '12 - Tébessa', zone: 'north', communes: ['Tébessa','Bir El Ater','Cheria','Stah Guentis','El Aouinet','El Kouif','Morsott','Ouenza','El Ma El Abiod','El Meridj','Bekkaria','Boukhadra','Ain Zerga','Negrine','Bir Dheheb','Tlidjene','El Ogla','Guorriguer','Safsaf El Ouesra','Ferkane'] },
+  { code: '13', name: '13 - Tlemcen', zone: 'north', communes: ['Tlemcen','Mansourah','Chetouane','Remchi','El Fehoul','Hennaya','Ghazaouet','Maghnia','Sebdou','Beni Snous','Beni Boussaid','Honaine','Sidi Abdelli','Souahlia','Msirda Fouaga','El Aricha','Ain Fezza','Ouled Riah','Beni Ouarsous','Sidi Medjahed','Benyoub','Ain Ghoraba','Chouala','Ain Tallout','Ain Youcef','Azails','Terni Beni Hdiel','Zenata','Sabra','Hammam Boughrara','Souk Thlata','Fellaoucene','Amieur','Ain Kebira','Bouhlou','Dar Yaghmouracen','Béni Semiel','Brédia','El Bouihi'] },
+  { code: '14', name: '14 - Tiaret', zone: 'north', communes: ['Tiaret','Medroussa','Ain Bouchekif','Ain Deheb','Sougueur','Frenda','Mahdia','Rahouia','Oued Lilli','Ain Kermes','Ksar Chellala','Sidi Ali Mellal','Ain El Hadid','Guertoufa','Sidi Hosni','Dahmouni','Ain Zarit','Bougara','Hamadia','Zmalet El Emir Abdelkader','Meghila','Sebt','Mellakou','Takhemaret','Rechaiga','Naima','Si Abdelghani','Ain El Hadid','Tagdemt'] },
+  { code: '15', name: '15 - Tizi Ouzou', zone: 'north', communes: ['Tizi Ouzou','Ain El Hammam','Akbil','Azazga','Boghni','Draa Ben Khedda','Draa El Mizan','Larbaa Nath Irathen','Tigzirt','Azeffoun','Ouaguenoun','Ain Zaouia','Beni Aissi','Beni Douala','Beni Mahmoud','Beni Yenni','Beni Zmenzer','Abi Youcef','Aghribs','Agouni Gueghrane','Aïn El Hamam','Akerrou','Ait Aggouacha','Ait Aissa Mimoun','Ait Bouaddou','Ait Chafaa','Ait Khelili','Ait Mahmoud','Ait Oumalou','Ait Toudert','Ait Yahia','Ait Yahia Moussa','Akerrou','Beni Khelili','Beni Ziki','Boghni','Bounouh','Freha','Frikat','Iflissen','Iferhounene','Imsouhal','Irdjen','Illilten','Maatkas','Makouda','Mechtras','Mekla','Mizrana','Nait Irathen','Ouacif','Ouadhia','Ouaguenoun','Semaoune','Souk El Tenine','Taddart','Tala Ataane','Tirmitine','Timizart','Tizi Gheniff','Tizi Rached','Yatafen','Zekri'] },
+  { code: '16', name: '16 - Alger (العاصمة)', zone: 'capital', communes: ['Alger Centre','Sidi M\'Hamed','El Madania','Belouizdad','Bab El Oued','Bologhine','Casbah','Oued Koriche','Birmandreis','El Biar','Bouzareah','Birkhadem','El Harrach','Baraki','Oued Smar','Bachdjerrah','Dar El Beida','Bab Ezzouar','Ben Aknoun','Dely Ibrahim','El Achour','Draria','Cheraga','Ouled Fayet','Ain Benian','Staoueli','Zeralda','Mahelma','Rahmania','Souidania','Hammamet','Douera','Ouled Chebel','Sidi Moussa','Ain Taya','Bordj El Kiffan','El Marsa','Heraoua','Rouiba','Reghaia','Ain Benian','Kouba','Hussein Dey','Mohammed Hadef','Bordj El Bahri','El Magharia','Saoula','Tessala El Merdja'] },
+  { code: '17', name: '17 - Djelfa', zone: 'north', communes: ['Djelfa','Moudjebara','Tadmit','Ain El Ibel','Hassi Bahbah','Ain Oussera','Messaad','Dar Chioukh','Zaccar','El Idrissia','Birine','Sidi Ladjel','Had Sahary','Guernini','Selmana','Ain Maabed','El Fashioun','Benhar','Douis','Charef','Ain Chouhada','M\'liliha','Sed Rahal','Faidh El Botma','Oum Laadham','Hassi El Euch','Deldoul'] },
+  { code: '18', name: '18 - Jijel', zone: 'north', communes: ['Jijel','Erakene','Seddara','Ziama Mansouriah','Taher','Chekfa','El Milia','El Ancer','Beni Yadjis','Bouchelaghem','Djimla','Selma Benziada','Chahna','Texenna','Kaous','Settara','Ouled Yahia Khedrouche','Ain Makhlouf','Ghebala','Bordj T\'Har','Bouraoui Belhadef','El Aouana'] },
+  { code: '19', name: '19 - Sétif', zone: 'north', communes: ['Sétif','Ain El Kebira','Ain Oulmene','El Eulma','Bouandas','Ain Azel','Babor','Guidjel','Kherrata','Beni Aziz','Draa Kebila','Bousselam','Djemila','El Ouricia','Hammam Guergour','Ain El Kebira','Guenzet','Ain Legradj','Medjana','Beni Ourtilane','Amoucha','El Hammam','Tachouda','Bir El Arch','Berhoum','Ain Lahdjar','Ouled Tebben','Mezloug','Bir Araa','Bourdj Bou Arreridj','Oued El Bahem','Serdj El Ghoul','Bellaa','Tizi N\'Bechar','Tizi N\'Bechar','Ain Abessa','Bir Haddada','Ain Roua','Ouled Si Ahmed'] },
+  { code: '20', name: '20 - Saïda', zone: 'north', communes: ['Saïda','Ain El Hadjar','Youb','Sidi Boubekeur','El Hassasna','Ouled Brahim','Maamoura','Doui Thabet','Ain Skhouna','Sidi Ahmed','Moulay Larbi','Ain Sultan','Tircine'] },
+  { code: '21', name: '21 - Skikda', zone: 'north', communes: ['Skikda','Ain Zouit','El Hadaiek','Azzaba','El Arrouch','Collo','Tamalous','Ben Ziad','Oum Toub','Cheraia','Djendel','Beni Bechir','Ramdane Djamel','Ain Bouziane','Emdjez Edchich','Kerkera','Hamadi Krouma','Ain Kechra','El Marsa','Beni Ouelbane','Fil Fila','Bekkouche Lakhdar','El Ghedir','Ouldja Boulbalout','Kanoua','Sidi Mezghiche','Zerdazas','Ouled Attia','Salah Bouchaour'] },
+  { code: '22', name: '22 - Sidi Bel Abbès', zone: 'north', communes: ['Sidi Bel Abbès','Tessala','Sidi Brahim','Mostefa Ben Brahim','Telagh','Ben Badis','Ras El Ma','Sfisef','Ain Thrid','Zerizer','Oued Taourira','Merine','Tilmouni','Ain Kada','Moulay Slissen','El Hachem','Ain El Berd','Tabia','Badredjine','Djillali Ben Amar','Mezaourou','Oued Sebaa','Boudjebha El Bordj','Ain Adden','Marhoum'] },
+  { code: '23', name: '23 - Annaba', zone: 'north', communes: ['Annaba','Berrahal','El Hadjar','Eulma','El Bouni','Seraidi','Chetaibi','Asfour','Oued El Aneb','Ain Berda','Cheurfa','Tressay','Treat'] },
+  { code: '24', name: '24 - Guelma', zone: 'north', communes: ['Guelma','Nechmaya','Bouati Mahmoud','Heliopolis','Guelaat Bou Sbaa','Hammam Debagh','Oued Zenati','Ain Makhlouf','Belkheir','Hammam N\'bail','Ain Ben Beida','Ayn Larbi','Bouchegouf','Medjez Amar','Medjez Sfa','Ras El Agba','Sellaoua Announa','El Fedjoudj','Oued Fragha','Bendjerrah','El Meridj'] },
+  { code: '25', name: '25 - Constantine', zone: 'north', communes: ['Constantine','Hamma Bouziane','Didouche Mourad','Zighoud Youcef','El Khroub','Ain Smara','Ouled Rahmoune','Ain Abid','Ibn Ziad','Beni Hamidane','Mesaoud Boudjeriou'] },
+  { code: '26', name: '26 - Médéa', zone: 'north', communes: ['Médéa','Ouzera','Ain Boucif','Berrouaghia','Seghouane','Ksar El Boukhari','Tablat','Beni Slimane','Ain Ouksir','Rebaia','Boghar','Sidi Zahar','Sidi Naamane','Sidi Damed','Sour El Ghozlane','El Omaria','El Aissaouia','Draa Essamar','Tafraout','Oued El Djemai','Ait Bou Aissa','Si Mahdjoub','Saneg','Meftah','Mezghena','Bir Ben Lahreche','Ouled Hellal','Aziz','Bouchrahil','Ouled Maaref','El Hamdania','Mihoub','Souaghi','Chahbounia'] },
+  { code: '27', name: '27 - Mostaganem', zone: 'north', communes: ['Mostaganem','Sayada','Fornaka','Stidia','Ain Nouissy','Hassi Mameche','Ain Tedles','Mesra','Bouguerat','Sirat','Achacha','Nekmaria','Ain Boudinar','Ouled Boughalem','El Hassiane','Kheir Eddine','Souaflia','Mansourah','Sidi Ali','Sidi Lakhdar','Oued El Kheir','Touahria','Benabdelmalek Ramdane','Mazagran','Oued Maaza'] },
+  { code: '28', name: '28 - M\'Sila', zone: 'north', communes: ['M\'Sila','Hammam Dalaâ','Ouled Derradj','Sidi Aissa','Ain El Hadjel','Bousaada','Ben Srour','Ouled Sidi Ibrahim','Magra','El M\'Hara','Khoubana','Ain Rich','Beni Ilmane','Ouled Slimane','Maadid','Berhoum','Dehahna','Bouti Sayah','Ain Khadra','Tarmount','Sidi Hadjeres','El Hamel','Chellal','Ain El Melh','Menaa','Bir Foda','Dhalaa','El Houamed'] },
+  { code: '29', name: '29 - Mascara', zone: 'north', communes: ['Mascara','Bou Hanifia','Tizi','Tighennif','Ghriss','Oued El Taria','Mohammadia','Sig','Ain Fares','El Guettana','Hachem','Froha','Khalouia','Matemore','Beniane','Ain Fekan','Bouhanifia','El Gaada','Ain Frass','Sidi Kada','Oggaz','Nesmoth','El Bordj','Sehailia','Chorfa','Birouaghia','Ain Fekan','Sidi Abdeldjebar','El Mamounia','Sidi Boussaid','Ouled Boussaid','Zahana','Maoussa'] },
+  { code: '30', name: '30 - Ouargla', zone: 'south', communes: ['Ouargla','Ain Beida','N\'Goussa','Hassi Messaoud','El Borma','Touggourt','El Allia','Taibet','Temacine','Balidat Ameur','Tebesbest','Zaouia El Abidia','El Hadjira','Nezla','Sidi Slimane','Sidi Khouiled','Meggarine','Bench'] },
+  { code: '31', name: '31 - Oran (وهران)', zone: 'north', communes: ['Oran','Gdyel','Bir El Djir','Es Senia','Arzew','Bethioua','Marsat El Hadjadj','Ain El Turk','Bousfer','El Ancor','Boutlelis','Miserghin','El Braya','Sidi Chami','Messerghin','Hassi Ben Okba','Sidi Ben Yebka','Oued Tlélat','Tafraoui','Saint Cloud','El Karma','Ain El Kerma','Ben Freha','Hassi Mefsoukh','Boufatis','Mers El Hadjadj','Kristel','Ain Biya','Bousfer Plage'] },
+  { code: '32', name: '32 - El Bayadh', zone: 'south', communes: ['El Bayadh','Rogassa','Stitten','Brezina','Ghassoul','Labiodh Sidi Cheikh','Ain El Orak','El Abiodh Sidi Cheikh','Kef El Ahmar','Mehara','Cheguig','El Kheiter','Arba Jemaa','Sidi Tifour','Erg Ferradj'] },
+  { code: '33', name: '33 - Illizi', zone: 'south', communes: ['Illizi','Djanet','Debdeb','Bordj Omar Driss','In Aménas'] },
+  { code: '34', name: '34 - Bordj Bou Arréridj', zone: 'north', communes: ['Bordj Bou Arréridj','Ras El Ma','Bordj Zemoura','Mansoura','El M\'hir','Ain Taghrout','Bir Kasdali','Bordj Ghedir','Tixter','El Ach','Colla','El Anseur','Hasnaoua','Ain Tesra','Belimour','Rabta','Taglait','Elmhir','Djaafra','Ain Oulmene'] },
+  { code: '35', name: '35 - Boumerdès', zone: 'capital', communes: ['Boumerdès','Boudouaou','Afir','Bordj Menaiel','Baghlia','Dellys','Naciria','Isser','Thenia','Khemis El Khechna','Hammedi','Si Mustapha','Ouled Moussa','Tidjelabine','Chabet El Ameur','Timezrit','Sidi Daoud','Zemmouri','El Kharrouba','Ouled Aissa','Ben Choud','Djinet','Beni Amrane','Souk El Had','Taourga','Larbatache'] },
+  { code: '36', name: '36 - El Tarf', zone: 'north', communes: ['El Tarf','Bougous','Ben M\'Hidi','Besbes','El Kala','Zitouna','Ain El Assel','El Aioun','Boutheldja','Chefia','Drean','Zerizer','Raml Souk','Bouteldja','Lac des Oiseaux','Oum Teboul','Souarekh','Chihani','Hammam Beni Salah'] },
+  { code: '37', name: '37 - Tindouf', zone: 'south', communes: ['Tindouf','Oum El Assel'] },
+  { code: '38', name: '38 - Tissemsilt', zone: 'north', communes: ['Tissemsilt','Bordj Bou Naama','Theniet El Had','Lardjem','Bordj El Emir Abdelkader','Sidi Slimane','Khemisti','Ammari','Sidi Boutouchent','Boucaid','Lazharia','Melaab','Youssoufia','Maacem','Ain Bessam','Beni Lahcen'] },
+  { code: '39', name: '39 - El Oued', zone: 'south', communes: ['El Oued','Robbah','Oued El Alenda','Bayadha','Guemar','Reguiba','Magrane','Hassi Khalifa','Taleb Larbi','Douar El Ma','Sidi Aoun','Trifaoui','Hamraia','Kouinine','Oued El Alenda','Mrara','Guemmar','Still','Sidi Khelil','Nakhla','Taghzout','El Ogla','El Mghair','Djamaa','Ouled Djellal','Sidi Slimane','Ourmas'] },
+  { code: '40', name: '40 - Khenchela', zone: 'north', communes: ['Khenchela','Mtoussa','Kais','El Hamma','Ain Touila','Babar','Chechar','Bouhmama','El Mahmel','Djellal','Yabous','Ain Skena','Remila','Tamza','Ensigha'] },
+  { code: '41', name: '41 - Souk Ahras', zone: 'north', communes: ['Souk Ahras','Sedrata','Hanancha','Machroha','Taoura','Merahna','Ouled Driss','Drea','Ain Zana','Bir Bouhouche','Khedara','Ouled Moumen','Ragouba','Terraguelt','Oum El Adhaim','M\'Daourouch','Ouillen','Safel El Ouiden','Zaarouria','Ain Soltane','Ain Zana','Bir Bouhouche'] },
+  { code: '42', name: '42 - Tipaza', zone: 'capital', communes: ['Tipaza','Menaceur','Larhat','Douaouda','Bourkika','Khemisti','Ahmer El Ain','Bourdj El Kiffan','Cherchell','Gouraya','Hadjout','Fouka','Bouchegouf','Bérard','Sidi Amar','Kolea','Ain Tagourait','Bou Ismail','Nador','Chaiba','Meurad','Sidi Ghiles','El Nador','Mazouna','Damous'] },
+  { code: '43', name: '43 - Mila', zone: 'north', communes: ['Mila','Ferdjioua','Chelghoum Laid','Oued Athmania','Teleghma','Grarem Gouga','Telerghma','Oued Seguen','El Mechira','Ain Beida Harriche','Sidi Khelifa','Derradji Bousselah','Ain Tine','Oued Endja','Benyahia Abderrahmane','Zeghaia','Tadjenanet','Rouached','Ain Mellouk','Bouhatem','El Ayadi Barbes','Hamala'] },
+  { code: '44', name: '44 - Aïn Defla', zone: 'north', communes: ['Aïn Defla','Khemis Miliana','Miliana','Hammouche','El Attaf','El Abadia','Djendel','Bordj Emir Khaled','Ain Torki','Ben Allal','Boumedfaa','Arib','Bathia','Rouina','Sidi Lakhdar','El Maine','Bir Ould Khelifa','Ain Boucif','Hoceinia','Mekhatria','Oued Chorfa','Tacheta Zougagha','Zeddine','Tarik Ibn Ziad','Ain Soltane','Djillali Ben Amar','Ain Bouyahia'] },
+  { code: '45', name: '45 - Naâma', zone: 'south', communes: ['Naâma','Mecheria','Ain Sefra','Tiout','Sfissifa','Moghrar','Assela','Makman Ben Amer','Kasdir','El Biod'] },
+  { code: '46', name: '46 - Aïn Témouchent', zone: 'north', communes: ['Aïn Témouchent','Hammam Bou Hadjar','El Amria','Hammam Chat','Beni Saf','El Malah','Ain Kihal','Aghlal','Sid Safi','Tamzoura','Ain El Arbaa','Oulhaça El Gheraba','Chaabat El Leham','Aoubellil','Ain Tolba','Bouzedjar','Hassasna','El Emir Abdelkader'] },
+  { code: '47', name: '47 - Ghardaïa', zone: 'south', communes: ['Ghardaïa','El Atteuf','Bounoura','Melika','Ddaya','Guerrara','Berriane','Metlili','Zelfana','Mansoura','Sebseb','El Guerrara','Hassi Gara','El Golea'] },
+  { code: '48', name: '48 - Relizane', zone: 'north', communes: ['Relizane','Oued Rhiou','Bendaoud','Sidi M\'Hamed Ben Ali','Mazouna','Ammi Moussa','Ramka','El Matmar','Belas','Hamri','Sidi Lazreg','Mendes','Dar Ben Abdellah','Ain Tarek','El Hamadna','Ouled Sidi Mihoub','Hadj Mechri','Kalaa','Yellel','Lahlef','El Ouldja','Ain El Hamam','Haci Sidi Larbi','El Mehdi'] },
+  { code: '49', name: '49 - El M\'Ghair', zone: 'south', communes: ['El M\'Ghair','Djamaa','Sidi Khelil','Oum Touyour','Sidi Amrane','Still','Mraier','Ourmas'] },
+  { code: '50', name: '50 - El Meniaa', zone: 'south', communes: ['El Meniaa','Hassi Gara','Hassi Fehal','El Golea','Zelfana'] },
+  { code: '51', name: '51 - Ouled Djellal', zone: 'south', communes: ['Ouled Djellal','Sidi Khaled','Ras El Miaad','Doucen','M\'ziraa'] },
+  { code: '52', name: '52 - Bordj Baji Mokhtar', zone: 'south', communes: ['Bordj Baji Mokhtar','Timiaouine'] },
+  { code: '53', name: '53 - Béni Abbès', zone: 'south', communes: ['Béni Abbès','Igli','El Ouata','Tababelt','Ksabi','Beni Ikhlef'] },
+  { code: '54', name: '54 - Timimoun', zone: 'south', communes: ['Timimoun','Aoulef','Tinerkouk','Ksar Kaddour','Charouine','Ouled Said','Ouled Aissa','Bouda','Fenoughil','Talmine'] },
+  { code: '55', name: '55 - Touggourt', zone: 'south', communes: ['Touggourt','Nezla','Tebesbest','Zaouia El Abidia','Megarine','Temacine','Balidat Ameur','Benziane','El Hadjira','Sidi Slimane'] },
+  { code: '56', name: '56 - Djanet', zone: 'south', communes: ['Djanet','Bordj El Haouas'] },
+  { code: '57', name: '57 - In Salah', zone: 'south', communes: ['In Salah','In Ghar','Foggaret Azzaouia'] },
+  { code: '58', name: '58 - In Guezzam', zone: 'south', communes: ['In Guezzam','Tin Zaouatine'] }
 ];
+
+/* ------------------------------------------------------------------
+   AVAILABLE COURIER COMPANIES
+   ------------------------------------------------------------------ */
+const COURIERS = [
+  {
+    id: 'zr-express',
+    name: 'ZR Express',
+    logo: '⚡',
+    badge: 'الأسرع',
+    desc: 'توصيل منزلي سريع | الدفع عند الاستلام',
+    etaHome: { capital: '24h', north: '24-48h', south: '2-3 Days' },
+    fees: { home: { capital: 400, north: 600, south: 900 }, stopdesk: { capital: 250, north: 350, south: 500 } }
+  },
+  {
+    id: 'yalidine',
+    name: 'Yalidine Express',
+    logo: '🚀',
+    badge: 'شريك مفضل',
+    desc: 'توصيل للمنزل + استلام من المكتب | تتبع مباشر',
+    etaHome: { capital: '24h', north: '48h', south: '2-4 Days' },
+    fees: { home: { capital: 420, north: 620, south: 920 }, stopdesk: { capital: 220, north: 330, south: 480 } }
+  },
+  {
+    id: 'mayestro',
+    name: 'Mayestro Delivery',
+    logo: '📦',
+    badge: 'اقتصادي',
+    desc: 'الخيار الاقتصادي لجميع الولايات | COD',
+    etaHome: { capital: '48h', north: '48-72h', south: '3-5 Days' },
+    fees: { home: { capital: 380, north: 580, south: 850 }, stopdesk: { capital: 200, north: 300, south: 450 } }
+  }
+];
+
+if (typeof window !== 'undefined') {
+  window.WILAYAS_DATA = WILAYAS_DATA;
+  window.COURIERS = COURIERS;
+}
 
 /* ------------------------------------------------------------------
    CHECKOUT ENGINE STATE
    ------------------------------------------------------------------ */
-// Cart is now managed by the shared MedicareCart engine (localStorage key: medicare_cart)
-
 const FREE_SHIPPING_THRESHOLD = 35000; // 35,000 DZD free shipping
 let selectedDeliveryType = 'home'; // 'home' or 'stopdesk'
+let selectedCourier = 'zr-express'; // default courier
 let selectedWilayaObj = null;
 let appliedDiscount = 0; // in DZD
 
@@ -83,21 +120,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const wilayaSelect = document.getElementById('chk-wilaya');
   const communeSelect = document.getElementById('chk-commune');
   const toast = document.getElementById('copy-toast');
-  const langToggleBtn = document.getElementById('lang-toggle-btn');
 
-  let dbWilayas = [];
+  let dbWilayas = typeof WILAYAS_DATA !== 'undefined' ? [...WILAYAS_DATA] : [];
   if (window.MedicareDB && typeof window.MedicareDB.getWilayas === 'function') {
-    dbWilayas = await window.MedicareDB.getWilayas();
-  }
-  if (!dbWilayas || !dbWilayas.length) {
-    dbWilayas = typeof WILAYAS_DATA !== 'undefined' ? WILAYAS_DATA : [];
+    try {
+      const fetched = await window.MedicareDB.getWilayas();
+      if (Array.isArray(fetched) && fetched.length >= 58) {
+        dbWilayas = fetched;
+      }
+    } catch (e) {
+      console.warn('[Checkout] Using local 58 wilayas dataset:', e);
+    }
   }
 
   /* ------------------------------------------------------------------
-     1. POPULATE WILAYAS DROPDOWN
+     1. POPULATE WILAYAS DROPDOWN (58 Wilayas)
      ------------------------------------------------------------------ */
   if (wilayaSelect) {
-    wilayaSelect.innerHTML = '<option value="">-- Select Wilaya (اختر الولاية) --</option>' +
+    wilayaSelect.innerHTML = '<option value="">-- Select Wilaya (اختر الولاية - 58 ولاية) --</option>' +
       dbWilayas.map(w => `<option value="${w.code}">${w.name}</option>`).join('');
   }
 
@@ -146,21 +186,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fetch communes from DB or fallback
     let communesList = [];
     if (window.MedicareDB && typeof window.MedicareDB.getCommunes === 'function') {
-      const dbCommunes = await window.MedicareDB.getCommunes(code);
-      if (dbCommunes && dbCommunes.length) communesList = dbCommunes.map(c => c.name);
+      try {
+        const dbCommunes = await window.MedicareDB.getCommunes(code);
+        if (dbCommunes && dbCommunes.length) communesList = dbCommunes.map(c => c.name);
+      } catch (e) {
+        console.warn('[Checkout] getCommunes fallback:', e);
+      }
     }
-    if (!communesList.length && selectedWilayaObj.communes) {
+
+    // Fallback to WILAYAS_DATA
+    if (!communesList.length) {
+      const localObj = WILAYAS_DATA.find(w => w.code === code);
+      if (localObj && localObj.communes && localObj.communes.length) {
+        communesList = localObj.communes;
+      }
+    }
+
+    if (!communesList.length && selectedWilayaObj.communes && selectedWilayaObj.communes.length) {
       communesList = selectedWilayaObj.communes;
+    }
+
+    // If still empty, extract city name from Wilaya label
+    if (!communesList.length) {
+      const cleanName = (selectedWilayaObj.name || '').replace(/^\d+\s*-\s*/, '').replace(/\(.*\)/, '').trim();
+      communesList = [cleanName || 'Centre Ville'];
     }
 
     // Populate communes
     if (communeSelect) {
       communeSelect.disabled = false;
       const options = communesList.map(c => `<option value="${c}">${c}</option>`).join('');
-      communeSelect.innerHTML = `<option value="">-- Select Commune (اختر البلدية) --</option>${options}<option value="Center">Centre Ville / Municipal Center</option>`;
+      communeSelect.innerHTML = `<option value="">-- Select Commune (اختر البلدية) --</option>${options}<option value="Centre Ville">Centre Ville (وسط المدينة)</option>`;
     }
 
-    validateField(selectEl);
+    if (typeof window.validateField === 'function') window.validateField(selectEl);
+    updateCourierDisplay();
     recalculateTotals();
   };
 
@@ -171,11 +231,154 @@ document.addEventListener('DOMContentLoaded', async () => {
     selectedDeliveryType = type;
     document.getElementById('delivery-option-home')?.classList.toggle('active', type === 'home');
     document.getElementById('delivery-option-stopdesk')?.classList.toggle('active', type === 'stopdesk');
+    updateCourierDisplay();
     recalculateTotals();
   };
 
   /* ------------------------------------------------------------------
-     4. DELIVERY FEE CALCULATOR
+     3b. COURIER COMPANY SELECTOR (Dropdown & Live Info Banner)
+     ------------------------------------------------------------------ */
+  window.onCourierSelectChange = function(courierId) {
+    selectedCourier = courierId;
+    updateCourierDisplay();
+    recalculateTotals();
+    const selectEl = document.getElementById('chk-courier');
+    if (selectEl && typeof window.validateField === 'function') {
+      window.validateField(selectEl);
+    }
+  };
+
+  window.selectCourier = function(courierId) {
+    selectedCourier = courierId;
+    const selectEl = document.getElementById('chk-courier');
+    if (selectEl) selectEl.value = courierId;
+    updateCourierDisplay();
+    recalculateTotals();
+  };
+
+  /* ------------------------------------------------------------------
+     3c. DYNAMIC COURIERS & DELIVERY FEES ENGINE
+     ------------------------------------------------------------------ */
+  function getEffectiveCouriers() {
+    try {
+      const storedRaw = localStorage.getItem('medicare_delivery_fees');
+      if (storedRaw) {
+        const fees = JSON.parse(storedRaw);
+        if (fees && fees.capital && fees.north && fees.south) {
+          const capHome = Number(fees.capital.home);
+          const capStop = Number(fees.capital.stopdesk);
+          const northHome = Number(fees.north.home);
+          const northStop = Number(fees.north.stopdesk);
+          const southHome = Number(fees.south.home);
+          const southStop = Number(fees.south.stopdesk);
+
+          return COURIERS.map(c => {
+            if (c.id === 'zr-express') {
+              return {
+                ...c,
+                fees: {
+                  home: { capital: capHome, north: northHome, south: southHome },
+                  stopdesk: { capital: capStop, north: northStop, south: southStop }
+                }
+              };
+            } else if (c.id === 'yalidine') {
+              return {
+                ...c,
+                fees: {
+                  home: { capital: capHome + 20, north: northHome + 20, south: southHome + 20 },
+                  stopdesk: { capital: Math.max(0, capStop - 30), north: Math.max(0, northStop - 20), south: Math.max(0, southStop - 20) }
+                }
+              };
+            } else if (c.id === 'mayestro') {
+              return {
+                ...c,
+                fees: {
+                  home: { capital: Math.max(0, capHome - 20), north: Math.max(0, northHome - 20), south: Math.max(0, southHome - 50) },
+                  stopdesk: { capital: Math.max(0, capStop - 50), north: Math.max(0, northStop - 50), south: Math.max(0, southStop - 50) }
+                }
+              };
+            }
+            return {
+              ...c,
+              fees: {
+                home: { capital: capHome, north: northHome, south: southHome },
+                stopdesk: { capital: capStop, north: northStop, south: southStop }
+              }
+            };
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('[Checkout] Failed to load custom delivery fees:', e);
+    }
+    return COURIERS;
+  }
+
+  function populateCourierDropdown() {
+    const selectEl = document.getElementById('chk-courier');
+    if (!selectEl) return;
+
+    const couriersList = getEffectiveCouriers();
+    selectEl.innerHTML = couriersList.map(c => `
+      <option value="${c.id}" ${selectedCourier === c.id ? 'selected' : ''}>${c.name}</option>
+    `).join('');
+  }
+
+  function updateCourierDisplay() {
+    const couriersList = getEffectiveCouriers();
+    const selectEl = document.getElementById('chk-courier');
+
+    // Populate dropdown if not yet initialized
+    if (selectEl && selectEl.options.length === 0) {
+      populateCourierDropdown();
+    }
+
+    if (selectEl && selectedCourier) {
+      selectEl.value = selectedCourier;
+    }
+
+    const zone = selectedWilayaObj ? selectedWilayaObj.zone : 'north';
+    const type = selectedDeliveryType;
+    const courier = couriersList.find(c => c.id === selectedCourier) || couriersList[0];
+
+    if (!courier) return;
+
+    const fee = courier.fees[type][zone];
+    const eta = courier.etaHome[zone];
+    const subtotal = getSubtotal();
+    const isFree = subtotal >= FREE_SHIPPING_THRESHOLD;
+
+    const logoEl = document.getElementById('courier-rate-logo');
+    const nameEl = document.getElementById('courier-rate-name');
+    const etaEl = document.getElementById('courier-rate-eta');
+    const priceEl = document.getElementById('courier-rate-price');
+    const infoBox = document.getElementById('courier-rate-info');
+
+    if (logoEl) logoEl.textContent = courier.logo || '📦';
+    if (nameEl) nameEl.textContent = courier.name;
+    if (etaEl) etaEl.textContent = `⏱ وقت التوصيل: ${eta}`;
+    if (priceEl) {
+      priceEl.innerHTML = isFree
+        ? '<span style="color:#10B981; font-weight:800;">مجاني (FREE)</span>'
+        : `${fee.toLocaleString()} <small style="font-size:12px; font-weight:600;">DZD</small>`;
+    }
+    if (infoBox) infoBox.style.display = 'flex';
+
+    // Update delivery type card price hints if available
+    const homeLabel = document.getElementById('home-fee-label');
+    const stopdeskLabel = document.getElementById('stopdesk-fee-label');
+    if (homeLabel) {
+      const hFee = courier.fees['home'][zone];
+      homeLabel.textContent = isFree ? '0 DZD' : `${hFee.toLocaleString()} DZD`;
+    }
+    if (stopdeskLabel) {
+      const sFee = courier.fees['stopdesk'][zone];
+      stopdeskLabel.textContent = isFree ? '0 DZD' : `${sFee.toLocaleString()} DZD`;
+    }
+  }
+
+  /* ------------------------------------------------------------------
+     4. DELIVERY FEE CALCULATOR (Courier-aware)
      ------------------------------------------------------------------ */
   function getDeliveryFee() {
     const subtotal = getSubtotal();
@@ -185,20 +388,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       return 0;
     }
 
-    if (!selectedWilayaObj) return 500; // default estimate
+    const zone = selectedWilayaObj ? selectedWilayaObj.zone : 'north';
+    const couriersList = getEffectiveCouriers();
+    const courier = couriersList.find(c => c.id === selectedCourier) || couriersList[0];
 
-    const zone = selectedWilayaObj.zone;
-
-    if (selectedDeliveryType === 'stopdesk') {
-      if (zone === 'capital') return 250;
-      if (zone === 'north') return 350;
-      return 500; // south
-    } else {
-      // Home delivery
-      if (zone === 'capital') return 400;
-      if (zone === 'north') return 600;
-      return 900; // south
-    }
+    return courier.fees[selectedDeliveryType][zone];
   }
 
   /* ------------------------------------------------------------------
@@ -233,13 +427,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
-    // Dynamic fee labels on delivery cards
+    // Dynamic fee labels on delivery type cards (use active courier's prices)
     const homeFeeLabel = document.getElementById('home-fee-label');
     const stopdeskFeeLabel = document.getElementById('stopdesk-fee-label');
     const zone = selectedWilayaObj ? selectedWilayaObj.zone : 'north';
+    const activeCourier = COURIERS.find(c => c.id === selectedCourier) || COURIERS[0];
 
-    const homeFeeVal = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : (zone === 'capital' ? 400 : zone === 'north' ? 600 : 900);
-    const stopdeskFeeVal = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : (zone === 'capital' ? 250 : zone === 'north' ? 350 : 500);
+    const homeFeeVal = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : activeCourier.fees.home[zone];
+    const stopdeskFeeVal = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : activeCourier.fees.stopdesk[zone];
 
     if (homeFeeLabel) homeFeeLabel.textContent = homeFeeVal === 0 ? 'FREE' : `${homeFeeVal.toLocaleString()} DZD`;
     if (stopdeskFeeLabel) stopdeskFeeLabel.textContent = stopdeskFeeVal === 0 ? 'FREE' : `${stopdeskFeeVal.toLocaleString()} DZD`;
@@ -310,8 +505,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('medicare_cart_updated', renderCartItems);
 
   /* ------------------------------------------------------------------
-     7. COUPON ENGINE
+     7. COUPON ENGINE (Dynamic LocalStorage & Multi-Type Discounts)
      ------------------------------------------------------------------ */
+  const DEFAULT_CHECKOUT_COUPONS = [
+    { id: 'CPN-101', code: 'STUDENT10', type: 'percentage', value: 10, usage_limit: 500, used_count: 142, expiry_date: '', status: 'Active' },
+    { id: 'CPN-102', code: 'MEDICARE2026', type: 'fixed', value: 2000, usage_limit: 200, used_count: 89, expiry_date: '2026-12-31', status: 'Active' }
+  ];
+
+  let currentAppliedCoupon = null;
+
+  function getAvailableCoupons() {
+    try {
+      const raw = localStorage.getItem('medicare_coupons');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('[Checkout] Failed to parse medicare_coupons from localStorage:', e);
+    }
+    // Fallback: initialize defaults
+    localStorage.setItem('medicare_coupons', JSON.stringify(DEFAULT_CHECKOUT_COUPONS));
+    return DEFAULT_CHECKOUT_COUPONS;
+  }
+
   window.applyCoupon = function() {
     const input = document.getElementById('chk-coupon-input');
     const code = input?.value.trim().toUpperCase();
@@ -322,22 +539,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const subtotal = getSubtotal();
+    const coupons = getAvailableCoupons();
+    const coupon = coupons.find(c => (c.code || '').trim().toUpperCase() === code);
 
-    if (code === 'STUDENT10' || code === 'MEDICARE10') {
-      appliedDiscount = Math.round(subtotal * 0.1);
-      document.getElementById('coupon-discount-row').style.display = 'flex';
-      document.getElementById('chk-discount-val').textContent = `−${appliedDiscount.toLocaleString()} DZD`;
-      showToast('✓ Coupon STUDENT10 applied (10% OFF)!');
-    } else if (code === 'MEDICARE2026') {
-      appliedDiscount = 2000;
-      document.getElementById('coupon-discount-row').style.display = 'flex';
-      document.getElementById('chk-discount-val').textContent = '−2,000 DZD';
-      showToast('✓ Coupon MEDICARE2026 applied (2,000 DZD OFF)!');
-    } else {
+    if (!coupon) {
       showToast('❌ Invalid or expired coupon code');
       return;
     }
 
+    if (coupon.status && coupon.status !== 'Active') {
+      showToast('❌ This coupon code is currently disabled');
+      return;
+    }
+
+    if (coupon.expiry_date) {
+      const expDate = new Date(coupon.expiry_date + 'T23:59:59');
+      if (!isNaN(expDate.getTime()) && expDate < new Date()) {
+        showToast('❌ This coupon code has expired');
+        return;
+      }
+    }
+
+    if (coupon.usage_limit && Number(coupon.used_count || 0) >= Number(coupon.usage_limit)) {
+      showToast('❌ This coupon has reached its maximum usage limit');
+      return;
+    }
+
+    let discountAmount = 0;
+    let label = '';
+
+    if (coupon.type === 'percentage') {
+      const pct = Math.min(100, Math.max(1, Number(coupon.value) || 0));
+      discountAmount = Math.round(subtotal * (pct / 100));
+      label = `${pct}% OFF`;
+    } else {
+      // Fixed amount
+      const fixedVal = Math.max(0, Number(coupon.value) || 0);
+      discountAmount = Math.min(subtotal, fixedVal);
+      label = `${fixedVal.toLocaleString()} DZD OFF`;
+    }
+
+    appliedDiscount = discountAmount;
+    currentAppliedCoupon = coupon;
+
+    const discountRow = document.getElementById('coupon-discount-row');
+    if (discountRow) discountRow.style.display = 'flex';
+    const discountValEl = document.getElementById('chk-discount-val');
+    if (discountValEl) discountValEl.textContent = `−${appliedDiscount.toLocaleString()} DZD`;
+
+    showToast(`✓ Coupon ${coupon.code} applied (${label})!`);
     recalculateTotals();
   };
 
@@ -345,6 +595,7 @@ document.addEventListener('DOMContentLoaded', async () => {
      8. FORM VALIDATION
      ------------------------------------------------------------------ */
   window.validateField = function(inputEl) {
+    if (!inputEl) return true;
     const group = inputEl.closest('.chk-form-group');
     if (!group) return true;
 
@@ -352,17 +603,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const val = inputEl.value.trim();
 
     if (inputEl.id === 'chk-fullname') {
-      valid = val.length >= 3;
+      valid = val.length >= 2;
     } else if (inputEl.id === 'chk-phone') {
-      // Algerian phone regex: starts with 05, 06, 07 followed by 8 digits (10 digits total)
-      const phoneClean = val.replace(/[\s\-\.]/g, '');
-      valid = /^0[567]\d{8}$/.test(phoneClean);
+      // Accepts Algerian numbers: 05xx, 06xx, 07xx, 02xx, 03xx, 04xx, +213..., 00213..., 213..., or 9-14 digits
+      const digitsOnly = val.replace(/\D/g, '');
+      const localClean = digitsOnly.replace(/^213|^00213/, '0');
+      valid = (localClean.length >= 9 && localClean.length <= 11 && localClean.startsWith('0')) ||
+              (digitsOnly.length >= 9 && digitsOnly.length <= 14);
     } else if (inputEl.id === 'chk-wilaya') {
       valid = val !== '';
     } else if (inputEl.id === 'chk-commune') {
       valid = val !== '';
+    } else if (inputEl.id === 'chk-courier') {
+      valid = val !== '';
     } else if (inputEl.id === 'chk-address') {
-      valid = val.length >= 5;
+      // If stopdesk delivery, address is optional or can be short
+      valid = val.length >= 2 || selectedDeliveryType === 'stopdesk';
     }
 
     if (valid) {
@@ -380,30 +636,49 @@ document.addEventListener('DOMContentLoaded', async () => {
      9. ORDER SUBMISSION & CONFIRMATION VIEW
      ------------------------------------------------------------------ */
   window.handleOrderSubmit = async function(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+
+    const validate = window.validateField || function() { return true; };
+    const toast = window.showCheckoutToast || window.showToast || function(m) { alert(m); };
 
     const fnEl = document.getElementById('chk-fullname');
     const phEl = document.getElementById('chk-phone');
     const wiEl = document.getElementById('chk-wilaya');
     const coEl = document.getElementById('chk-commune');
+    const crEl = document.getElementById('chk-courier');
     const adEl = document.getElementById('chk-address');
 
-    const v1 = validateField(fnEl);
-    const v2 = validateField(phEl);
-    const v3 = validateField(wiEl);
-    const v4 = validateField(coEl);
-    const v5 = validateField(adEl);
+    // Auto-fill address for Stopdesk if left empty
+    if (selectedDeliveryType === 'stopdesk' && adEl && !adEl.value.trim()) {
+      adEl.value = 'Stop-Desk Agency Pickup (الاستلام من مكتب الوكالة)';
+    }
 
-    if (!v1 || !v2 || !v3 || !v4 || !v5) {
-      showToast('❌ Please fill out all required fields correctly');
+    const v1 = validate(fnEl);
+    const v2 = validate(phEl);
+    const v3 = validate(wiEl);
+    const v4 = validate(coEl);
+    const v5 = validate(crEl);
+    const v6 = validate(adEl);
+
+    if (!v1 || !v2 || !v3 || !v4 || !v5 || !v6) {
+      const missing = [];
+      if (!v1) missing.push('الاسم الكامل (Full Name)');
+      if (!v2) missing.push('رقم الهاتف (Phone Number)');
+      if (!v3) missing.push('الولاية (Wilaya)');
+      if (!v4) missing.push('البلدية (Commune)');
+      if (!v5) missing.push('شركة التوصيل (Courier Company)');
+      if (!v6) missing.push('العنوان (Address)');
+
+      toast(`❌ يرجى ملء: ${missing.join('، ')}`);
       const firstErr = document.querySelector('.chk-form-group.error');
       firstErr?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstErr?.querySelector('input, select')?.focus();
       return;
     }
 
     const currentCartItems = window.MedicareCart ? window.MedicareCart.getCart() : [];
     if (currentCartItems.length === 0) {
-      showToast('❌ Your cart is empty');
+      toast('❌ السلة فارغة / Your cart is empty');
       return;
     }
 
@@ -430,6 +705,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       commune: commune,
       address: adEl.value.trim(),
       delivery_type: selectedDeliveryType,
+      courier_company: selectedCourier,
+      courier_name: (COURIERS.find(c => c.id === selectedCourier) || COURIERS[0]).name,
       items: currentCartItems,
       subtotal: subtotal,
       delivery_fee: deliveryFee,
@@ -443,9 +720,56 @@ document.addEventListener('DOMContentLoaded', async () => {
       createdOrder = await window.MedicareDB.createOrder(orderPayload);
     }
 
+    // Deduct purchased quantities from stock & log warehouse movement
+    if (window.MedicareDB && typeof window.MedicareDB.updateStock === 'function') {
+      currentCartItems.forEach(item => {
+        const prodId = item.id || item.productId;
+        if (!prodId) return;
+
+        let currentStock = 10;
+        if (window.PRODUCT_CATALOG_MAP && window.PRODUCT_CATALOG_MAP[prodId]) {
+          currentStock = Number(window.PRODUCT_CATALOG_MAP[prodId].stock ?? 10);
+        } else {
+          try {
+            const overrides = JSON.parse(localStorage.getItem('medicare_stock_overrides') || '{}');
+            if (overrides[prodId] !== undefined) currentStock = Number(overrides[prodId]);
+          } catch (e) {}
+        }
+
+        const orderQty = Number(item.qty || item.quantity || 1);
+        const newStock = Math.max(0, currentStock - orderQty);
+
+        window.MedicareDB.updateStock(prodId, newStock, {
+          logMovement: true,
+          type: 'OUT',
+          qty: orderQty,
+          stockBefore: currentStock,
+          productName: item.name || item.nameAr || prodId,
+          reason: `Customer Order #${orderNum}`,
+          staff: 'Online Store Checkout',
+          orderNumber: orderNum
+        });
+      });
+    }
+
     // Clear shared cart after successful submission
     if (window.MedicareCart) {
       window.MedicareCart.clearCart();
+    }
+
+    // Increment coupon usage count if coupon applied
+    if (currentAppliedCoupon) {
+      try {
+        const coupons = getAvailableCoupons();
+        const cIdx = coupons.findIndex(c => c.id === currentAppliedCoupon.id || c.code === currentAppliedCoupon.code);
+        if (cIdx !== -1) {
+          coupons[cIdx].used_count = (Number(coupons[cIdx].used_count) || 0) + 1;
+          localStorage.setItem('medicare_coupons', JSON.stringify(coupons));
+          window.dispatchEvent(new CustomEvent('medicare_coupons_updated'));
+        }
+      } catch (e) {
+        console.warn('[Checkout] Failed to increment coupon usage:', e);
+      }
     }
 
     // Delivery Window Estimate
@@ -457,14 +781,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('conf-customer-name').textContent = fullName;
     document.getElementById('conf-customer-phone').textContent = phone;
     document.getElementById('conf-destination').textContent = `${wilayaName} (Commune: ${commune})`;
-    document.getElementById('conf-delivery-type').textContent = selectedDeliveryType === 'home' ? 'Home Delivery (ZR Express / Yalidine)' : 'Stop-Desk Agency Pickup (Yalidine Desk)';
+    const confCourierName = (COURIERS.find(c => c.id === selectedCourier) || COURIERS[0]).name;
+    document.getElementById('conf-delivery-type').textContent = selectedDeliveryType === 'home'
+      ? `Home Delivery via ${confCourierName}`
+      : `Stop-Desk Pickup via ${confCourierName}`;
     document.getElementById('conf-delivery-window').textContent = windowText;
     document.getElementById('conf-total-due').textContent = `${grandTotal.toLocaleString()} DZD (Cash on Delivery)`;
-
-    // WhatsApp Tracking Link
-    const waMsg = `Hello MEDICARE! 👋\nI placed an order on your site.\n\n📌 Order Number: ${orderNum}\n👤 Name: ${fullName}\n📞 Phone: ${phone}\n📍 Destination: ${wilayaName} - ${commune}\n💵 Total Due (COD): ${grandTotal.toLocaleString()} DZD\n\nPlease confirm dispatch and tracking details. Thank you!`;
-    const waLink = document.getElementById('conf-whatsapp-track-link');
-    if (waLink) waLink.href = `https://wa.me/213550000000?text=${encodeURIComponent(waMsg)}`;
 
     // Update Wizard Steps
     document.getElementById('wizard-step-1').classList.remove('active');
@@ -478,31 +800,76 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('checkout-confirmation-view').style.display = 'block';
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast('🎉 Order placed successfully!');
+    toast('🎉 تم تقديم الطلب بنجاح! / Order placed successfully!');
   };
 
   /* ------------------------------------------------------------------
      10. TOAST & UTILITIES
      ------------------------------------------------------------------ */
   function showToast(msg) {
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => toast.classList.remove('show'), 2500);
+    const toastEl = document.getElementById('copy-toast');
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(() => toastEl.classList.remove('show'), 2500);
   }
+  // Expose globally so handleOrderSubmit and other callers can reach it
+  window.showToast = showToast;
+
+  const langToggleBtn = document.getElementById('lang-toggle-btn');
+  const langDropdownMenu = document.getElementById('lang-dropdown-menu');
+  // (langToggleBtn/langDropdownMenu declared here — not at top of handler to avoid duplicate const error)
 
   if (langToggleBtn) {
-    langToggleBtn.addEventListener('click', () => {
-      const isRTL = document.documentElement.getAttribute('dir') === 'rtl';
-      document.documentElement.setAttribute('dir', isRTL ? 'ltr' : 'rtl');
-      document.documentElement.setAttribute('lang', isRTL ? 'en' : 'ar');
-      langToggleBtn.querySelector('.btn-text').textContent = isRTL ? 'العربية' : 'English';
-      showToast(isRTL ? '🌐 Switched to English' : '🌐 تم التبديل إلى العربية');
+    langToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (langDropdownMenu) {
+        langDropdownMenu.classList.toggle('show');
+      } else {
+        const cur = window.MC_I18N ? window.MC_I18N.getCurrentLang() : 'en';
+        const next = cur === 'en' ? 'ar' : (cur === 'ar' ? 'fr' : 'en');
+        if (window.MC_I18N) window.MC_I18N.setLang(next);
+      }
     });
   }
 
+  if (langDropdownMenu) {
+    langDropdownMenu.querySelectorAll('.mc-lang-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selected = btn.dataset.lang;
+        if (window.MC_I18N) window.MC_I18N.setLang(selected);
+        renderCartItems();
+        langDropdownMenu.classList.remove('show');
+      });
+    });
+
+    document.addEventListener('click', e => {
+      if (langToggleBtn && !langToggleBtn.contains(e.target) && !langDropdownMenu.contains(e.target)) {
+        langDropdownMenu.classList.remove('show');
+      }
+    });
+  }
+
+  window.addEventListener('medicare_language_changed', () => {
+    renderCartItems();
+  });
+
   // Initial render
+  populateCourierDropdown();
+  updateCourierDisplay();
   renderCartItems();
+
+  // Listeners for real-time delivery fee updates from admin
+  window.addEventListener('medicare_delivery_fees_updated', () => {
+    updateCourierDisplay();
+    recalculateTotals();
+  });
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'medicare_delivery_fees') {
+      updateCourierDisplay();
+      recalculateTotals();
+    }
+  });
 
 });

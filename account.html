@@ -27,7 +27,7 @@
         <img src="mid logo.png" alt="MEDICARE" class="mc-real-logo" width="160">
       </a>
       <div class="mc-header-actions">
-        <a href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
+        <a href="https://wa.me/213662497253" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm">
           <span>💬</span><span class="btn-text">اطلب الآن</span>
         </a>
         <a href="wishlist.html" class="mc-icon-btn" aria-label="Wishlist"><span>♥</span></a>
@@ -409,8 +409,33 @@
 
   <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
 
+  <!-- =====================================================================
+       MOBILE ONLY: Persistent Bottom Navigation Bar
+       ===================================================================== -->
+  <nav id="mob-bottom-nav" class="mc-mob-bottom-nav" aria-label="Main navigation">
+    <a href="index.html" class="mc-mob-nav-item" data-tab="home">
+      <span class="mc-mob-nav-icon">🏠</span>
+      <span class="mc-mob-nav-label">Home</span>
+    </a>
+    <a href="category.html" class="mc-mob-nav-item" data-tab="shop">
+      <span class="mc-mob-nav-icon">🛍️</span>
+      <span class="mc-mob-nav-label">Shop</span>
+    </a>
+    <button class="mc-mob-nav-item" id="mob-nav-cart" data-tab="cart" aria-label="Shopping cart">
+      <span class="mc-mob-nav-icon" style="position:relative; display:inline-block;">
+        🛒<span id="mob-cart-badge" class="mc-mob-cart-badge" aria-label="items in cart">0</span>
+      </span>
+      <span class="mc-mob-nav-label">Cart</span>
+    </button>
+    <a href="account.html" class="mc-mob-nav-item active" data-tab="account" aria-current="page">
+      <span class="mc-mob-nav-icon">👤</span>
+      <span class="mc-mob-nav-label">Account</span>
+    </a>
+  </nav>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
+  <script src="src/i18n.js"></script>
   <script src="src/supabase-client.js"></script>
   <script src="src/cart.js"></script>
   <script src="src/account-header.js"></script>

@@ -137,7 +137,7 @@
   <header class="mc-sticky-header">
     <div class="mc-header-inner">
       <!-- Logo -->
-      <a href="#" class="mc-brand-logo" aria-label="MEDICARE E-Commerce Homepage">
+      <a href="index.html" class="mc-brand-logo" aria-label="MEDICARE E-Commerce Homepage">
         <img src="mid logo.png" alt="MEDICARE Medical Wear and Essentials" class="mc-real-logo" width="160" height="auto">
       </a>
 
@@ -153,14 +153,20 @@
 
       <!-- Quick Actions Bar -->
       <div class="mc-header-actions">
+        <!-- Desktop Shop All link — always visible -->
+        <a href="category.html" class="mc-btn mc-btn-primary mc-btn-sm mc-header-shop-btn" aria-label="Shop all products">
+          <span>🛍️</span>
+          <span class="btn-text">Shop All</span>
+        </a>
+
         <!-- WhatsApp Quick-Order Button -->
-        <a href="https://wa.me/213550000000?text=Hello%20MEDICARE,%20I%20want%20to%20place%20a%20quick%20order" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm" aria-label="WhatsApp Quick Order">
+        <a href="https://wa.me/213662497253?text=Hello%20MEDICARE,%20I%20want%20to%20place%20a%20quick%20order" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-sm" aria-label="WhatsApp Quick Order">
           <span>💬</span>
           <span class="btn-text">اطلب الآن</span>
         </a>
 
         <!-- Wishlist Icon -->
-        <button class="mc-icon-btn" aria-label="Wishlist">
+        <button class="mc-icon-btn" aria-label="Wishlist" onclick="window.location.href='wishlist.html'">
           <span>♥</span>
           <span id="wishlist-badge" class="mc-icon-badge">2</span>
         </button>
@@ -176,14 +182,49 @@
           <span>👤</span>
         </button>
 
-        <!-- Bilingual Language Switcher (EN / AR) -->
-        <button id="lang-toggle-btn" class="mc-toggle-btn">
-          <span>🌐</span>
-          <span class="btn-text">العربية (RTL)</span>
-        </button>
+        <!-- Trilingual Language Switcher (AR 🇩🇿 | EN 🇬🇧 | FR 🇫🇷) -->
+        <div class="mc-lang-dropdown">
+          <button id="lang-toggle-btn" class="mc-toggle-btn mc-lang-btn" aria-label="Switch Language" aria-expanded="false">
+            <span>🌐</span>
+            <span class="btn-text">English</span>
+            <span style="font-size:10px; opacity:0.7;">▼</span>
+          </button>
+          <div id="lang-dropdown-menu" class="mc-lang-menu">
+            <button class="mc-lang-option" data-lang="ar">
+              <span>🇩🇿</span>
+              <span>العربية (AR)</span>
+            </button>
+            <button class="mc-lang-option" data-lang="en">
+              <span>🇬🇧</span>
+              <span>English (EN)</span>
+            </button>
+            <button class="mc-lang-option" data-lang="fr">
+              <span>🇫🇷</span>
+              <span>Français (FR)</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
+
+  <!-- Persistent Category Nav Bar (below header) -->
+  <nav class="mc-nav-bar" id="mc-nav-bar" aria-label="Site navigation">
+    <div class="mc-nav-inner">
+      <a href="category.html" class="mc-nav-shop-link" id="nav-shop-all-btn">
+        <span>🛍️</span>
+        <span>Shop All 48 Products</span>
+        <span class="mc-nav-shop-arrow">→</span>
+      </a>
+      <div class="mc-nav-cats">
+        <a href="category.html?specialty=medicine" class="mc-nav-cat-link">🩺 Scrubs</a>
+        <a href="category.html?specialty=pharmacy" class="mc-nav-cat-link">🥼 Lab Coats</a>
+        <a href="category.html?specialty=nursing" class="mc-nav-cat-link">👟 Footwear</a>
+        <a href="category.html?specialty=medicine&type=diagnostic" class="mc-nav-cat-link">🔬 Diagnostic</a>
+        <a href="category.html?specialty=bundle" class="mc-nav-cat-link">🎒 Starter Kits</a>
+      </div>
+    </div>
+  </nav>
 
   <!-- Slide-Over Cart Drawer -->
   <div id="cart-drawer-overlay" class="mc-cart-drawer-overlay">
@@ -205,7 +246,7 @@
         </div>
         <div class="mc-cart-total-row">
           <span id="cart-subtotal-label">Subtotal:</span>
-          <span id="cart-total-price">29,500 DZD</span>
+          <span id="cart-subtotal-val">0 DZD</span>
         </div>
         <button id="cart-checkout-btn" class="mc-btn mc-btn-accent mc-btn-lg mc-btn-full" onclick="window.location.href='checkout.html'">
           Proceed to Checkout (COD) — الدفع عند الاستلام
@@ -231,9 +272,9 @@
           <div class="mc-slide-tag">✨ New 2026 Collection</div>
           <h1 class="mc-slide-title">Obsidian Flex Antimicrobial Scrubs</h1>
           <p class="mc-slide-desc">Engineered for 24-hour shift endurance — 4-way stretch flex fabric with liquid-shield barrier.</p>
-          <div class="mc-slide-ctas" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="#featured" class="mc-btn mc-btn-accent mc-btn-lg">Shop Scrubs</a>
-            <a href="#starter-kits" class="mc-btn mc-btn-secondary mc-btn-lg">Explore Student Kits</a>
+          <div class="mc-slide-ctas" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <a href="category.html" class="mc-btn mc-btn-accent mc-btn-lg" style="font-weight:800;">🛍️ Shop All 48 Products →</a>
+            <a href="category.html?specialty=medicine" class="mc-btn mc-btn-secondary mc-btn-lg">Shop Scrubs</a>
           </div>
         </div>
 
@@ -242,8 +283,9 @@
           <div class="mc-slide-tag">🎓 Student Discount Active</div>
           <h1 class="mc-slide-title">2026 Medical Student Starter Kits</h1>
           <p class="mc-slide-desc">Complete gear & apparel bundles for Medicine, Pharmacy, Dentistry, and Nursing. Save up to 25%.</p>
-          <div class="mc-slide-ctas" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="#starter-kits" class="mc-btn mc-btn-primary mc-btn-lg">View Student Bundles</a>
+          <div class="mc-slide-ctas" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <a href="category.html" class="mc-btn mc-btn-accent mc-btn-lg" style="font-weight:800;">🛍️ Shop All 48 Products →</a>
+            <a href="category.html?specialty=bundle" class="mc-btn mc-btn-primary mc-btn-lg">View Student Bundles</a>
           </div>
         </div>
 
@@ -252,8 +294,9 @@
           <div class="mc-slide-tag">🩺 Precision Acoustics</div>
           <h1 class="mc-slide-title">Titanium Master Diagnostic Gear</h1>
           <p class="mc-slide-desc">Ultra-sensitive acoustic stethoscopes in brushed matte titanium. Free lifetime calibration.</p>
-          <div class="mc-slide-ctas" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="#featured" class="mc-btn mc-btn-accent mc-btn-lg">Shop Diagnostic Tools</a>
+          <div class="mc-slide-ctas" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+            <a href="category.html" class="mc-btn mc-btn-accent mc-btn-lg" style="font-weight:800;">🛍️ Shop All 48 Products →</a>
+            <a href="category.html?specialty=medicine" class="mc-btn mc-btn-secondary mc-btn-lg">Shop Diagnostic Tools</a>
           </div>
         </div>
 
@@ -268,6 +311,21 @@
         </div>
       </div>
     </section>
+
+    <!-- ===================================================================
+         QUICK SHOP BANNER (between hero and category grid)
+         =================================================================== -->
+    <div class="mc-quick-shop-banner mc-reveal">
+      <div class="mc-quick-shop-inner">
+        <div class="mc-quick-shop-text">
+          <span class="mc-quick-shop-eyebrow">🏥 Full Catalog Available Now</span>
+          <span class="mc-quick-shop-headline">48 Premium Medical Products — Delivered Anywhere in Algeria</span>
+        </div>
+        <a href="category.html" class="mc-btn mc-btn-primary mc-btn-lg mc-quick-shop-cta" style="font-weight:800; white-space:nowrap;">
+          🛍️ Browse All 48 Products →
+        </a>
+      </div>
+    </div>
 
     <!-- Category Section -->
     <section class="mc-section mc-reveal">
@@ -287,36 +345,67 @@
         <button class="mc-specialty-tab" data-specialty="nursing">Nursing (التمريض)</button>
       </div>
 
-      <!-- Icon-Based Category Quick-Nav Cards -->
+      <!-- Icon-Based Category Quick-Nav Cards — pre-filtered deep links -->
       <div class="mc-category-grid">
-        <a href="category.html" class="mc-cat-card">
+        <a href="category.html?specialty=medicine&type=scrubs" class="mc-cat-card" aria-label="Shop medical scrubs">
           <div class="mc-cat-icon">👕</div>
-          <span class="mc-cat-title">Scrubs<br><small style="font-weight:500;color:var(--color-neutral-500)">أطقم السكراب</small></span>
+          <div class="mc-cat-text">
+            <span class="mc-cat-name">Scrubs</span>
+            <span class="mc-cat-name-ar">أطقم السكراب</span>
+          </div>
+          <span class="mc-cat-count">18 products</span>
         </a>
 
-        <a href="category.html" class="mc-cat-card">
+        <a href="category.html?specialty=pharmacy" class="mc-cat-card" aria-label="Shop lab coats">
           <div class="mc-cat-icon">🥼</div>
-          <span class="mc-cat-title">Lab Coats<br><small style="font-weight:500;color:var(--color-neutral-500)">معاطف المختبر</small></span>
+          <div class="mc-cat-text">
+            <span class="mc-cat-name">Lab Coats</span>
+            <span class="mc-cat-name-ar">معاطف المختبر</span>
+          </div>
+          <span class="mc-cat-count">12 products</span>
         </a>
 
-        <a href="category.html" class="mc-cat-card">
+        <a href="category.html?specialty=nursing" class="mc-cat-card" aria-label="Shop medical footwear">
           <div class="mc-cat-icon">👟</div>
-          <span class="mc-cat-title">Footwear<br><small style="font-weight:500;color:var(--color-neutral-500)">أحذية طبية</small></span>
+          <div class="mc-cat-text">
+            <span class="mc-cat-name">Footwear</span>
+            <span class="mc-cat-name-ar">أحذية طبية</span>
+          </div>
+          <span class="mc-cat-count">10 products</span>
         </a>
 
-        <a href="category.html" class="mc-cat-card">
-          <div class="mc-cat-icon">🩺</div>
-          <span class="mc-cat-title">Diagnostic<br><small style="font-weight:500;color:var(--color-neutral-500)">أدوات التشخيص</small></span>
+        <a href="category.html?specialty=medicine&type=diagnostic" class="mc-cat-card" aria-label="Shop diagnostic tools">
+          <div class="mc-cat-icon">🔬</div>
+          <div class="mc-cat-text">
+            <span class="mc-cat-name">Diagnostic</span>
+            <span class="mc-cat-name-ar">أدوات التشخيص</span>
+          </div>
+          <span class="mc-cat-count">8 products</span>
         </a>
 
-        <a href="category.html" class="mc-cat-card">
+        <a href="category.html?specialty=dentistry" class="mc-cat-card" aria-label="Shop dentistry supplies">
+          <div class="mc-cat-icon">🦷</div>
+          <div class="mc-cat-text">
+            <span class="mc-cat-name">Dentistry</span>
+            <span class="mc-cat-name-ar">طب الأسنان</span>
+          </div>
+          <span class="mc-cat-count">8 products</span>
+        </a>
+
+        <a href="category.html?specialty=bundle" class="mc-cat-card mc-cat-card-highlight" aria-label="Shop student starter kits">
           <div class="mc-cat-icon">🎒</div>
-          <span class="mc-cat-title">Med Bags<br><small style="font-weight:500;color:var(--color-neutral-500)">الحقائب الطبية</small></span>
+          <div class="mc-cat-text">
+            <span class="mc-cat-name">Starter Kits</span>
+            <span class="mc-cat-name-ar">حقائب المبتدئين</span>
+          </div>
+          <span class="mc-cat-count mc-cat-count-highlight">Save 25%</span>
         </a>
+      </div>
 
-        <a href="category.html#starter-kits" class="mc-cat-card">
-          <div class="mc-cat-icon">📦</div>
-          <span class="mc-cat-title">Starter Kits<br><small style="font-weight:500;color:var(--color-neutral-500)">حقائب المبتدئين</small></span>
+      <!-- Shop All CTA below category grid -->
+      <div style="text-align:center; margin-top: 1.5rem;">
+        <a href="category.html" class="mc-btn mc-btn-primary" style="font-weight:800; font-size:1rem; padding:0.75rem 2rem; gap:0.5rem;">
+          🛍️ View Full Catalog — All 48 Products
         </a>
       </div>
     </section>
@@ -328,105 +417,11 @@
           <h2 id="section-featured-title" class="mc-section-title">Featured & Best-Seller Essentials</h2>
           <p id="section-featured-sub" class="mc-section-desc">Highest rated products engineered for daily clinical practice.</p>
         </div>
-        <a id="view-all-btn" href="category.html" class="mc-btn mc-btn-ghost mc-btn-sm">View All Products →</a>
+        <a id="view-all-btn" href="category.html" class="mc-btn mc-btn-primary mc-btn-sm" style="font-weight:800; white-space:nowrap;">🛍️ Shop All 48 Products →</a>
       </div>
 
-      <div class="mc-component-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
-
-        <!-- Product 1 -->
-        <div class="mc-card mc-product-card" data-specialty="medicine" style="cursor:pointer;" onclick="window.location.href='product-detail.html?id=MC-101'">
-          <div class="mc-product-img-wrapper">
-            <img src="assets/medicare_scrubs_hero_1786614154492.png" alt="Obsidian Flex Antimicrobial Scrubs" class="mc-product-img" loading="lazy">
-            <div class="mc-product-badge-group">
-              <span class="mc-badge mc-badge-primary">Best Seller</span>
-              <span class="mc-badge mc-badge-accent">Antimicrobial</span>
-            </div>
-            <button class="mc-wishlist-btn" onclick="event.stopPropagation()" aria-label="Add to Wishlist">♥</button>
-          </div>
-          <div class="mc-product-content">
-            <div class="mc-product-category">Medical Wear • Surgical Flex</div>
-            <h3 class="mc-product-title">Obsidian Flex Antimicrobial Scrubs</h3>
-            <p class="mc-product-desc">4-way stretch flex fabric with fluid-shield barrier. Designed for 24-hour shift endurance.</p>
-            <div class="mc-product-footer">
-              <div class="mc-price-group">
-                <span class="mc-price-main">10,700 DZD</span>
-                <span class="mc-price-original">13,400 DZD</span>
-                <span class="mc-price-sub">Tax Exempt for MD/RN</span>
-              </div>
-              <button class="mc-btn mc-btn-primary mc-btn-sm mc-add-to-cart-btn" onclick="event.stopPropagation(); addToCart('MC-101','Obsidian Flex Antimicrobial Scrubs','سكراب أوبسيديان المضاد للبكتيريا',10700,'assets/medicare_scrubs_hero_1786614154492.png')">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 2 -->
-        <div class="mc-card mc-product-card" data-specialty="medicine" style="cursor:pointer;" onclick="window.location.href='product-detail.html?id=MC-108'">
-          <div class="mc-product-img-wrapper">
-            <img src="assets/medicare_stethoscope_1786614166370.png" alt="Titanium Stethoscope" class="mc-product-img" loading="lazy">
-            <div class="mc-product-badge-group">
-              <span class="mc-badge mc-badge-accent">★ Doctor Choice</span>
-            </div>
-            <button class="mc-wishlist-btn" onclick="event.stopPropagation()" aria-label="Add to Wishlist">♥</button>
-          </div>
-          <div class="mc-product-content">
-            <div class="mc-product-category">Diagnostic Essentials</div>
-            <h3 class="mc-product-title">Titanium Master Precision Stethoscope</h3>
-            <p class="mc-product-desc">Ultra-sensitive acoustic response with ergonomic brushed titanium chestpiece.</p>
-            <div class="mc-product-footer">
-              <div class="mc-price-group">
-                <span class="mc-price-main">19,800 DZD</span>
-                <span class="mc-price-sub">Free Lifetime Calibration</span>
-              </div>
-              <button class="mc-btn mc-btn-primary mc-btn-sm mc-add-to-cart-btn" onclick="event.stopPropagation(); addToCart('MC-108','Titanium Master Precision Stethoscope','سماعة تيتانيوم الدقيقة',19800,'assets/medicare_stethoscope_1786614166370.png')">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 3 -->
-        <div class="mc-card mc-product-card" data-specialty="pharmacy" style="cursor:pointer;" onclick="window.location.href='product-detail.html?id=MC-103'">
-          <div class="mc-product-img-wrapper">
-            <img src="assets/medicare_lab_coat_1786614177321.png" alt="Executive Lab Coat" class="mc-product-img" loading="lazy">
-            <div class="mc-product-badge-group">
-              <span class="mc-badge mc-badge-neutral">Stain Repellent</span>
-            </div>
-            <button class="mc-wishlist-btn" onclick="event.stopPropagation()" aria-label="Add to Wishlist">♥</button>
-          </div>
-          <div class="mc-product-content">
-            <div class="mc-product-category">Executive Apparel</div>
-            <h3 class="mc-product-title">Executive Fluid-Shield Lab Coat</h3>
-            <p class="mc-product-desc">Tailored fit with stain-repellent nano-coating and reinforced tablet pockets.</p>
-            <div class="mc-product-footer">
-              <div class="mc-price-group">
-                <span class="mc-price-main">13,400 DZD</span>
-                <span class="mc-price-sub">Custom Name Embroidery</span>
-              </div>
-              <button class="mc-btn mc-btn-primary mc-btn-sm mc-add-to-cart-btn" onclick="event.stopPropagation(); addToCart('MC-103','Executive Fluid-Shield Lab Coat','معطف مختبر مقاوم للسوائل',13400,'assets/medicare_lab_coat_1786614177321.png')">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 4 -->
-        <div class="mc-card mc-product-card" data-specialty="nursing" style="cursor:pointer;" onclick="window.location.href='product-detail.html?id=MC-110'">
-          <div class="mc-product-img-wrapper">
-            <img src="assets/medicare_footwear_1786615096505.png" alt="Clinical Footwear Clogs" class="mc-product-img" loading="lazy">
-            <div class="mc-product-badge-group">
-              <span class="mc-badge mc-badge-info">Shock Absorbing</span>
-            </div>
-            <button class="mc-wishlist-btn" onclick="event.stopPropagation()" aria-label="Add to Wishlist">♥</button>
-          </div>
-          <div class="mc-product-content">
-            <div class="mc-product-category">Ergonomic Footwear</div>
-            <h3 class="mc-product-title">Obsidian Clinical Cushion Clogs</h3>
-            <p class="mc-product-desc">Liquid-repellent, slip-resistant clogs designed to prevent joint fatigue during long hospital rotations.</p>
-            <div class="mc-product-footer">
-              <div class="mc-price-group">
-                <span class="mc-price-main">9,000 DZD</span>
-                <span class="mc-price-sub">Antibacterial Insole</span>
-              </div>
-              <button class="mc-btn mc-btn-primary mc-btn-sm mc-add-to-cart-btn" onclick="event.stopPropagation(); addToCart('MC-110','Obsidian Clinical Cushion Clogs','قبقاب طبي بمقدمة مغلقة',9000,'assets/medicare_footwear_1786615096505.png')">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-
+      <div id="featured-products-grid" class="mc-component-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+        <!-- Rendered dynamically by renderFeaturedProducts() from MedicareDB -->
       </div>
     </section>
 
@@ -439,76 +434,16 @@
         </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <!-- Bundle 1 -->
-        <div class="mc-bundle-card">
-          <div class="mc-bundle-img-wrapper">
-            <img src="assets/medicare_starter_kit_1786615195273.png" alt="First Year Pharmacy Starter Kit" class="mc-bundle-img">
-            <span class="mc-bundle-save-badge">SAVE 25%</span>
-          </div>
-
-          <div class="mc-bundle-info">
-            <div class="mc-product-category">Pharmacy & Lab Special</div>
-            <h3 class="mc-product-title">1st Year Pharmacy & Chemistry Starter Kit</h3>
-            <p class="mc-product-desc">Includes everything required for practical pharmacy lab work: Executive White Lab Coat, Porcelain Mortar & Pestle, UV Safety Goggles, and Hardcover Clinical Notebook.</p>
-
-            <div class="mc-bundle-items-list">
-              <span class="mc-bundle-item-pill">✓ Tailored Lab Coat</span>
-              <span class="mc-bundle-item-pill">✓ Mortar & Pestle</span>
-              <span class="mc-bundle-item-pill">✓ Safety Goggles</span>
-              <span class="mc-bundle-item-pill">✓ Lab Notebook</span>
-            </div>
-
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-              <div>
-                <span style="font-family: var(--font-family-display); font-size: 1.5rem; font-weight: 800; color: var(--color-primary-900);">$145.00</span>
-                <span style="font-size: 0.9rem; text-decoration: line-through; color: var(--color-neutral-400); margin-left: 0.5rem;">$195.00</span>
-              </div>
-              <button class="mc-btn mc-btn-accent mc-order-bundle-btn" onclick="addToCart('MC-KIT-1','1st Year Pharmacy Starter Kit','حقيبة الصيدلة السنة الأولى',17400,'assets/medicare_starter_kit_1786615195273.png')">
-                Order Bundle (17,400 DZD)
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bundle 2 -->
-        <div class="mc-bundle-card">
-          <div class="mc-bundle-img-wrapper">
-            <img src="assets/medicare_medical_bag_1786614187700.png" alt="Clinical Surgery Starter Kit" class="mc-bundle-img">
-            <span class="mc-bundle-save-badge">SAVE 20%</span>
-          </div>
-
-          <div class="mc-bundle-info">
-            <div class="mc-product-category">Clinical Surgery & Residency</div>
-            <h3 class="mc-product-title">Clinical Surgery & Resident Starter Pack</h3>
-            <p class="mc-product-desc">High-performance bundle featuring Obsidian Flex Scrubs, Titanium Master Stethoscope, and Doctor’s Waterproof Modular Gear Backpack.</p>
-
-            <div class="mc-bundle-items-list">
-              <span class="mc-bundle-item-pill">✓ Obsidian Scrubs</span>
-              <span class="mc-bundle-item-pill">✓ Titanium Stethoscope</span>
-              <span class="mc-bundle-item-pill">✓ Modular Backpack</span>
-              <span class="mc-bundle-item-pill">✓ Penlight + Reflex Hammer</span>
-            </div>
-
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-              <div>
-                <span style="font-family: var(--font-family-display); font-size: 1.5rem; font-weight: 800; color: var(--color-primary-900);">$310.00</span>
-                <span style="font-size: 0.9rem; text-decoration: line-through; color: var(--color-neutral-400); margin-left: 0.5rem;">$399.00</span>
-              </div>
-              <button class="mc-btn mc-btn-accent mc-order-bundle-btn" onclick="addToCart('MC-KIT-2','Clinical Surgery Starter Pack','حقيبة الجراحة السريرية',37200,'assets/medicare_medical_bag_1786614187700.png')">
-                Order Bundle (37,200 DZD)
-              </button>
-            </div>
-          </div>
-        </div>
+      <div id="starter-kits-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Rendered dynamically by renderHomeBundles() from real active bundles -->
       </div>
     </section>
 
     <!-- ==========================================================================
          SECTION 6: TRUST & ASSURANCE BAR (ALGERIA 58 WILAYAS COD)
          ========================================================================== -->
-    <section class="mc-trust-bar mc-reveal">
-      <div class="mc-trust-grid">
+    <section class="mc-trust-bar mc-reveal" id="mc-trust-bar">
+      <div class="mc-trust-grid" id="mc-trust-grid">
         <div class="mc-trust-item">
           <div class="mc-trust-icon">💵</div>
           <div>
@@ -554,47 +489,16 @@
         </div>
       </div>
 
-      <div class="mc-reviews-grid">
-        <!-- Review 1 -->
-        <div class="mc-review-card">
-          <div class="mc-review-stars">★★★★★</div>
-          <p class="mc-review-text">"The Obsidian Flex Scrubs are hands down the best surgical scrubs I've worn in 6 years of residency. Breathable, fluid-resistant, and don't wrinkle after long night shifts."</p>
-          <div class="mc-review-author">
-            <div class="mc-avatar">Dr</div>
-            <div class="mc-author-info">
-              <span class="mc-author-name">Dr. Amine K.</span>
-              <span class="mc-author-role">Resident General Surgeon • Algiers</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Review 2 -->
-        <div class="mc-review-card">
-          <div class="mc-review-stars">★★★★★</div>
-          <p class="mc-review-text">"Ordered the 1st Year Pharmacy Starter Kit. Delivered to Oran in 48 hours with cash on delivery. The lab coat quality and mortar & pestle are exceptional."</p>
-          <div class="mc-review-author">
-            <div class="mc-avatar">SB</div>
-            <div class="mc-author-info">
-              <span class="mc-author-name">Sarah B.</span>
-              <span class="mc-author-role">Pharmacy Student • Oran</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Review 3 -->
-        <div class="mc-review-card">
-          <div class="mc-review-stars">★★★★★</div>
-          <p class="mc-review-text">"The Titanium Stethoscope acoustic clarity is on par with top global brands. Lifetime free calibration in Algeria makes MEDICARE the obvious choice."</p>
-          <div class="mc-review-author">
-            <div class="mc-avatar">Dr</div>
-            <div class="mc-author-info">
-              <span class="mc-author-name">Dr. Yacine M.</span>
-              <span class="mc-author-role">Cardiologist • Constantine</span>
-            </div>
-          </div>
+      <!-- Reviews Grid — dynamically rendered from Supabase by index.js -->
+      <div id="home-reviews-grid" class="mc-reviews-grid">
+        <div class="mc-review-card" style="grid-column:1/-1; text-align:center; padding:3rem 1rem; color:var(--color-neutral-400);">
+          <div style="font-size:2rem; margin-bottom:0.5rem;">💬</div>
+          <div style="font-size:15px; font-weight:700; margin-bottom:0.4rem;">No Reviews Yet</div>
+          <div style="font-size:13px;">Be the first to leave a review on any product! كن أول من يكتب تقييماً.</div>
         </div>
       </div>
     </section>
+
 
     <!-- Community / Newsletter Section -->
     <section class="mc-community-box mc-reveal">
@@ -602,14 +506,15 @@
         <h2 id="community-title" style="font-family: var(--font-family-display); font-size: 2.25rem; font-weight: 800; margin: 0 0 1rem 0;">Join 15,000+ Medical Professionals</h2>
         <p id="community-sub" style="font-size: 1.1rem; color: var(--color-neutral-300); margin: 0 0 1.5rem 0;">Subscribe for VIP student discounts, new product launches, and instant WhatsApp order updates.</p>
 
-        <a id="whatsapp-cta-text" href="https://wa.me/213550000000" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-lg" style="margin-bottom: 1.5rem; display: inline-flex;">
+        <a id="whatsapp-cta-text" href="https://wa.me/213662497253" target="_blank" class="mc-btn mc-btn-whatsapp mc-btn-lg" style="margin-bottom: 1.5rem; display: inline-flex;">
           💬 Join WhatsApp VIP — انضم للمجموعة
         </a>
 
-        <form class="mc-newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed to MEDICARE Newsletter!');">
+        <form class="mc-newsletter-form" id="newsletter-form" onsubmit="handleNewsletterSubmit(event)">
           <input id="newsletter-input" type="email" class="mc-input" placeholder="Enter your email address…" required style="border-radius: var(--radius-md);">
           <button id="subscribe-btn" type="submit" class="mc-btn mc-btn-accent">Subscribe</button>
         </form>
+        <p id="newsletter-msg" style="margin:0.6rem 0 0; font-size:13px; min-height:18px;"></p>
       </div>
     </section>
 
@@ -653,10 +558,10 @@
       <!-- Col 4 -->
       <div class="mc-footer-col">
         <div class="mc-footer-title">Contact & Support</div>
-        <span class="mc-footer-link">📞 Support: +213 550 000 000</span>
-        <span class="mc-footer-link">💬 WhatsApp: +213 550 000 000</span>
-        <span class="mc-footer-link">✉️ Email: support@medicare.dz</span>
-        <span class="mc-footer-link">📍 Algiers & Oran Hubs, Algeria</span>
+        <span class="mc-footer-link">📞 Support: <a href="tel:+213662497253" style="color:inherit;text-decoration:none;">0662 49 72 53</a></span>
+        <span class="mc-footer-link">💬 WhatsApp: <a href="https://wa.me/213662497253" target="_blank" style="color:inherit;text-decoration:none;">0662 49 72 53</a></span>
+        <span class="mc-footer-link">✉️ Email: <a href="mailto:medicare3320@gmail.com" style="color:inherit;text-decoration:none;">medicare3320@gmail.com</a></span>
+        <span class="mc-footer-link">📍 Algérie (توصيل لكافة 58 ولاية)</span>
       </div>
     </div>
 
@@ -674,11 +579,45 @@
   <div id="copy-toast" class="mc-copy-toast">✓ Done!</div>
 
   <!-- WhatsApp Floating Action Button (Mobile) -->
-  <a href="https://wa.me/213550000000?text=Hello%20MEDICARE,%20I%20want%20to%20place%20a%20quick%20order" target="_blank" class="mc-whatsapp-fab" aria-label="WhatsApp Quick Order">💬</a>
+  <a href="https://wa.me/213662497253?text=Hello%20MEDICARE,%20I%20want%20to%20place%20a%20quick%20order" target="_blank" class="mc-whatsapp-fab" aria-label="WhatsApp Quick Order">💬</a>
+
+  <!-- Sticky Shop All FAB — appears after scrolling past hero -->
+  <a href="category.html" id="shop-all-fab" class="mc-shop-all-fab" aria-label="Shop all 48 products">
+    <span>🛍️</span>
+    <span class="mc-shop-all-fab-text">Shop All 48</span>
+    <span>→</span>
+  </a>
+
+  <!-- =====================================================================
+       MOBILE ONLY: Persistent Bottom Navigation Bar
+       ===================================================================== -->
+  <nav id="mob-bottom-nav" class="mc-mob-bottom-nav" aria-label="Main navigation">
+    <!-- Shop is FIRST item for discoverability -->
+    <a href="category.html" class="mc-mob-nav-item" data-tab="shop" style="order:-1;">
+      <span class="mc-mob-nav-icon">🛍️</span>
+      <span class="mc-mob-nav-label" style="font-weight:800;">Shop</span>
+    </a>
+    <a href="index.html" class="mc-mob-nav-item active" data-tab="home" aria-current="page">
+      <span class="mc-mob-nav-icon">🏠</span>
+      <span class="mc-mob-nav-label">Home</span>
+    </a>
+    <button class="mc-mob-nav-item" id="mob-nav-cart" data-tab="cart" aria-label="Shopping cart">
+      <span class="mc-mob-nav-icon" style="position:relative; display:inline-block;">
+        🛒<span id="mob-cart-badge" class="mc-mob-cart-badge" aria-label="items in cart">0</span>
+      </span>
+      <span class="mc-mob-nav-label">Cart</span>
+    </button>
+    <a href="account.html" class="mc-mob-nav-item" data-tab="account">
+      <span class="mc-mob-nav-icon">👤</span>
+      <span class="mc-mob-nav-label">Account</span>
+    </a>
+  </nav>
 
   <!-- Supabase Backend SDK & Client Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
+  <script src="src/i18n.js"></script>
+  <script src="src/product-catalog.js"></script>
   <script src="src/supabase-client.js"></script>
   <script src="src/cart.js"></script>
   <script src="src/account-header.js"></script>

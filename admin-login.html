@@ -30,6 +30,7 @@
   </style>
   <title>Admin Portal Login — MEDICARE</title>
   <meta name="description" content="Isolated security gateway login for MEDICARE store owner and staff members.">
+  <meta name="robots" content="noindex, nofollow">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,21 +62,20 @@
       <!-- Email -->
       <div class="adm-login-group">
         <label class="adm-login-label" for="login-email">Staff Email Address</label>
-        <input type="email" id="login-email" class="adm-login-input" placeholder="e.g. owner@medicare.dz" value="owner@medicare.dz" required>
+        <input type="email" id="login-email" class="adm-login-input" placeholder="your@email.com" autocomplete="email" required>
       </div>
 
       <!-- Password -->
       <div class="adm-login-group">
         <label class="adm-login-label" for="login-password">Password</label>
-        <input type="password" id="login-password" class="adm-login-input" placeholder="••••••••••••" value="medicare2026" required>
+        <input type="password" id="login-password" class="adm-login-input" placeholder="••••••••••••" autocomplete="current-password" required>
       </div>
 
       <div class="adm-login-row">
         <label class="adm-remember-label">
-          <input type="checkbox" id="remember-me" checked style="accent-color:var(--color-primary-500);">
+          <input type="checkbox" id="remember-me" style="accent-color:var(--color-primary-500);">
           <span>Remember session</span>
         </label>
-        <a href="#" class="adm-forgot-link" onclick="openForgotPasswordModal(); return false;">Forgot password?</a>
       </div>
 
       <button type="submit" id="login-submit-btn" class="mc-btn mc-btn-primary mc-btn-lg adm-login-btn">
@@ -84,42 +84,33 @@
 
     </form>
 
-    <!-- Demo Role Pre-fill Selector -->
-    <div class="adm-demo-credentials">
-      <strong style="color:#FFF;">⚡ Quick Demo Login (Select Role):</strong>
-      <div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.5rem;">
-        <button class="adm-demo-role-btn" onclick="fillCredentials('owner@medicare.dz', '👑 Owner (Full Access)')">👑 Owner</button>
-        <button class="adm-demo-role-btn" onclick="fillCredentials('manager@medicare.dz', '💼 Store Manager')">💼 Manager</button>
-        <button class="adm-demo-role-btn" onclick="fillCredentials('handler@medicare.dz', '📦 Order Handler')">📦 Handler</button>
-        <button class="adm-demo-role-btn" onclick="fillCredentials('support@medicare.dz', '🎧 Support & Content')">🎧 Support</button>
-      </div>
-      <div style="font-size:10.5px; color:#64748B; margin-top:0.5rem;" id="selected-role-notice">
-        Currently selected: <strong>👑 Owner (Full Access)</strong>
-      </div>
-    </div>
-
   </div>
 
 
-  <!-- 2FA OTP MODAL -->
-  <div id="modal-2fa" class="adm-modal-overlay" style="display:flex; visibility:hidden; opacity:0; pointer-events:none;" role="dialog">
-    <div class="adm-modal-box" style="max-width:400px; background:#1E293B; color:#FFF; border:1px solid #334155; text-align:center; padding:2rem;">
+  <!-- 2FA VERIFICATION CODE MODAL -->
+  <div id="modal-2fa" class="adm-modal-overlay" style="display:flex; visibility:hidden; opacity:0; pointer-events:none;" role="dialog" aria-modal="true" aria-label="Verification Code">
+    <div class="adm-modal-box" style="max-width:390px; width:100%; background:#1E293B; color:#FFF; border:1px solid #334155; text-align:center; padding:2rem 1.5rem; border-radius:1rem; box-sizing:border-box;">
       <div style="font-size:2.5rem; margin-bottom:0.5rem;">🛡️</div>
-      <h3 style="font-family:var(--font-family-display); font-size:1.3rem; margin:0 0 0.5rem 0;">Two-Factor Authentication (2FA)</h3>
-      <p style="font-size:12.5px; color:#94A3B8; margin:0 0 1rem 0;">Owner security verification required. Enter the 6-digit OTP code sent to your authenticator app.</p>
+      <h3 style="font-family:var(--font-family-display); font-size:1.3rem; margin:0 0 0.5rem 0;">Security Verification</h3>
+      <p style="font-size:13px; color:#94A3B8; margin:0 0 1.25rem 0; line-height:1.5;">
+        Owner access requires additional verification.<br>Enter your 4-digit security code.
+      </p>
 
       <div class="otp-inputs-grid">
-        <input type="text" maxlength="1" class="otp-digit-input" value="1" onkeyup="moveOtp(this, 1)">
-        <input type="text" maxlength="1" class="otp-digit-input" value="2" onkeyup="moveOtp(this, 2)">
-        <input type="text" maxlength="1" class="otp-digit-input" value="3" onkeyup="moveOtp(this, 3)">
-        <input type="text" maxlength="1" class="otp-digit-input" value="4" onkeyup="moveOtp(this, 4)">
-        <input type="text" maxlength="1" class="otp-digit-input" value="5" onkeyup="moveOtp(this, 5)">
-        <input type="text" maxlength="1" class="otp-digit-input" value="6" onkeyup="moveOtp(this, 6)">
+        <input type="password" maxlength="1" class="otp-digit-input" id="otp-1" onkeyup="moveOtp(this, 1)" onfocus="this.select()" inputmode="numeric" autocomplete="off">
+        <input type="password" maxlength="1" class="otp-digit-input" id="otp-2" onkeyup="moveOtp(this, 2)" onfocus="this.select()" inputmode="numeric" autocomplete="off">
+        <input type="password" maxlength="1" class="otp-digit-input" id="otp-3" onkeyup="moveOtp(this, 3)" onfocus="this.select()" inputmode="numeric" autocomplete="off">
+        <input type="password" maxlength="1" class="otp-digit-input" id="otp-4" onkeyup="moveOtp(this, 4)" onfocus="this.select()" inputmode="numeric" autocomplete="off">
       </div>
 
-      <button class="mc-btn mc-btn-primary mc-btn-lg" style="width:100%; margin-top:1rem;" onclick="verifyOtpSubmit()">
-        Verify & Continue ➔
-      </button>
+      <div style="display:flex; gap:0.5rem; margin-top:1.25rem;">
+        <button type="button" class="mc-btn mc-btn-secondary" style="flex:1; border-color:#475569; color:#94A3B8;" onclick="closeOtpModal()">
+          Cancel
+        </button>
+        <button type="button" class="mc-btn mc-btn-primary" style="flex:2;" onclick="verifyOtpSubmit()">
+          Verify & Enter ➔
+        </button>
+      </div>
     </div>
   </div>
 
@@ -129,9 +120,8 @@
   <!-- Supabase Backend SDK & Client Config -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="src/config.js"></script>
+  <script src="src/i18n.js"></script>
   <script src="src/supabase-client.js"></script>
   <script src="src/admin-login.js"></script>
 </body>
 </html>
-
-

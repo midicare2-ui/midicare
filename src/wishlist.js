@@ -12,16 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load wishlist from localStorage (shared key)
   let wishlist = JSON.parse(localStorage.getItem('medicare_wishlist') || '[]');
 
-  // Fallback demo items if localStorage is empty
-  if (wishlist.length === 0) {
-    wishlist = [
-      { id: 'MC-101', name: 'Obsidian Flex Antimicrobial Scrub Set', nameAr: 'طقم سكراب أوبسيديان', price: 10700, img: 'assets/medicare_scrubs_hero_1786614154492.png', specialty: 'Medicine' },
-      { id: 'MC-108', name: 'Titanium Master Precision Stethoscope', nameAr: 'سماعة تيتانيوم', price: 19800, img: 'assets/medicare_stethoscope_1786614166370.png', specialty: 'Diagnostic' },
-      { id: 'MC-103', name: 'Executive Fluid-Shield Lab Coat', nameAr: 'معطف مختبر مقاوم للسوائل', price: 13400, img: 'assets/medicare_lab_coat_1786614177321.png', specialty: 'Lab Coats' },
-      { id: 'MC-110', name: 'Obsidian Clinical Cushion Clogs', nameAr: 'قبقاب طبي بمقدمة مغلقة', price: 9000, img: 'assets/medicare_footwear_1786615096505.png', specialty: 'Footwear' }
-    ];
-  }
-
   function saveWishlist() {
     localStorage.setItem('medicare_wishlist', JSON.stringify(wishlist));
   }
@@ -149,12 +139,16 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ------------------------------------------------------------------
      3. REVIEWS MODAL & INTERACTIVE STAR SELECTOR
      ------------------------------------------------------------------ */
+  let attachedPhotos = []; // Array of base64 data URLs
+
   window.openReviewModal = function() {
     reviewModal?.classList.add('open');
+    document.body.style.overflow = 'hidden';
   };
 
   window.closeReviewModal = function() {
     reviewModal?.classList.remove('open');
+    document.body.style.overflow = '';
   };
 
   if (reviewModal) {
@@ -163,25 +157,74 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && reviewModal?.classList.contains('open')) closeReviewModal();
+  });
+
   window.setRating = function(val) {
-    currentSelectedRating = val;
+    currentSelectedRating = Number(val) || 5;
     const stars = document.querySelectorAll('#interactive-star-picker .star');
     stars.forEach((star, i) => {
-      if (i < val) star.classList.add('selected');
+      if (i < currentSelectedRating) star.classList.add('selected');
       else star.classList.remove('selected');
     });
   };
 
-  window.simulatePhotoUpload = function() {
-    const msg = document.getElementById('rev-photo-preview-msg');
-    if (msg) msg.style.display = 'block';
-    showToast('📷 Photo attached!');
+  function renderPhotoPreviews() {
+    const previewContainer = document.getElementById('rev-photo-previews');
+    if (!previewContainer) return;
+    if (attachedPhotos.length === 0) { previewContainer.innerHTML = ''; return; }
+    previewContainer.innerHTML = attachedPhotos.map((src, index) => `
+      <div class="rev-preview-item">
+        <img src="${src}" alt="Photo ${index + 1}">
+        <button type="button" class="remove-btn" onclick="removeAttachedPhoto(${index})" title="Remove">✕</button>
+      </div>
+    `).join('');
+  }
+
+  window.removeAttachedPhoto = function(index) {
+    attachedPhotos.splice(index, 1);
+    renderPhotoPreviews();
   };
+
+  function processImageFiles(files) {
+    if (!files || files.length === 0) return;
+    const maxFiles = 4, maxSize = 5 * 1024 * 1024;
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) { showToast('⚠️ Images only (JPG, PNG, WEBP)'); return; }
+      if (file.size > maxSize) { showToast(`⚠️ "${file.name}" exceeds 5MB`); return; }
+      if (attachedPhotos.length >= maxFiles) { showToast(`⚠️ Max ${maxFiles} photos`); return; }
+      const reader = new FileReader();
+      reader.onload = e => { attachedPhotos.push(e.target.result); renderPhotoPreviews(); showToast(`📷 "${file.name}" attached!`); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  window.handlePhotoSelect = function(e) {
+    processImageFiles(e.target.files);
+    e.target.value = '';
+  };
+
+  window.openReviewPhotoLightbox = function(src) {
+    const lb = document.createElement('div');
+    lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:1rem;';
+    lb.innerHTML = `<img src="${src}" style="max-width:92vw;max-height:90vh;border-radius:12px;box-shadow:0 25px 60px rgba(0,0,0,0.6);object-fit:contain;">`;
+    lb.addEventListener('click', () => lb.remove());
+    document.body.appendChild(lb);
+  };
+
+  // Drag & drop on dropzone
+  const dropzone = document.getElementById('rev-photo-dropzone');
+  if (dropzone) {
+    ['dragenter','dragover'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover'); }, false));
+    ['dragleave','drop'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover'); }, false));
+    dropzone.addEventListener('drop', e => { if (e.dataTransfer?.files) processImageFiles(e.dataTransfer.files); }, false);
+  }
 
   window.handleReviewSubmit = function(e) {
     e.preventDefault();
     const author = document.getElementById('rev-author')?.value.trim();
-    const role   = document.getElementById('rev-role')?.value;
+    const role   = document.getElementById('rev-role')?.value || 'Resident Physician';
     const title  = document.getElementById('rev-headline')?.value.trim();
     const body   = document.getElementById('rev-body')?.value.trim();
 
@@ -192,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const container = document.getElementById('reviews-list-container');
     const starsStr = '★'.repeat(currentSelectedRating) + '☆'.repeat(5 - currentSelectedRating);
+    const currentPhotos = [...attachedPhotos];
 
     const newReviewHTML = `
       <div class="rev-card" style="animation: fadeIn 0.4s ease;">
@@ -205,6 +249,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">${starsStr}</div>
         <h4 style="margin:0 0 0.35rem 0; font-family:var(--font-family-display); font-size:15px; color:var(--color-neutral-900);">${title}</h4>
         <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">${body}</p>
+        ${currentPhotos.length > 0 ? `
+          <div class="pdp-review-photos" style="margin-bottom:0.75rem;">
+            ${currentPhotos.map(p => `<img src="${p}" alt="Review Photo" class="pdp-review-photo-thumb" onclick="openReviewPhotoLightbox('${p}')" title="Click to view">`).join('')}
+          </div>
+        ` : ''}
         <div style="display:flex; justify-content:flex-end;">
           <button class="rev-helpful-btn" onclick="voteHelpful(this, 1)">
             👍 Helpful (<span class="vote-count">1</span>)
@@ -217,16 +266,29 @@ document.addEventListener('DOMContentLoaded', () => {
       container.insertAdjacentHTML('afterbegin', newReviewHTML);
     }
 
+    const currentProductId = (window.productData && window.productData.id)
+      || new URLSearchParams(window.location.search).get('id')
+      || null;
+
     if (window.MedicareDB && typeof window.MedicareDB.submitReview === 'function') {
       window.MedicareDB.submitReview({
         customer_name: author,
         specialty_tag: role,
         rating: currentSelectedRating,
-        comment: body,
-        product_id: 'MC-101'
-      });
+        comment: `${title}: ${body}`,
+        product_id: currentProductId,
+        photos: currentPhotos
+      }).catch(err => console.warn('[Wishlist] submitReview failed:', err));
+    } else if (currentProductId) {
+      const localReviews = JSON.parse(localStorage.getItem('medicare_reviews_db') || '[]');
+      localReviews.unshift({ id: 'REV-' + Date.now(), customer_name: author, specialty_tag: role, rating: currentSelectedRating, comment: `${title}: ${body}`, product_id: currentProductId, is_approved: true, created_at: new Date().toISOString(), photos: currentPhotos });
+      localStorage.setItem('medicare_reviews_db', JSON.stringify(localReviews));
     }
 
+    e.target.reset();
+    attachedPhotos = [];
+    renderPhotoPreviews();
+    window.setRating(5);
     closeReviewModal();
     showToast('🎉 Review submitted successfully!');
   };
@@ -323,8 +385,132 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ------------------------------------------------------------------
+     7. DYNAMIC REVIEWS LOADING & RENDERING
+     ------------------------------------------------------------------ */
+  async function loadAndRenderReviews(sortBy) {
+    const overviewEl  = document.getElementById('rev-overview-card');
+    const listEl      = document.getElementById('reviews-list-container');
+    const showingEl   = document.getElementById('rev-showing-label');
+
+    let reviews = [];
+    try {
+      if (window.MedicareDB && typeof window.MedicareDB.getReviews === 'function') {
+        const res = await window.MedicareDB.getReviews({ limit: 50 });
+        if (res && Array.isArray(res)) reviews = res;
+        else if (res && Array.isArray(res.data)) reviews = res.data;
+      }
+    } catch (e) {
+      console.warn('[Wishlist] Could not load reviews from Supabase:', e);
+    }
+
+    // Fallback: check localStorage
+    if (reviews.length === 0) {
+      reviews = JSON.parse(localStorage.getItem('medicare_reviews_db') || '[]');
+    }
+
+    // Apply sort
+    const sort = sortBy || (document.getElementById('review-sort-select')?.value || 'recent');
+    if (sort === 'recent')  reviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    if (sort === 'highest') reviews.sort((a, b) => (b.rating || 5) - (a.rating || 5));
+    if (sort === 'lowest')  reviews.sort((a, b) => (a.rating || 5) - (b.rating || 5));
+    if (sort === 'helpful') reviews.sort((a, b) => (b.helpful_count || 0) - (a.helpful_count || 0));
+
+    // Render overview histogram
+    if (overviewEl) {
+      if (reviews.length === 0) {
+        overviewEl.innerHTML = `
+          <div style="text-align:center; padding:2rem; color:var(--color-neutral-400);">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">⭐</div>
+            <div style="font-size:14px; margin-bottom:1rem;">No reviews yet — be the first!</div>
+            <button class="mc-btn mc-btn-accent" onclick="openReviewModal()">✍️ Write a Review</button>
+          </div>`;
+      } else {
+        const total = reviews.length;
+        const avg   = (reviews.reduce((s, r) => s + (r.rating || 5), 0) / total).toFixed(1);
+        const stars = [5,4,3,2,1].map(s => {
+          const cnt = reviews.filter(r => Math.round(r.rating || 5) === s).length;
+          const pct = total > 0 ? Math.round((cnt / total) * 100) : 0;
+          return `<div class="pdp-histo-row"><span>${s} Stars</span><div class="pdp-histo-bar-bg"><div class="pdp-histo-bar-fill" style="width:${pct}%"></div></div><span>${pct}% (${cnt})</span></div>`;
+        }).join('');
+        const starsFill = Math.round(avg);
+        const starsDisplay = '★'.repeat(starsFill) + '☆'.repeat(5 - starsFill);
+        overviewEl.innerHTML = `
+          <div class="rev-score-box">
+            <div class="rev-score-big">${avg}</div>
+            <div class="rev-score-stars">${starsDisplay}</div>
+            <div style="font-size:12.5px; color:var(--color-neutral-500); font-weight:600;">Based on ${total} review${total !== 1 ? 's' : ''}</div>
+          </div>
+          <div class="pdp-review-histogram">${stars}</div>
+          <div style="text-align:center;">
+            <button class="mc-btn mc-btn-accent" onclick="openReviewModal()">✍️ Write a Review — أضف تقييمك</button>
+          </div>`;
+      }
+    }
+
+    // Render review cards
+    if (showingEl) {
+      showingEl.textContent = reviews.length > 0 ? `Showing ${reviews.length} Review${reviews.length !== 1 ? 's' : ''}` : '';
+    }
+
+    if (listEl) {
+      if (reviews.length === 0) {
+        listEl.innerHTML = `
+          <div class="rev-empty-state" style="text-align:center; padding:3rem 1rem; color:var(--color-neutral-400);">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">💬</div>
+            <div style="font-size:16px; font-weight:700; margin-bottom:0.5rem;">No Reviews Yet</div>
+            <div style="font-size:13px;">Be the first to share your experience! كن أول من يكتب تقييماً.</div>
+            <button class="mc-btn mc-btn-accent mc-btn-sm" style="margin-top:1.25rem;" onclick="openReviewModal()">✍️ Write a Review</button>
+          </div>`;
+      } else {
+        listEl.innerHTML = reviews.map(r => {
+          const rating     = r.rating || 5;
+          const starsHtml  = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+          const authorName = r.customer_name || r.author || 'Verified Customer';
+          const role       = r.specialty_tag || r.role || 'Verified Buyer';
+          const dateFmt    = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { year:'numeric', month:'long', day:'numeric' }) : 'Recently';
+          const comment    = r.comment || r.body || '';
+          const helpful    = r.helpful_count || 0;
+          const photosHtml = (r.photos && r.photos.length > 0)
+            ? `<div class="pdp-review-photos" style="margin-bottom:0.75rem;">${r.photos.map(p => `<img src="${p}" alt="Review Photo" class="pdp-review-photo-thumb">`).join('')}</div>`
+            : '';
+          const ownerReply = r.owner_reply
+            ? `<div class="rev-owner-reply-box">
+                <div class="rev-owner-title"><span>💬 Official Response from MEDICARE Team</span></div>
+                <div>${r.owner_reply}</div>
+               </div>`
+            : '';
+          return `
+            <div class="rev-card">
+              <div class="rev-user-header">
+                <div class="rev-user-name">
+                  <span>${authorName}</span>
+                  <span class="rev-verified-tag">✓ ${role}</span>
+                </div>
+                <span style="font-size:12px; color:var(--color-neutral-400);">${dateFmt}</span>
+              </div>
+              <div style="color:var(--color-accent-500); margin-bottom:0.35rem; font-size:14px;">${starsHtml}</div>
+              <p style="font-size:13.5px; color:var(--color-neutral-700); line-height:1.6; margin:0 0 0.875rem 0;">${comment}</p>
+              ${photosHtml}
+              <div style="display:flex; justify-content:flex-end;">
+                <button class="rev-helpful-btn" onclick="voteHelpful(this, ${helpful})">
+                  👍 Helpful (<span class="vote-count">${helpful}</span>)
+                </button>
+              </div>
+              ${ownerReply}
+            </div>`;
+        }).join('');
+      }
+    }
+  }
+
+  // Wire sort dropdown
+  const sortSelect = document.getElementById('review-sort-select');
+  if (sortSelect) sortSelect.addEventListener('change', e => loadAndRenderReviews(e.target.value));
+
   // Initial render
   renderWishlist();
   renderCart();
+  loadAndRenderReviews();
 
 });
