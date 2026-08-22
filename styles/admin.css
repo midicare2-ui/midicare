@@ -1636,3 +1636,33 @@
   }
 }
 
+/* ==========================================================================
+   RTL LAYOUT & ARABIC TYPOGRAPHY SUPPORT
+   ========================================================================== */
+html[dir="rtl"],
+html[dir="rtl"] .admin-body {
+  font-family: 'IBM Plex Sans Arabic', 'Readex Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html[dir="rtl"] .adm-sidebar {
+  border-right: none;
+  border-left: 1px solid var(--adm-sidebar-border);
+}
+
+html[dir="rtl"] .adm-nav-item span:first-child {
+  text-align: right;
+}
+
+html[dir="rtl"] .adm-header-title-wrap {
+  text-align: right;
+}
+
+html[dir="rtl"] .adm-header-actions {
+  flex-direction: row;
+}
+
+html[dir="rtl"] .adm-kpi-trend {
+  flex-direction: row-reverse;
+}
+
+

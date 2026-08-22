@@ -121,6 +121,155 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ------------------------------------------------------------------
+     9. THEME & TRILINGUAL LANGUAGE (AR 🇩🇿 / EN 🇬🇧 / FR 🇫🇷) TOGGLE
+     ------------------------------------------------------------------ */
+  const savedTheme = localStorage.getItem('medicare_admin_theme') || 'light';
+  document.documentElement.setAttribute('data-admin-theme', savedTheme);
+
+  window.toggleAdminTheme = function() {
+    const current = document.documentElement.getAttribute('data-admin-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-admin-theme', next);
+    localStorage.setItem('medicare_admin_theme', next);
+    showToast(next === 'dark' ? '🌙 تم تفعيل الوضع الليلي (Dark Mode)' : '☀️ تم تفعيل الوضع الفاتح (Light Mode)');
+  };
+
+  const ADMIN_I18N = {
+    ar: {
+      toast: '🇩🇿 تم التبديل إلى اللغة العربية (RTL)',
+      mainControl: 'التحكم الرئيسي',
+      storeMgmt: 'إدارة المتجر',
+      secAccess: 'الأمان والصلاحيات',
+      configSettings: 'الإعدادات والتهيئة',
+      dashboard: '📊 لوحة التحكم',
+      orders: '📦 إدارة الطلبات',
+      products: '👕 المنتجات',
+      inventory: '🏬 المخزون والمقاسات',
+      customers: '👥 دليل العملاء',
+      categories: '🏷️ الفئات والتخصصات',
+      coupons: '🎟️ كوبونات الخصم',
+      bundles: '🎁 العروض والباقات',
+      reviews: '✍️ مراجعات وتقييمات',
+      staff: '🔐 طاقم العمل والصلاحيات',
+      audit: '📜 سجل النشاطات',
+      homepage: '🖼️ محتوى الواجهة (CMS)',
+      delivery: '🚚 58 ولاية وأسعار الشحن',
+      reports: '📈 التقارير والمبيعات',
+      addProduct: '+ إضافة منتج جديد',
+      viewStorefront: '🏪 عرض المتجر للعملاء',
+      logout: '🚪 تسجيل الخروج'
+    },
+    en: {
+      toast: '🇬🇧 Switched to English (LTR)',
+      mainControl: 'MAIN CONTROL',
+      storeMgmt: 'STORE MANAGEMENT',
+      secAccess: 'SECURITY & ACCESS',
+      configSettings: 'CONFIG & SETTINGS',
+      dashboard: '📊 Dashboard',
+      orders: '📦 Orders',
+      products: '👕 Products',
+      inventory: '🏬 Inventory & Variants',
+      customers: '👥 Customers',
+      categories: '🏷️ Categories & Specialties',
+      coupons: '🎟️ Discount Coupons',
+      bundles: '🎁 Bundles & Offers',
+      reviews: '✍️ Reviews Moderation',
+      staff: '🔐 Staff & Permissions',
+      audit: '📜 Audit Activity Log',
+      homepage: '🖼️ Homepage CMS',
+      delivery: '🚚 58 Wilayas & Fees',
+      reports: '📈 Analytics & Reports',
+      addProduct: '+ Add Product',
+      viewStorefront: '🏪 View Storefront',
+      logout: '🚪 Logout'
+    },
+    fr: {
+      toast: '🇫🇷 Changé en Français (LTR)',
+      mainControl: 'CONTRÔLE PRINCIPAL',
+      storeMgmt: 'GESTION DU MAGASIN',
+      secAccess: 'SÉCURITÉ & ACCÈS',
+      configSettings: 'CONFIGURATION',
+      dashboard: '📊 Tableau de Bord',
+      orders: '📦 Commandes',
+      products: '👕 Produits',
+      inventory: '🏬 Stock & Variantes',
+      customers: '👥 Clients',
+      categories: '🏷️ Catégories & Spécialités',
+      coupons: '🎟️ Coupons de Réduction',
+      bundles: '🎁 Packs & Offres',
+      reviews: '✍️ Modération des Avis',
+      staff: '🔐 Équipe & Permissions',
+      audit: '📜 Journal d\'Audit',
+      homepage: '🖼️ CMS Page d\'Accueil',
+      delivery: '🚚 58 Wilayas & Tarifs',
+      reports: '📈 Rapports & Ventes',
+      addProduct: '+ Ajouter un Produit',
+      viewStorefront: '🏪 Voir la Boutique',
+      logout: '🚪 Déconnexion'
+    }
+  };
+
+  function applyAdminLanguage(lang) {
+    const isRTL = (lang === 'ar');
+    document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
+    localStorage.setItem('medicare_lang', lang);
+
+    const dict = ADMIN_I18N[lang] || ADMIN_I18N.en;
+
+    // Update Sidebar Group Labels
+    const groupLabels = document.querySelectorAll('.adm-nav-label');
+    if (groupLabels.length >= 4) {
+      groupLabels[0].textContent = dict.mainControl;
+      groupLabels[1].textContent = dict.storeMgmt;
+      groupLabels[2].textContent = dict.secAccess;
+      groupLabels[3].textContent = dict.configSettings;
+    }
+
+    // Update Nav buttons text
+    const setNavText = (modId, text) => {
+      const btn = document.querySelector(`button[onclick*="'${modId}'"]`) || document.querySelector(`button[onclick*='"${modId}"']`);
+      if (btn) {
+        const span = btn.querySelector('span:first-child');
+        if (span) span.textContent = text;
+      }
+    };
+
+    setNavText('mod-dashboard', dict.dashboard);
+    setNavText('mod-orders', dict.orders);
+    setNavText('mod-products', dict.products);
+    setNavText('mod-inventory', dict.inventory);
+    setNavText('mod-customers', dict.customers);
+    setNavText('mod-categories', dict.categories);
+    setNavText('mod-coupons', dict.coupons);
+    setNavText('mod-bundles', dict.bundles);
+    setNavText('mod-reviews', dict.reviews);
+    setNavText('mod-staff', dict.staff);
+    setNavText('mod-audit', dict.audit);
+    setNavText('mod-homepage', dict.homepage);
+    setNavText('mod-delivery', dict.delivery);
+    setNavText('mod-reports', dict.reports);
+
+    // Update Add Product button
+    const addBtn = document.querySelector('.adm-header-add-btn span');
+    if (addBtn) addBtn.textContent = dict.addProduct;
+  }
+
+  window.toggleAdminLanguage = function() {
+    const currentLang = localStorage.getItem('medicare_lang') || 'en';
+    const nextLang = currentLang === 'ar' ? 'en' : (currentLang === 'en' ? 'fr' : 'ar');
+    applyAdminLanguage(nextLang);
+    const dict = ADMIN_I18N[nextLang] || ADMIN_I18N.en;
+    showToast(dict.toast);
+  };
+
+  // Initialize saved language on load
+  const initialSavedLang = localStorage.getItem('medicare_lang') || 'en';
+  if (initialSavedLang !== 'en') {
+    applyAdminLanguage(initialSavedLang);
+  }
+
+  /* ------------------------------------------------------------------
      4. PERMISSION GUARD ENGINE & DYNAMIC SIDEBAR
      ------------------------------------------------------------------ */
   function hasPermission(moduleKey) {
