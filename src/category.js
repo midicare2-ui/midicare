@@ -282,8 +282,50 @@ function getLiveCatalog() {
     ? [...window.PRODUCT_CATALOG]
     : (typeof require !== 'undefined' ? [...require('./product-catalog.js').PRODUCT_CATALOG] : []);
 
+  // ── أولاً: دمج منتجات localStorage (Admin-added products) — تأخذ الأولوية
+  try {
+    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    customProds.forEach(cp => {
+      const primaryImage = (Array.isArray(cp.images) && cp.images.length > 0 && cp.images[0])
+        ? cp.images[0]
+        : (typeof cp.images === 'string' && cp.images ? cp.images : (cp.img || ''));
+
+      const normalized = {
+        id:           cp.id || cp.sku,
+        name:         cp.name || '',
+        name_ar:      cp.name_ar || cp.name || '',
+        category:     cp.category || 'Scrubs',
+        specialty:    cp.specialty || 'medicine',
+        price:        Number(cp.price) || 0,
+        originalPrice: cp.original_price ? Number(cp.original_price) : (cp.originalPrice || null),
+        rating:       Number(cp.rating) || 5,
+        reviews:      Number(cp.reviews_count ?? cp.reviews) || 0,
+        stock:        Number(cp.stock) || 0,
+        material:     cp.material || '',
+        brand:        cp.brand || 'medicare',
+        badge:        cp.badge || '',
+        colors:       Array.isArray(cp.colors) ? cp.colors : [],
+        sizes:        Array.isArray(cp.sizes) ? cp.sizes : ['S','M','L','XL'],
+        img:          primaryImage,
+        img2:         (Array.isArray(cp.images) && cp.images.length > 1) ? cp.images[1] : (cp.img2 || null),
+        images:       (Array.isArray(cp.images) && cp.images.length > 0) ? cp.images : [primaryImage].filter(Boolean),
+        isBestSeller: cp.is_bestseller || cp.isBestSeller || false,
+        isNew:        cp.is_new || cp.isNew || false,
+        // حفظ باقي الحقول
+        ...Object.fromEntries(Object.entries(cp).filter(([k]) => !['id','name','name_ar','category','specialty','price','original_price','originalPrice','rating','reviews_count','reviews','stock','material','brand','badge','colors','sizes','images','img','img2','is_bestseller','isBestSeller','is_new','isNew'].includes(k)))
+      };
+
+      const idx = base.findIndex(p => String(p.id) === String(normalized.id));
+      if (idx >= 0) {
+        base[idx] = { ...base[idx], ...normalized }; // تحديث المنتج الموجود
+      } else {
+        base.unshift(normalized); // إضافة منتج جديد في البداية
+      }
+    });
+  } catch (e) { console.warn('[Category] Error merging localStorage products:', e); }
+
   // ── Merge Supabase products (fetched async on init)
-  // Products from Supabase take precedence over static catalog for same id
+  // Supabase تحدّث المنتجات الموجودة فقط بدون إزالة المخصصة
   if (_supabaseProducts && _supabaseProducts.length > 0) {
     _supabaseProducts.forEach(sp => {
       const idx = base.findIndex(p => String(p.id) === String(sp.id));
@@ -291,6 +333,7 @@ function getLiveCatalog() {
         id:          sp.id,
         name:        sp.name,
         name_ar:     sp.name_ar || sp.name,
+        category:    sp.category || 'Scrubs',
         specialty:   sp.specialty,
         price:       Number(sp.price),
         originalPrice: sp.original_price ? Number(sp.original_price) : null,
@@ -315,44 +358,6 @@ function getLiveCatalog() {
       }
     });
   }
-
-  // ── Merge localStorage custom products (Admin-added when Supabase was offline)
-  try {
-    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
-    customProds.forEach(cp => {
-      if (!base.some(p => String(p.id) === String(cp.id))) {
-        const primaryImage = (Array.isArray(cp.images) && cp.images.length > 0 && cp.images[0])
-          ? cp.images[0]
-          : (typeof cp.images === 'string' && cp.images ? cp.images : (cp.img || ''));
-
-        // Normalize same as Supabase products to ensure img, reviews etc. are mapped correctly
-        const normalized = {
-          id:           cp.id || cp.sku,
-          name:         cp.name || '',
-          name_ar:      cp.name_ar || cp.name || '',
-          specialty:    cp.specialty || '',
-          price:        Number(cp.price) || 0,
-          originalPrice: cp.original_price ? Number(cp.original_price) : (cp.originalPrice || null),
-          rating:       Number(cp.rating) || 5,
-          reviews:      Number(cp.reviews_count ?? cp.reviews) || 0,
-          stock:        Number(cp.stock) || 0,
-          material:     cp.material || '',
-          brand:        cp.brand || 'medicare',
-          badge:        cp.badge || '',
-          colors:       Array.isArray(cp.colors) ? cp.colors : [],
-          sizes:        Array.isArray(cp.sizes) ? cp.sizes : ['S','M','L','XL'],
-          img:          primaryImage,
-          img2:         (Array.isArray(cp.images) && cp.images.length > 1) ? cp.images[1] : (cp.img2 || null),
-          images:       (Array.isArray(cp.images) && cp.images.length > 0) ? cp.images : [primaryImage],
-          isBestSeller: cp.is_bestseller || cp.isBestSeller || false,
-          isNew:        cp.is_new || cp.isNew || false,
-          // Preserve all other fields (features, specs, etc.)
-          ...Object.fromEntries(Object.entries(cp).filter(([k]) => !['id','name','name_ar','specialty','price','original_price','originalPrice','rating','reviews_count','reviews','stock','material','brand','badge','colors','sizes','images','img','img2','is_bestseller','isBestSeller','is_new','isNew'].includes(k)))
-        };
-        base.unshift(normalized);
-      }
-    });
-  } catch (e) {}
 
   // ── Apply stock overrides
   const overrides = JSON.parse(localStorage.getItem('medicare_stock_overrides') || '{}');
@@ -595,6 +600,13 @@ function getCategoryStoredBundles() {
 }
 
 function getProductFromAnyCatalog(id) {
+  // أولاً: تحقق من المنتجات المضافة يدوياً (localStorage) — هذه تشمل منتجات الأدمن
+  try {
+    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    const found = customProds.find(p => String(p.id) === String(id) || String(p.sku) === String(id));
+    if (found) return found;
+  } catch(e) {}
+
   if (window.getProductById && typeof window.getProductById === 'function') {
     const p = window.getProductById(id);
     if (p) return p;
@@ -602,7 +614,12 @@ function getProductFromAnyCatalog(id) {
   if (window.PRODUCT_CATALOG_MAP && window.PRODUCT_CATALOG_MAP[id]) {
     return window.PRODUCT_CATALOG_MAP[id];
   }
-  return CATALOG.find(p => p.id === id) || null;
+  // بحث في _supabaseProducts أيضاً
+  if (_supabaseProducts && _supabaseProducts.length > 0) {
+    const sp = _supabaseProducts.find(p => String(p.id) === String(id));
+    if (sp) return sp;
+  }
+  return CATALOG.find(p => String(p.id) === String(id)) || null;
 }
 
 function renderCategoryBundles() {
@@ -1212,10 +1229,25 @@ window.addEventListener('medicare_stock_updated', () => {
 });
 window.addEventListener('medicare_products_updated', () => {
   applyFilters();
+  renderCategoryBundles();
 });
 window.addEventListener('storage', (e) => {
   if (e.key === 'medicare_stock_overrides' || e.key === 'medicare_custom_products') {
     applyFilters();
+    renderCategoryBundles();
   }
 });
+
+// ── BroadcastChannel: استقبال تحديثات المنتجات من الأدمن فوراً (cross-tab)
+try {
+  const _productsBc = new BroadcastChannel('medicare_products_channel');
+  _productsBc.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'product_updated') {
+      // إعادة تحميل المنتجات وتحديث الصفحة فوراً بدون refresh
+      applyFilters();
+      renderCategoryBundles();
+      showToast('🔄 تم تحديث قائمة المنتجات');
+    }
+  });
+} catch(e) {}
 

@@ -58,18 +58,47 @@
 
     /* ---- PRODUCTS ---- */
     async getProducts(options = {}) {
-      const data = await sbQuery('products', q => {
-        let query = q.select('*').order('created_at', { ascending: false });
-        if (options.specialty && options.specialty !== 'all') query = query.eq('specialty', options.specialty);
-        if (options.badge) query = query.eq('badge', options.badge);
-        if (options.limit) query = query.limit(options.limit);
-        return query;
+      let remoteData = [];
+      try {
+        const data = await sbQuery('products', q => {
+          let query = q.select('*').order('created_at', { ascending: false });
+          if (options.specialty && options.specialty !== 'all') query = query.eq('specialty', options.specialty);
+          if (options.badge) query = query.eq('badge', options.badge);
+          if (options.limit) query = query.limit(options.limit);
+          return query;
+        });
+        if (data && Array.isArray(data)) remoteData = data;
+      } catch (e) {
+        console.warn('[MedicareDB] getProducts remote query error:', e);
+      }
+
+      // Merge localStorage custom products
+      let localData = [];
+      try {
+        localData = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+      } catch (e) {}
+
+      const prodsMap = new Map();
+      remoteData.forEach(p => {
+        if (p && p.id) prodsMap.set(String(p.id), p);
       });
-      if (data && data.length > 0) return data;
-      // Fallback
-      let items = [...getFallbackProducts()];
-      if (options.specialty && options.specialty !== 'all') items = items.filter(p => p.specialty === options.specialty);
-      if (options.limit) items = items.slice(0, options.limit);
+      localData.forEach(p => {
+        if (p && p.id && !prodsMap.has(String(p.id))) {
+          prodsMap.set(String(p.id), p);
+        }
+      });
+
+      let items = Array.from(prodsMap.values());
+      if (items.length === 0) {
+        items = [...getFallbackProducts()];
+      }
+
+      if (options.specialty && options.specialty !== 'all') {
+        items = items.filter(p => p.specialty === options.specialty);
+      }
+      if (options.limit) {
+        items = items.slice(0, options.limit);
+      }
       return items;
     },
 
@@ -491,17 +520,20 @@
 
     async updateOrderStatus(orderId, newStatus) {
       const cleanId = String(orderId).replace(/^#/, '').trim();
+      const nowIso = new Date().toISOString();
       if (_isLive && supabase) {
         try {
           const { error } = await supabase.from('orders').update({
             status: newStatus,
-            updated_at: new Date().toISOString()
+            status_updated_at: nowIso,
+            updated_at: nowIso
           }).eq('order_number', cleanId);
 
           if (error) {
             await supabase.from('orders').update({
               status: newStatus,
-              updated_at: new Date().toISOString()
+              status_updated_at: nowIso,
+              updated_at: nowIso
             }).eq('id', cleanId);
           }
         } catch (e) {
@@ -511,12 +543,67 @@
 
       // Update localStorage
       const localOrders = JSON.parse(localStorage.getItem('medicare_orders_db') || '[]');
-      const order = localOrders.find(o => o.id === cleanId || o.order_number === cleanId);
+      const order = localOrders.find(o => String(o.id || '').replace(/^#/, '') === cleanId || String(o.order_number || '').replace(/^#/, '') === cleanId);
       if (order) {
         order.status = newStatus;
+        order.status_updated_at = nowIso;
+        order.updated_at = nowIso;
         localStorage.setItem('medicare_orders_db', JSON.stringify(localOrders));
       }
       return true;
+    },
+
+    async deleteOrder(orderId) {
+      const cleanId = String(orderId).replace(/^#/, '').trim();
+      if (_isLive && supabase) {
+        try {
+          const { error } = await supabase.from('orders').delete().eq('order_number', cleanId);
+          if (error) {
+            await supabase.from('orders').delete().eq('id', cleanId);
+          }
+        } catch (e) {
+          console.warn('[MedicareDB] deleteOrder Supabase error:', e);
+        }
+      }
+
+      // Remove from localStorage
+      try {
+        const localOrders = JSON.parse(localStorage.getItem('medicare_orders_db') || '[]');
+        const filtered = localOrders.filter(o => {
+          const oNum = String(o.order_number || o.id || '').replace(/^#/, '').trim();
+          return oNum !== cleanId && o.id !== cleanId && o.order_number !== cleanId;
+        });
+        localStorage.setItem('medicare_orders_db', JSON.stringify(filtered));
+      } catch (e) {
+        console.warn('[MedicareDB] deleteOrder localStorage error:', e);
+      }
+      return true;
+    },
+
+    async cleanupExpiredOrders(maxAgeHours = 24) {
+      const maxAgeMs = maxAgeHours * 60 * 60 * 1000;
+      const now = Date.now();
+      let cleanedCount = 0;
+      try {
+        const allOrders = await this.getOrders();
+        for (const order of allOrders) {
+          const status = (order.status || '').toLowerCase();
+          if (status === 'delivered' || status === 'cancelled') {
+            const timestamp = order.status_updated_at || order.updated_at || order.created_at;
+            const refTime = timestamp ? new Date(timestamp).getTime() : 0;
+            if (refTime > 0 && (now - refTime) >= maxAgeMs) {
+              const orderId = order.order_number || order.id;
+              if (orderId) {
+                await this.deleteOrder(orderId);
+                cleanedCount++;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[MedicareDB] cleanupExpiredOrders error:', e);
+      }
+      return cleanedCount;
     },
 
     /* ---- REVIEWS ---- */

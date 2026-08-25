@@ -1013,11 +1013,16 @@ document.addEventListener('DOMContentLoaded', () => {
   let allCustomerRecords = [];
 
   async function loadAndRenderOrders() {
-    if (window.MedicareDB && typeof window.MedicareDB.getOrders === 'function') {
+    if (window.MedicareDB) {
       try {
-        allAdminOrders = await window.MedicareDB.getOrders();
+        if (typeof window.MedicareDB.cleanupExpiredOrders === 'function') {
+          await window.MedicareDB.cleanupExpiredOrders(24);
+        }
+        if (typeof window.MedicareDB.getOrders === 'function') {
+          allAdminOrders = await window.MedicareDB.getOrders();
+        }
       } catch (e) {
-        console.warn('[Admin] Failed to fetch orders from MedicareDB:', e);
+        console.warn('[Admin] Failed to fetch orders or cleanup from MedicareDB:', e);
       }
     }
     
@@ -1033,6 +1038,21 @@ document.addEventListener('DOMContentLoaded', () => {
     updateOrderTabCounters();
     updateSidebarBadges();
   }
+
+  // Periodic automatic cleanup of Delivered / Cancelled orders older than 24h
+  setInterval(async () => {
+    try {
+      if (window.MedicareDB && typeof window.MedicareDB.cleanupExpiredOrders === 'function') {
+        const cleaned = await window.MedicareDB.cleanupExpiredOrders(24);
+        if (cleaned > 0) {
+          console.log(`[Auto-Cleanup] Cleaned ${cleaned} delivered/cancelled orders (>24h).`);
+          await loadAndRenderOrders();
+        }
+      }
+    } catch (e) {
+      console.warn('[Auto-Cleanup] Interval error:', e);
+    }
+  }, 10 * 60 * 1000); // every 10 minutes
 
   function updateDashboardKPIs() {
     const orders = Array.isArray(allAdminOrders) ? allAdminOrders : [];
@@ -1115,7 +1135,8 @@ document.addEventListener('DOMContentLoaded', () => {
       pending: 0,
       preparing: 0,
       shipped: 0,
-      delivered: 0
+      delivered: 0,
+      cancelled: 0
     };
     orders.forEach(o => {
       const s = (o.status || '').toLowerCase();
@@ -1123,6 +1144,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (s === 'preparing' || s === 'confirmed') counts.preparing++;
       else if (s === 'shipped') counts.shipped++;
       else if (s === 'delivered') counts.delivered++;
+      else if (s === 'cancelled') counts.cancelled++;
     });
 
     const setBtn = (id, label, count) => {
@@ -1134,6 +1156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setBtn('btn-filter-order-preparing', 'Preparing', counts.preparing);
     setBtn('btn-filter-order-shipped', 'Shipped', counts.shipped);
     setBtn('btn-filter-order-delivered', 'Delivered', counts.delivered);
+    setBtn('btn-filter-order-cancelled', 'Cancelled', counts.cancelled);
   }
 
   window.updateChartPeriod = function(period) {
@@ -1441,6 +1464,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const ordNo = o.order_number || o.id;
           const statusBadge = getStatusBadgeHTML(o.status);
           const dateStr = o.created_at ? new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Today';
+          const sLower = (o.status || '').toLowerCase();
+          const canDelete = sLower === 'delivered' || sLower === 'cancelled';
           return `
             <tr>
               <td><strong>#${ordNo.replace(/^#/, '')}</strong></td>
@@ -1450,7 +1475,14 @@ document.addEventListener('DOMContentLoaded', () => {
               <td><strong>${Number(o.total || 0).toLocaleString()} DZD</strong></td>
               <td>${o.delivery_type === 'stopdesk' ? 'Stop-Desk' : 'Home Delivery'}</td>
               <td>${statusBadge}</td>
-              <td><button class="adm-btn-icon" onclick="openOrderDetailModal('${ordNo}')" title="View Details">👁️</button></td>
+              <td>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <button class="adm-btn-icon" onclick="openOrderDetailModal('${ordNo}')" title="عرض تفاصيل الطلب (View Details)">👁️</button>
+                  ${canDelete ? `
+                    <button class="adm-btn-icon" style="color:#DC2626; border-color:#FECACA; background:#FEF2F2;" onclick="deleteOrderFromAdmin('${ordNo}')" title="حذف الطلب نهائياً (Delete Order)">🗑️</button>
+                  ` : ''}
+                </div>
+              </td>
             </tr>`;
         }).join('');
       }
@@ -1469,6 +1501,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ordersModuleTbody.innerHTML = filtered.map(o => {
           const ordNo = o.order_number || o.id;
           const status = o.status || 'Pending';
+          const sLower = (status || '').toLowerCase();
+          const canDelete = sLower === 'delivered' || sLower === 'cancelled';
           return `
             <tr>
               <td><strong>#${ordNo.replace(/^#/, '')}</strong></td>
@@ -1492,7 +1526,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </select>
               </td>
               <td>
-                <button class="adm-btn-icon" onclick="openOrderDetailModal('${ordNo}')" title="View Order Details & Invoice">👁️</button>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <button class="adm-btn-icon" onclick="openOrderDetailModal('${ordNo}')" title="عرض تفاصيل الطلب والفاتورة (View Details)">👁️</button>
+                  ${canDelete ? `
+                    <button class="adm-btn-icon" style="color:#DC2626; border-color:#FECACA; background:#FEF2F2;" onclick="deleteOrderFromAdmin('${ordNo}')" title="حذف الطلب نهائياً (Delete Order)">🗑️</button>
+                  ` : ''}
+                </div>
               </td>
             </tr>`;
         }).join('');
@@ -1531,6 +1570,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const order = allAdminOrders.find(o => (o.order_number || o.id) === orderId);
     if (order) {
       order.status = newStatus;
+      order.status_updated_at = new Date().toISOString();
+      order.updated_at = new Date().toISOString();
     }
     logAuditAction('Updated Order Status', `Order #${orderId} → ${newStatus}`);
     showToast(`✓ Order #${orderId} updated to "${newStatus}"`);
@@ -1544,6 +1585,41 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCustomerDirectory();
     renderSpecialtyReports();
     updateOrderTabCounters();
+    updateSidebarBadges();
+  };
+
+  window.deleteOrderFromAdmin = async function(orderId, fromModal = false) {
+    const cleanId = String(orderId).replace(/^#/, '').trim();
+    const order = allAdminOrders.find(o => (o.order_number || o.id || '').replace(/^#/, '').trim() === cleanId);
+    const statusText = order ? order.status : '';
+
+    if (!confirm(`هل أنت متأكد من حذف الطلب #${cleanId} (${statusText || 'تم التوصيل/ملغي'}) نهائياً من النظام؟`)) {
+      return;
+    }
+
+    if (fromModal) {
+      closeOrderDetailModal();
+    }
+
+    if (window.MedicareDB && typeof window.MedicareDB.deleteOrder === 'function') {
+      await window.MedicareDB.deleteOrder(cleanId);
+    }
+
+    allAdminOrders = allAdminOrders.filter(o => (o.order_number || o.id || '').replace(/^#/, '').trim() !== cleanId);
+
+    logAuditAction('Deleted Order', `Order #${cleanId} deleted permanently`);
+    showToast(`🗑️ تم حذف الطلب #${cleanId} بنجاح`);
+
+    // Refresh all affected tables and KPIs
+    renderOrdersTables();
+    updateDashboardKPIs();
+    renderSalesChart(currentChartPeriod);
+    renderTopSellers();
+    buildCustomerDirectory();
+    renderCustomerDirectory();
+    renderSpecialtyReports();
+    updateOrderTabCounters();
+    updateSidebarBadges();
   };
 
   /* ------------------------------------------------------------------
@@ -1712,6 +1788,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const titleEl = document.getElementById('order-modal-title');
       if (titleEl) titleEl.textContent = `Order #${cleanId} — Details & Invoice`;
 
+      const sLower = (order.status || '').toLowerCase();
+      const canDelete = sLower === 'delivered' || sLower === 'cancelled';
+
       const printArea = document.getElementById('print-area');
       if (printArea) {
         printArea.innerHTML = `
@@ -1719,7 +1798,8 @@ document.addEventListener('DOMContentLoaded', () => {
           ${generateInvoiceHTML(order)}
 
           <!-- ACTION BUTTONS (HIDDEN WHEN PRINTING) -->
-          <div class="no-print" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:flex-end;">
+          <div class="no-print" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:flex-end; align-items:center;">
+            ${canDelete ? `<button class="mc-btn mc-btn-sm" style="background:#DC2626; color:#ffffff; border:none; font-weight:700;" onclick="deleteOrderFromAdmin('${cleanId}', true)" title="حذف هذا الطلب نهائياً">🗑️ حذف الطلب</button>` : ''}
             <button class="mc-btn mc-btn-primary mc-btn-sm" onclick="printShippingLabel('${cleanId}')">🏷️ Print Label</button>
             <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="printInvoice('${cleanId}')">🧾 Print Invoice</button>
             <button class="mc-btn mc-btn-secondary mc-btn-sm" onclick="closeOrderDetailModal()">Close</button>
@@ -2662,40 +2742,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getCombinedProductsList() {
     const stockOverrides = getStockOverrides();
-    const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
-    const customMapped = customProds.map(p => {
-      const override = stockOverrides[p.id];
-      const stockVal = override != null ? (typeof override === 'object' ? override.total : Number(override)) : (p.stock || 25);
-      return {
-        ...p,
-        nameAr: p.name_ar || p.nameAr || p.name,
-        name_ar: p.name_ar || p.nameAr || p.name,
-        stock: stockVal,
-        image: (p.images && p.images[0]) || p.img || ''
-      };
-    });
+    let customProds = [];
+    try {
+      customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+    } catch (e) {
+      customProds = [];
+    }
 
-    const standardMapped = allAdminProducts.map(p => {
-      const override = stockOverrides[p.id];
-      const stockVal = override != null ? (typeof override === 'object' ? override.total : Number(override)) : (p.stock || 20);
-      return {
-        ...p,
-        nameAr: p.name_ar || p.nameAr || p.name,
-        name_ar: p.name_ar || p.nameAr || p.name,
-        stock: stockVal,
-        image: (p.images && p.images[0]) || p.img || ''
-      };
-    });
+    const prodsMap = new Map();
 
-    // Merge and deduplicate by ID (custom products take precedence)
-    const combined = [...customMapped];
-    standardMapped.forEach(sp => {
-      if (!combined.some(cp => String(cp.id) === String(sp.id))) {
-        combined.push(sp);
+    // 1. Add allAdminProducts (from Supabase Database)
+    (allAdminProducts || []).forEach(p => {
+      if (p && (p.id || p.sku)) {
+        const pId = String(p.id || p.sku).trim();
+        const override = stockOverrides[pId];
+        const stockVal = override != null ? (typeof override === 'object' ? override.total : Number(override)) : (p.stock != null ? p.stock : 20);
+        prodsMap.set(pId, {
+          ...p,
+          id: pId,
+          sku: p.sku || pId,
+          name: p.name || p.nameAr || p.name_ar || 'Product',
+          nameAr: p.name_ar || p.nameAr || p.name || 'منتج',
+          name_ar: p.name_ar || p.nameAr || p.name || 'منتج',
+          price: Number(p.price || 0),
+          stock: stockVal,
+          image: (Array.isArray(p.images) && p.images[0]) || p.img || p.image || ''
+        });
       }
     });
 
-    return combined;
+    // 2. Add customProds (localStorage - takes precedence)
+    (customProds || []).forEach(p => {
+      if (p && (p.id || p.sku)) {
+        const pId = String(p.id || p.sku).trim();
+        const override = stockOverrides[pId];
+        const stockVal = override != null ? (typeof override === 'object' ? override.total : Number(override)) : (p.stock != null ? p.stock : 25);
+        prodsMap.set(pId, {
+          ...p,
+          id: pId,
+          sku: p.sku || pId,
+          name: p.name || p.nameAr || p.name_ar || 'Product',
+          nameAr: p.name_ar || p.nameAr || p.name || 'منتج',
+          name_ar: p.name_ar || p.nameAr || p.name || 'منتج',
+          price: Number(p.price || 0),
+          stock: stockVal,
+          image: (Array.isArray(p.images) && p.images[0]) || p.img || p.image || ''
+        });
+      }
+    });
+
+    return Array.from(prodsMap.values());
   }
 
   function getAllCatalogProducts() {
@@ -3058,9 +3154,15 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('medicare_stock_overrides', JSON.stringify(overrides));
       } catch (e) {}
 
-      // 4. Notify system
+      // 4. Notify system — same tab & cross-tab broadcast
       window.dispatchEvent(new CustomEvent('medicare_products_updated', { detail: productData }));
       window.dispatchEvent(new CustomEvent('medicare_stock_updated', { detail: { productId: sku, newStock: isNaN(stockRaw) ? 25 : stockRaw } }));
+      // إبلاغ باقي الصفحات المفتوحة (category.html, index.html...) عبر BroadcastChannel
+      try {
+        const bc = new BroadcastChannel('medicare_products_channel');
+        bc.postMessage({ type: 'product_updated', product: productData, timestamp: Date.now() });
+        bc.close();
+      } catch(e) {}
 
       // 5. Feedback
       const sbStatus = sbResult && sbResult.success ? '☁️ متزامن مع Supabase' : '💾 تم الحفظ بنجاح';
@@ -4568,26 +4670,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.dispatchEvent(new CustomEvent('medicare_bundles_updated', { detail: bundles }));
   }
 
-  function getAllCatalogProducts() {
-    if (window.PRODUCT_CATALOG && Array.isArray(window.PRODUCT_CATALOG) && window.PRODUCT_CATALOG.length > 0) {
-      return window.PRODUCT_CATALOG;
-    }
-    if (window.PRODUCT_CATALOG_MAP) {
-      return Object.values(window.PRODUCT_CATALOG_MAP);
-    }
-    return [];
-  }
-
   function getProductFromCatalog(id) {
+    if (!id) return null;
+    const cleanId = String(id).trim();
+    const all = (typeof getCombinedProductsList === 'function') ? getCombinedProductsList() : [];
+    const found = all.find(p => String(p.id).trim() === cleanId || String(p.sku || '').trim() === cleanId);
+    if (found) return found;
+
     if (window.getProductById && typeof window.getProductById === 'function') {
-      const p = window.getProductById(id);
+      const p = window.getProductById(cleanId);
       if (p) return p;
     }
-    if (window.PRODUCT_CATALOG_MAP && window.PRODUCT_CATALOG_MAP[id]) {
-      return window.PRODUCT_CATALOG_MAP[id];
+    if (window.PRODUCT_CATALOG_MAP && window.PRODUCT_CATALOG_MAP[cleanId]) {
+      return window.PRODUCT_CATALOG_MAP[cleanId];
     }
-    const all = getAllCatalogProducts();
-    return all.find(p => p.id === id) || null;
+    return null;
   }
 
   window.renderBundlesTable = function() {
@@ -4702,14 +4799,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('modal-bundle');
     if (!modal) return;
 
-    // Refresh products if not yet loaded
-    if (allAdminProducts.length === 0 && window.MedicareDB && typeof window.MedicareDB.getProducts === 'function') {
+    // Refresh products from database / API
+    if (window.MedicareDB && typeof window.MedicareDB.getProducts === 'function') {
       try {
-        await loadAdminProducts();
-      } catch(e) {}
+        const dbProds = await window.MedicareDB.getProducts();
+        if (Array.isArray(dbProds) && dbProds.length > 0) {
+          allAdminProducts = dbProds.map(p => {
+            const norm = (typeof normalizeProduct === 'function') ? normalizeProduct(p) : p;
+            return {
+              ...norm,
+              id: p.id || p.sku,
+              name: p.name || p.nameAr || p.name_ar,
+              nameAr: p.name_ar || p.nameAr || p.name,
+              name_ar: p.name_ar || p.nameAr || p.name,
+              sku: p.sku || p.id,
+              category: p.category || (p.specialty ? (p.specialty.charAt(0).toUpperCase() + p.specialty.slice(1)) : 'Medical Wear'),
+              specialty: p.specialty || 'medicine',
+              price: Number(p.price || 0),
+              stock: p.stock != null ? p.stock : 20,
+              image: (Array.isArray(p.images) && p.images[0]) || p.img || p.image || ''
+            };
+          });
+        }
+      } catch(e) {
+        console.warn('[openBundleModal] load products error:', e);
+      }
     }
 
-    const allProducts = getAllCatalogProducts();
+    const allProducts = getCombinedProductsList();
     const anchorSelect = document.getElementById('b-anchor-product');
     const productsList = document.getElementById('b-products-selection-list');
     const titleEl = document.getElementById('modal-bundle-title');

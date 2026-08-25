@@ -1229,5 +1229,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // ── BroadcastChannel: استقبال تحديثات المنتجات من الأدمن فوراً (cross-tab)
+  try {
+    const _homeBc = new BroadcastChannel('medicare_products_channel');
+    _homeBc.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'product_updated') {
+        renderFeaturedProducts();
+        renderHomeBundles();
+        updateCategoryCounts();
+      }
+    });
+  } catch(e) {}
+
 });
 
