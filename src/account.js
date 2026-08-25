@@ -68,18 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   /* ------------------------------------------------------------------
-     3. DEMO LOGIN HELPER
-     ------------------------------------------------------------------ */
-  window.fillDemoCustomerCredentials = function() {
-    const inputPass = document.getElementById('login-password');
-    const inputVal  = document.getElementById('login-input');
-    if (inputVal)  inputVal.value  = '0550000000';
-    if (inputPass) inputPass.value = 'doctor2026';
-    showToast('⚡ Demo credentials pre-filled!');
-  };
-
-  /* ------------------------------------------------------------------
-     4. LOGIN HANDLER
+     3. LOGIN HANDLER
      ------------------------------------------------------------------ */
   window.handleCustomerLogin = async function(e) {
     e.preventDefault();
