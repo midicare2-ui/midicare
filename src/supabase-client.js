@@ -521,20 +521,20 @@
     async updateOrderStatus(orderId, newStatus) {
       const cleanId = String(orderId).replace(/^#/, '').trim();
       const nowIso = new Date().toISOString();
+      const validStatuses = ['Pending', 'Confirmed', 'Preparing', 'Shipped', 'Delivered', 'Cancelled'];
+      const matchedStatus = validStatuses.find(s => s.toLowerCase() === String(newStatus).toLowerCase()) || newStatus;
+
       if (_isLive && supabase) {
         try {
-          const { error } = await supabase.from('orders').update({
-            status: newStatus,
-            status_updated_at: nowIso,
+          const updatePayload = {
+            status: matchedStatus,
             updated_at: nowIso
-          }).eq('order_number', cleanId);
+          };
+
+          const { error } = await supabase.from('orders').update(updatePayload).eq('order_number', cleanId);
 
           if (error) {
-            await supabase.from('orders').update({
-              status: newStatus,
-              status_updated_at: nowIso,
-              updated_at: nowIso
-            }).eq('id', cleanId);
+            await supabase.from('orders').update(updatePayload).eq('id', cleanId);
           }
         } catch (e) {
           console.warn('[MedicareDB] updateOrderStatus error:', e);
@@ -545,7 +545,7 @@
       const localOrders = JSON.parse(localStorage.getItem('medicare_orders_db') || '[]');
       const order = localOrders.find(o => String(o.id || '').replace(/^#/, '') === cleanId || String(o.order_number || '').replace(/^#/, '') === cleanId);
       if (order) {
-        order.status = newStatus;
+        order.status = matchedStatus;
         order.status_updated_at = nowIso;
         order.updated_at = nowIso;
         localStorage.setItem('medicare_orders_db', JSON.stringify(localOrders));
