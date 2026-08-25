@@ -1449,6 +1449,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }).join('');
   }
+  window.renderSpecialtyReports = renderSpecialtyReports;
 
   function renderOrdersTables() {
     const dashboardTbody = document.getElementById('admin-dashboard-orders-body');
