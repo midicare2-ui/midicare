@@ -1184,24 +1184,51 @@ document.addEventListener('DOMContentLoaded', () => {
         : `${d.getMonth() + 1}/${d.getDate()}`;
       
       const dayRevenue = orders
-        .filter(o => o.created_at && o.created_at.startsWith(isoPrefix))
+        .filter(o => {
+          if (!o.created_at) return false;
+          const oDate = o.created_at.substring(0, 10);
+          return oDate === isoPrefix;
+        })
         .reduce((sum, o) => sum + Number(o.total || 0), 0);
 
       days.push({ dateStr: isoPrefix, label: dayLabel, revenue: dayRevenue, isToday: i === 0 });
     }
 
-    const maxRev = Math.max(...days.map(d => d.revenue), 1000);
+    const totalRevenue = days.reduce((s, d) => s + d.revenue, 0);
+
+    // No data at all — show empty state
+    if (totalRevenue === 0) {
+      chartBox.innerHTML = `
+        <div style="width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.5rem; color:var(--adm-muted-fg); font-size:12.5px; text-align:center; gap:0.4rem;">
+          <span style="font-size:28px;">📊</span>
+          <span>لا توجد مبيعات في هذه الفترة</span>
+          <span style="font-size:11px; opacity:0.7;">No sales data for this period</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; width:100%; padding:0 0.25rem; position:absolute; bottom:0.5rem; left:0; right:0;">
+          ${days.map(d => `<span style="flex:1; text-align:center; font-size:10px; color:${d.isToday ? 'var(--adm-primary)' : 'var(--adm-muted-fg)'}; font-weight:${d.isToday ? '700' : '400'};">${d.label}</span>`).join('')}
+        </div>
+      `;
+      chartBox.style.position = 'relative';
+      return;
+    }
+
+    chartBox.style.position = '';
+    const maxRev = Math.max(...days.map(d => d.revenue), 1);
 
     chartBox.innerHTML = days.map(d => {
-      const heightPct = Math.max(8, Math.round((d.revenue / maxRev) * 100));
+      const heightPct = d.revenue > 0 ? Math.max(10, Math.round((d.revenue / maxRev) * 100)) : 3;
+      const barColor = d.isToday
+        ? 'oklch(0.8614 0.1165 74.2273)'
+        : d.revenue > 0 ? 'var(--adm-primary)' : 'var(--adm-border)';
       return `
         <div class="adm-chart-bar-group" title="${d.dateStr}: ${d.revenue.toLocaleString()} DZD">
-          <div class="adm-chart-bar ${d.isToday ? 'highlight' : ''}" style="height:${heightPct}%;"></div>
+          <div class="adm-chart-bar" style="height:${heightPct}%; background:${barColor}; opacity:${d.revenue > 0 ? 1 : 0.4};"></div>
           <span style="font-size:10px; font-weight:${d.isToday ? '700' : '500'}; color:${d.isToday ? 'var(--adm-primary)' : 'var(--adm-muted-fg)'};">${d.label}</span>
         </div>
       `;
     }).join('');
   }
+  window.renderSalesChart = renderSalesChart;
 
   function renderTopSellers() {
     const container = document.getElementById('dashboard-top-sellers');
