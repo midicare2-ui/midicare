@@ -36,16 +36,34 @@
     return [];
   }
 
+  function disableLiveMode(reason) {
+    if (!_isLive) return;
+    _isLive = false;
+    if (window.MedicareDB) window.MedicareDB.isLive = false;
+    console.warn(`[MedicareDB] Offline Mode activated (${reason}). Using localStorage and local catalog.`);
+  }
+
   /* ---- HELPER: safe Supabase query ---- */
   async function sbQuery(table, queryFn) {
     if (!_isLive || !supabase) return null;
     try {
       const q = supabase.from(table);
       const { data, error } = await queryFn(q);
-      if (error) { console.warn(`[MedicareDB] ${table} query error:`, error.message); return null; }
+      if (error) {
+        if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+          disableLiveMode('Network error: ' + error.message);
+        } else {
+          console.warn(`[MedicareDB] ${table} query error:`, error.message);
+        }
+        return null;
+      }
       return data;
     } catch (e) {
-      console.warn(`[MedicareDB] ${table} exception:`, e);
+      if (e.name === 'TypeError' || (e.message && e.message.includes('Failed to fetch'))) {
+        disableLiveMode('Host unreachable: ' + (config.SUPABASE_URL || ''));
+      } else {
+        console.warn(`[MedicareDB] ${table} exception:`, e);
+      }
       return null;
     }
   }
@@ -157,8 +175,15 @@
             const { data: data2, error: e2 } = await supabase.from('products').select('*').eq('id', String(id)).limit(1);
             if (!e2 && data2 && data2.length > 0) remoteProd = data2[0];
           }
+          if (error && error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+            disableLiveMode('Network error in getProductById: ' + error.message);
+          }
         } catch (e) {
-          console.warn('[MedicareDB] getProductById Supabase error:', e);
+          if (e.name === 'TypeError' || (e.message && e.message.includes('Failed to fetch'))) {
+            disableLiveMode('Host unreachable in getProductById');
+          } else {
+            console.warn('[MedicareDB] getProductById Supabase error:', e);
+          }
         }
       }
 
