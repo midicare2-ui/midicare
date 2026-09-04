@@ -18,18 +18,13 @@ window.showToast = function(msg) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Auto-clean any legacy oversized base64 strings to free browser localStorage quota
+  // Verify localStorage custom products integrity on load
   try {
     const rawCustom = localStorage.getItem('medicare_custom_products');
-    if (rawCustom && rawCustom.length > 500000) {
+    if (rawCustom) {
       const parsed = JSON.parse(rawCustom);
-      if (Array.isArray(parsed)) {
-        const cleaned = parsed.map(p => ({
-          ...p,
-          images: (p.images || []).map(img => (typeof img === 'string' && img.length > 70000) ? '' : img),
-          image: (typeof p.image === 'string' && p.image.length > 70000) ? '' : (p.image || '')
-        }));
-        localStorage.setItem('medicare_custom_products', JSON.stringify(cleaned));
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        console.log(`📦 Loaded ${parsed.length} custom products from localStorage`);
       }
     }
   } catch (e) {}
@@ -2129,7 +2124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.onload = () => {
               let w = img.width;
               let h = img.height;
-              const maxDim = 800;
+              const maxDim = 450;
               if (w > h && w > maxDim) {
                 h = Math.round((h * maxDim) / w);
                 w = maxDim;
@@ -2142,7 +2137,7 @@ document.addEventListener('DOMContentLoaded', () => {
               canvas.height = h;
               const ctx = canvas.getContext('2d');
               ctx.drawImage(img, 0, 0, w, h);
-              resolve(canvas.toDataURL('image/jpeg', 0.8));
+              resolve(canvas.toDataURL('image/jpeg', 0.65));
             };
             img.onerror = () => resolve(e.target.result);
             img.src = e.target.result;

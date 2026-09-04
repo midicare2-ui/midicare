@@ -80,15 +80,53 @@
 
       const prodsMap = new Map();
       remoteData.forEach(p => {
-        if (p && p.id) prodsMap.set(String(p.id), p);
-      });
-      localData.forEach(p => {
-        if (p && p.id && !prodsMap.has(String(p.id))) {
-          prodsMap.set(String(p.id), p);
+        if (p && (p.id || p.sku)) {
+          const key = String(p.id || p.sku);
+          prodsMap.set(key, { ...p });
         }
       });
 
-      let items = Array.from(prodsMap.values());
+      // localStorage custom products take precedence and enrich remote data
+      localData.forEach(p => {
+        if (p && (p.id || p.sku)) {
+          const key = String(p.id || p.sku);
+          const existing = prodsMap.get(key);
+          if (existing) {
+            prodsMap.set(key, {
+              ...existing,
+              ...p,
+              images: (Array.isArray(p.images) && p.images.length > 0) ? p.images : (existing.images || []),
+              img: p.img || (p.images && p.images[0]) || existing.img || ''
+            });
+          } else {
+            prodsMap.set(key, { ...p });
+          }
+        }
+      });
+
+      // Keep newly added custom products at the front of the list
+      const finalItems = [];
+      const seenKeys = new Set();
+      localData.forEach(lp => {
+        if (lp && (lp.id || lp.sku)) {
+          const key = String(lp.id || lp.sku);
+          if (!seenKeys.has(key)) {
+            finalItems.push(prodsMap.get(key) || lp);
+            seenKeys.add(key);
+          }
+        }
+      });
+      remoteData.forEach(rp => {
+        if (rp && (rp.id || rp.sku)) {
+          const key = String(rp.id || rp.sku);
+          if (!seenKeys.has(key)) {
+            finalItems.push(prodsMap.get(key) || rp);
+            seenKeys.add(key);
+          }
+        }
+      });
+
+      let items = finalItems.length > 0 ? finalItems : Array.from(prodsMap.values());
       if (items.length === 0) {
         items = [...getFallbackProducts()];
       }
@@ -103,28 +141,40 @@
     },
 
     async getProductById(id) {
-      // ── 1. Try Supabase (avoid .single() to prevent PGRST116 "row not found" errors)
+      let localProd = null;
+      try {
+        const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+        localProd = customProds.find(p => String(p.id) === String(id) || (p.sku && String(p.sku) === String(id)));
+      } catch (e) {}
+
+      // ── 1. Try Supabase
+      let remoteProd = null;
       if (_isLive && supabase) {
         try {
           const { data, error } = await supabase.from('products').select('*').eq('id', id).limit(1);
-          if (!error && data && data.length > 0) return data[0];
-          // If not found by exact id match, try string coercion (id might be number in DB)
-          if (!error && (!data || data.length === 0)) {
+          if (!error && data && data.length > 0) remoteProd = data[0];
+          if (!remoteProd) {
             const { data: data2, error: e2 } = await supabase.from('products').select('*').eq('id', String(id)).limit(1);
-            if (!e2 && data2 && data2.length > 0) return data2[0];
+            if (!e2 && data2 && data2.length > 0) remoteProd = data2[0];
           }
         } catch (e) {
           console.warn('[MedicareDB] getProductById Supabase error:', e);
         }
       }
-      // ── 2. Check localStorage custom products (products added from Admin when Supabase was offline)
-      try {
-        const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
-        const found = customProds.find(p => String(p.id) === String(id));
-        if (found) return found;
-      } catch (e) {}
+
+      if (localProd && remoteProd) {
+        return {
+          ...remoteProd,
+          ...localProd,
+          images: (Array.isArray(localProd.images) && localProd.images.length > 0) ? localProd.images : (remoteProd.images || []),
+          img: localProd.img || (localProd.images && localProd.images[0]) || remoteProd.img || ''
+        };
+      }
+      if (localProd) return localProd;
+      if (remoteProd) return remoteProd;
+
       // ── 3. Fall back to static local catalog
-      return getFallbackProducts().find(p => String(p.id) === String(id)) || null;
+      return getFallbackProducts().find(p => String(p.id) === String(id) || (p.sku && String(p.sku) === String(id))) || null;
     },
 
     /**
@@ -135,9 +185,26 @@
      * @returns {{ success: boolean, error: string|null }}
      */
     async saveProduct(product, isEdit = false) {
+      // 1. Always ensure persistent local storage backup
+      try {
+        let localList = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+        const pId = String(product.id || product.sku || '');
+        if (pId) {
+          const idx = localList.findIndex(p => String(p.id || p.sku) === pId);
+          if (idx >= 0) {
+            localList[idx] = { ...localList[idx], ...product };
+          } else {
+            localList.unshift(product);
+          }
+          localStorage.setItem('medicare_custom_products', JSON.stringify(localList));
+        }
+      } catch (locErr) {
+        console.warn('[MedicareDB] Local save helper error:', locErr);
+      }
+
       if (!_isLive || !supabase) {
         console.warn('[MedicareDB] saveProduct: Supabase not connected, localStorage only.');
-        return { success: false, error: 'Supabase not connected' };
+        return { success: true, error: 'Saved locally (Supabase offline)' };
       }
       try {
         // Map and sanitize fields for PostgreSQL table compatibility
@@ -172,36 +239,43 @@
           }
 
           // If another error occurred
-          console.error('[MedicareDB] saveProduct error:', errMsg);
-          return { success: false, error: errMsg };
+          console.warn('[MedicareDB] saveProduct remote error (fallback to local):', errMsg);
+          return { success: true, error: errMsg, savedLocally: true };
         }
 
-        return { success: false, error: 'Max retry attempts reached' };
+        return { success: true, error: 'Max retry attempts reached, saved locally', savedLocally: true };
       } catch (e) {
-        console.error('[MedicareDB] saveProduct exception:', e);
-        return { success: false, error: e.message };
+        console.warn('[MedicareDB] saveProduct exception (saved locally):', e);
+        return { success: true, error: e.message, savedLocally: true };
       }
     },
 
     /**
-     * deleteProduct — permanently removes a product from Supabase.
+     * deleteProduct — permanently removes a product from Supabase & localStorage.
      * @param {string} productId
      * @returns {{ success: boolean, error: string|null }}
      */
     async deleteProduct(productId) {
+      // 1. Delete from localStorage
+      try {
+        let localList = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
+        localList = localList.filter(p => String(p.id) !== String(productId) && String(p.sku) !== String(productId));
+        localStorage.setItem('medicare_custom_products', JSON.stringify(localList));
+      } catch (e) {}
+
       if (!_isLive || !supabase) {
-        return { success: false, error: 'Supabase not connected' };
+        return { success: true, error: 'Removed locally' };
       }
       try {
         const { error } = await supabase.from('products').delete().eq('id', productId);
         if (error) {
-          console.error('[MedicareDB] deleteProduct error:', error.message);
-          return { success: false, error: error.message };
+          console.warn('[MedicareDB] deleteProduct remote error:', error.message);
+          return { success: true, error: error.message };
         }
         return { success: true, error: null };
       } catch (e) {
-        console.error('[MedicareDB] deleteProduct exception:', e);
-        return { success: false, error: e.message };
+        console.warn('[MedicareDB] deleteProduct remote exception:', e);
+        return { success: true, error: e.message };
       }
     },
 

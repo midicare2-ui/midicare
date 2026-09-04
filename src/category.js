@@ -282,7 +282,45 @@ function getLiveCatalog() {
     ? [...window.PRODUCT_CATALOG]
     : (typeof require !== 'undefined' ? [...require('./product-catalog.js').PRODUCT_CATALOG] : []);
 
-  // ── أولاً: دمج منتجات localStorage (Admin-added products) — تأخذ الأولوية
+  // ── أولاً: دمج منتجات Supabase (إذا كانت متوفرة في الذاكرة)
+  if (_supabaseProducts && _supabaseProducts.length > 0) {
+    _supabaseProducts.forEach(sp => {
+      const idx = base.findIndex(p => String(p.id) === String(sp.id));
+      const primaryImage = (Array.isArray(sp.images) && sp.images.length > 0 && sp.images[0])
+        ? sp.images[0]
+        : (typeof sp.images === 'string' && sp.images ? sp.images : (sp.img || ''));
+      const normalized = {
+        id:          sp.id,
+        name:        sp.name,
+        name_ar:     sp.name_ar || sp.name,
+        category:    sp.category || 'Scrubs',
+        specialty:   sp.specialty,
+        price:       Number(sp.price),
+        originalPrice: sp.original_price ? Number(sp.original_price) : null,
+        rating:      Number(sp.rating) || 5,
+        reviews:     Number(sp.reviews_count) || 0,
+        stock:       Number(sp.stock) || 0,
+        material:    sp.material || '',
+        brand:       sp.brand || 'medicare',
+        badge:       sp.badge || '',
+        colors:      Array.isArray(sp.colors) ? sp.colors : [],
+        sizes:       Array.isArray(sp.sizes) ? sp.sizes : ['S','M','L','XL'],
+        img:         primaryImage,
+        img2:        (Array.isArray(sp.images) && sp.images.length > 1) ? sp.images[1] : (sp.img2 || null),
+        images:      (Array.isArray(sp.images) && sp.images.length > 0) ? sp.images : [primaryImage].filter(Boolean),
+        isBestSeller: sp.is_bestseller || false,
+        isNew:       sp.is_new || false,
+        ...Object.fromEntries(Object.entries(sp).filter(([k]) => !['id','name','name_ar','category','specialty','price','original_price','originalPrice','rating','reviews_count','reviews','stock','material','brand','badge','colors','sizes','images','img','img2','is_bestseller','isBestSeller','is_new','isNew'].includes(k)))
+      };
+      if (idx >= 0) {
+        base[idx] = { ...base[idx], ...normalized };
+      } else {
+        base.unshift(normalized);
+      }
+    });
+  }
+
+  // ── ثانياً: دمج منتجات localStorage (Admin-added / edited products) — تأخذ الأولوية المطلقة
   try {
     const customProds = JSON.parse(localStorage.getItem('medicare_custom_products') || '[]');
     customProds.forEach(cp => {
@@ -311,53 +349,17 @@ function getLiveCatalog() {
         images:       (Array.isArray(cp.images) && cp.images.length > 0) ? cp.images : [primaryImage].filter(Boolean),
         isBestSeller: cp.is_bestseller || cp.isBestSeller || false,
         isNew:        cp.is_new || cp.isNew || false,
-        // حفظ باقي الحقول
         ...Object.fromEntries(Object.entries(cp).filter(([k]) => !['id','name','name_ar','category','specialty','price','original_price','originalPrice','rating','reviews_count','reviews','stock','material','brand','badge','colors','sizes','images','img','img2','is_bestseller','isBestSeller','is_new','isNew'].includes(k)))
       };
 
-      const idx = base.findIndex(p => String(p.id) === String(normalized.id));
+      const idx = base.findIndex(p => String(p.id) === String(normalized.id) || (p.sku && String(p.sku) === String(normalized.id)));
       if (idx >= 0) {
-        base[idx] = { ...base[idx], ...normalized }; // تحديث المنتج الموجود
+        base[idx] = { ...base[idx], ...normalized }; // تحديث وتثبيت الأولوية للمحلي
       } else {
-        base.unshift(normalized); // إضافة منتج جديد في البداية
+        base.unshift(normalized); // إضافة في المقدمة
       }
     });
   } catch (e) { console.warn('[Category] Error merging localStorage products:', e); }
-
-  // ── Merge Supabase products (fetched async on init)
-  // Supabase تحدّث المنتجات الموجودة فقط بدون إزالة المخصصة
-  if (_supabaseProducts && _supabaseProducts.length > 0) {
-    _supabaseProducts.forEach(sp => {
-      const idx = base.findIndex(p => String(p.id) === String(sp.id));
-      const normalized = {
-        id:          sp.id,
-        name:        sp.name,
-        name_ar:     sp.name_ar || sp.name,
-        category:    sp.category || 'Scrubs',
-        specialty:   sp.specialty,
-        price:       Number(sp.price),
-        originalPrice: sp.original_price ? Number(sp.original_price) : null,
-        rating:      Number(sp.rating) || 5,
-        reviews:     Number(sp.reviews_count) || 0,
-        stock:       Number(sp.stock) || 0,
-        material:    sp.material || '',
-        brand:       sp.brand || 'medicare',
-        badge:       sp.badge || '',
-        colors:      Array.isArray(sp.colors) ? sp.colors : [],
-        sizes:       Array.isArray(sp.sizes) ? sp.sizes : ['S','M','L','XL'],
-        img:         (Array.isArray(sp.images) && sp.images.length > 0 && sp.images[0]) ? sp.images[0] : (typeof sp.images === 'string' && sp.images ? sp.images : ''),
-        img2:        (Array.isArray(sp.images) && sp.images.length > 1 && sp.images[1]) ? sp.images[1] : null,
-        images:      (Array.isArray(sp.images) && sp.images.length > 0) ? sp.images : [],
-        isBestSeller: sp.is_bestseller || false,
-        isNew:       sp.is_new || false
-      };
-      if (idx >= 0) {
-        base[idx] = normalized; // Update existing entry
-      } else {
-        base.unshift(normalized); // Add new product at top
-      }
-    });
-  }
 
   // ── Apply stock overrides
   const overrides = JSON.parse(localStorage.getItem('medicare_stock_overrides') || '{}');
